@@ -97,16 +97,16 @@ if [ -d "${AppleJavaFolder}" ]; then
 	JVMClasspath="${AppleJavaFolder}*"
 	
 	# read the MainClass name
-	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" ${InfoPlistFile}`
+	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" ${InfoPlistFile} 2> /dev/null`
 	
 	# read the JVM Options
-	JVMOptions=`/usr/libexec/PlistBuddy -c "print :Java:Properties" ${InfoPlistFile} | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
+	JVMOptions=`/usr/libexec/PlistBuddy -c "print :Java:Properties" ${InfoPlistFile} 2> /dev/null | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
 	
 	# read the JVM Default Options
-	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :Java:VMOptions" ${InfoPlistFile} | xargs`
+	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :Java:VMOptions" ${InfoPlistFile} 2> /dev/null | xargs`
 	
 	# read the JVM Arguments
-	JVMArguments=`/usr/libexec/PlistBuddy -c "print :Java:Arguments" ${InfoPlistFile} | xargs`
+	JVMArguments=`/usr/libexec/PlistBuddy -c "print :Java:Arguments" ${InfoPlistFile} 2> /dev/null | xargs`
 
 
 # read Info.plist in Oracle style
@@ -116,16 +116,16 @@ elif [ -d "${OracleJavaFolder}" ]; then
 	JVMClasspath="${OracleJavaFolder}*"
 	
 	# read the MainClass name
-	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" ${InfoPlistFile}`
+	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" ${InfoPlistFile} 2> /dev/null`
 	
 	# read the JVM Options
-	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" ${InfoPlistFile} | grep " -" | tr '\n' ' ' | sed 's/  */ /g' | xargs`
+	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" ${InfoPlistFile} 2> /dev/null | grep " -" | tr '\n' ' ' | sed 's/  */ /g' | xargs`
 	
 	# read the JVM Default Options
-	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" ${InfoPlistFile} | grep -o "\-.*" | tr '\n' ' ' | xargs`
+	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" ${InfoPlistFile} 2> /dev/null | grep -o "\-.*" | tr '\n' ' ' | xargs`
 	
 	# read the JVM Arguments
-	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" ${InfoPlistFile} | tr '\n' ' ' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
+	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" ${InfoPlistFile} 2> /dev/null | tr '\n' ' ' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
 	
 fi
 
