@@ -100,13 +100,13 @@ if [ -d "${AppleJavaFolder}" ]; then
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" ${InfoPlistFile}`
 	
 	# read the JVM Options
-	JVMOptions=`/usr/libexec/PlistBuddy -c "print :Java:Properties" ${InfoPlistFile} | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g'`
+	JVMOptions=`/usr/libexec/PlistBuddy -c "print :Java:Properties" ${InfoPlistFile} | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
 	
 	# read the JVM Default Options
-	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :Java:VMOptions" ${InfoPlistFile}`
+	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :Java:VMOptions" ${InfoPlistFile} | xargs`
 	
 	# read the JVM Arguments
-	JVMArguments=`/usr/libexec/PlistBuddy -c "print :Java:Arguments" ${InfoPlistFile}`
+	JVMArguments=`/usr/libexec/PlistBuddy -c "print :Java:Arguments" ${InfoPlistFile} | xargs`
 
 
 # read Info.plist in Oracle style
@@ -119,13 +119,13 @@ elif [ -d "${OracleJavaFolder}" ]; then
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" ${InfoPlistFile}`
 	
 	# read the JVM Options
-	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" ${InfoPlistFile} | grep " -" | tr '\n' ' ' | sed 's/  */ /g'`
+	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" ${InfoPlistFile} | grep " -" | tr '\n' ' ' | sed 's/  */ /g' | xargs`
 	
 	# read the JVM Default Options
-	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" ${InfoPlistFile} | grep -o "\-.*" | tr '\n' ' '`
+	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" ${InfoPlistFile} | grep -o "\-.*" | tr '\n' ' ' | xargs`
 	
 	# read the JVM Arguments
-	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" ${InfoPlistFile} | tr '\n' ' ' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g'`
+	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" ${InfoPlistFile} | tr '\n' ' ' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
 	
 fi
 
@@ -184,13 +184,13 @@ elif [ -x "$JAVACMD" ]; then
 	#	- main class
 	#	- JVM arguments
 	exec "$JAVACMD" \
-		   -cp "${JVMClasspath}" \
-		   -Xdock:icon="$PROGDIR/../Resources/${CFBundleIconFile}" \
-		   -Xdock:name="${CFBundleName}" \
-		   "${JVMOptions}" \
-		   "${JVMDefaultOptions}" \
-		   "${JVMMainClass}" \
-		   "${JVMArguments}"
+			-cp "${JVMClasspath}" \
+			-Xdock:icon="$PROGDIR/../Resources/${CFBundleIconFile}" \
+			-Xdock:name="${CFBundleName}" \
+			${JVMOptions:+"$JVMOptions" }\
+			${JVMDefaultOptions:+"$JVMDefaultOptions" }\
+			"${JVMMainClass}"\
+			${JVMArguments:+"$JVMArguments"}
 	
 	
 else
