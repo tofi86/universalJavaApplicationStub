@@ -42,14 +42,14 @@ The shell script reads JVM properties from `Info.plist` regardless of which form
 #	- JVM default options
 #	- main class
 #	- JVM arguments
-exec "$JAVACMD" \
-	   -cp "${JVMClasspath}" \
-	   -Xdock:icon="$PROGDIR/../Resources/${CFBundleIconFile}" \
-	   -Xdock:name="${CFBundleName}" \
-	   "${JVMOptions}" \
-	   "${JVMDefaultOptions}" \
-	   "${JVMMainClass}" \
-	   "${JVMArguments}"
+	exec "$JAVACMD" \
+		-cp "${JVMClasspath}" \
+		-Xdock:icon="$PROGDIR/../Resources/${CFBundleIconFile}" \
+		-Xdock:name="${CFBundleName}" \
+		${JVMOptions:+"$JVMOptions" }\
+		${JVMDefaultOptions:+"$JVMDefaultOptions" }\
+		"${JVMMainClass}"\
+		${JVMArguments:+"$JVMArguments"}
 ```
 
 It sets the classpath, the dock icon, the *AboutMenuName* (in Xdock style) and then every *JVMOptions*, *JVMDefaultOptions* or *JVMArguments* found in the `Info.plist` file.
@@ -114,6 +114,8 @@ Missing Features
 ----------------
 
 At the moment, there's no support for
+* File drag & drop to the dock icon
+ * *personal reminder: files aren't passed as argument but on the drop clipboard. therefore probably not fixable...*
 * required JVM architecture (like `x86_64`, etc.)
 * required JVM version (like `1.6+`, etc.)
 * etc...
