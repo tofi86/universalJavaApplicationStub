@@ -114,8 +114,6 @@ Missing Features
 ----------------
 
 At the moment, there's no support for
-* File drag & drop to the dock icon
- * *personal reminder: files aren't passed as argument but on the drop clipboard. therefore probably not fixable...*
 * required JVM architecture (like `x86_64`, etc.)
 * required JVM version (like `1.6+`, etc.)
 * etc...
