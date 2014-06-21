@@ -179,7 +179,6 @@ elif [ -x "$JAVACMD" ]; then
 	export CFProcessPath="$0"
 
 	cd "$JavaFolder"
-	pwd
 
 	# execute Java and set
 	#	- classpath
