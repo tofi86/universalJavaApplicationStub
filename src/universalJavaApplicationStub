@@ -63,7 +63,34 @@ while [ -h "$PRG" ]; do
     fi
 done
 
+# set the directory abspath of the current shell script
 PROGDIR=`dirname "$PRG"`
+
+
+
+
+#
+# set files and folders
+############################################
+
+# the base path of the app package
+cd "$PROGDIR"/../../
+AppPackageFolder=`pwd`
+
+# set Apple's Java folder
+AppleJavaFolder="${AppPackageFolder}"/Contents/Resources/Java
+
+# set Apple's Resources folder
+AppleResourcesFolder="${AppPackageFolder}"/Contents/Resources
+
+# set Oracle's Java folder
+OracleJavaFolder="${AppPackageFolder}"/Contents/Java
+
+# set Oracle's Resources folder
+OracleResourcesFolder="${AppPackageFolder}"/Contents/Resources
+
+# set path to Info.plist in bundle
+InfoPlistFile="${AppPackageFolder}"/Contents/Info.plist
 
 
 
@@ -71,15 +98,6 @@ PROGDIR=`dirname "$PRG"`
 #
 # read Info.plist and extract JVM options
 ############################################
-
-# set Apple's Java folder
-AppleJavaFolder="$PROGDIR/../Resources/Java/"
-
-# set Oracle's Java folder
-OracleJavaFolder="$PROGDIR/../Java/"
-
-# set path to Info.plist in bundle
-InfoPlistFile="$PROGDIR/../Info.plist"
 
 
 # read the program name from CFBundleName
@@ -92,9 +110,27 @@ CFBundleIconFile=`/usr/libexec/PlistBuddy -c "print :CFBundleIconFile" ${InfoPli
 # read Info.plist in Apple style
 if [ -d "${AppleJavaFolder}" ]; then
 
-	# set working directory
+	# read the Java WorkingDirectory
+	JVMWorkDir=`/usr/libexec/PlistBuddy -c "print :Java:WorkingDirectory" ${InfoPlistFile} 2> /dev/null | xargs`
+	
+	# set Working Directory based upon Plist info
+	if [ "${JVMWorkDir}" == "\$JAVAROOT" ]; then
+		WorkingDirectory="${AppleJavaFolder}"
+		
+	elif [ "${JVMWorkDir}" == "\$APP_PACKAGE" ]; then
+		WorkingDirectory="${AppPackageFolder}"
+		
+	elif [ "${JVMWorkDir}" == "\$USER_HOME" ]; then
+		WorkingDirectory="~"
+		
+	else
+		# root is the standard WorkingDirectory when the script is started
+		WorkingDirectory="/"
+	fi
+	
+	# set Java and Resources folder
 	JavaFolder="${AppleJavaFolder}"
-	ResourcesFolder=".."
+	ResourcesFolder="${AppleResourcesFolder}"
 
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" ${InfoPlistFile} 2> /dev/null`
@@ -112,9 +148,10 @@ if [ -d "${AppleJavaFolder}" ]; then
 # read Info.plist in Oracle style
 elif [ -d "${OracleJavaFolder}" ]; then
 
-	# set working directory
+	# set Working Directory and Java and Resources folder
 	JavaFolder="${OracleJavaFolder}"
-	ResourcesFolder="../Resources"
+	ResourcesFolder="${OracleResourcesFolder}"
+	WorkingDirectory="${OracleJavaFolder}"
 
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" ${InfoPlistFile} 2> /dev/null`
@@ -178,7 +215,8 @@ elif [ -x "$JAVACMD" ]; then
 	# enable drag&drop to the dock icon
 	export CFProcessPath="$0"
 
-	cd "$JavaFolder"
+	# change to Working Directory based upon Apple/Oracle Plist info
+	cd "${WorkingDirectory}"
 
 	# execute Java and set
 	#	- classpath
@@ -189,8 +227,8 @@ elif [ -x "$JAVACMD" ]; then
 	#	- main class
 	#	- JVM arguments
 	exec "$JAVACMD" \
-			-cp "./*" \
-			-Xdock:icon="$ResourcesFolder/${CFBundleIconFile}" \
+			-cp "${JavaFolder}/*" \
+			-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
 			-Xdock:name="${CFBundleName}" \
 			${JVMOptions:+$JVMOptions }\
 			${JVMDefaultOptions:+$JVMDefaultOptions }\
