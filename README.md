@@ -43,16 +43,18 @@ The shell script reads JVM properties from `Info.plist` regardless of which form
 #	- main class
 #	- JVM arguments
 	exec "$JAVACMD" \
-		-cp "${JVMClasspath}" \
-		-Xdock:icon="$PROGDIR/../Resources/${CFBundleIconFile}" \
+		-cp "${JavaFolder}/*" \
+		-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
 		-Xdock:name="${CFBundleName}" \
-		${JVMOptions:+"$JVMOptions" }\
-		${JVMDefaultOptions:+"$JVMDefaultOptions" }\
-		"${JVMMainClass}"\
-		${JVMArguments:+"$JVMArguments"}
+		${JVMOptions:+$JVMOptions }\
+		${JVMDefaultOptions:+$JVMDefaultOptions }\
+		${JVMMainClass}\
+		${JVMArguments:+ $JVMArguments"}
 ```
 
 It sets the classpath, the dock icon, the *AboutMenuName* (in Xdock style) and then every *JVMOptions*, *JVMDefaultOptions* or *JVMArguments* found in the `Info.plist` file.
+
+The WorkingDirectory is either retrieved from Apple's `Info.plist` key `Java/WorkingDirectory` or set to the JavaRoot directory within the app bundle.
 
 The name of the *main class* is also retrieved from `Info.plist`. If no *main class* could be found, an applescript error dialog is shown and the script exits with *exit code 1*.
 
