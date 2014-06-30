@@ -1,7 +1,7 @@
 universalJavaApplicationStub
 =====================
 
-A shellscript JavaApplicationStub for Java Apps on Mac OS X that works with both Apple's and Oracle's plist format.
+A shellscript JavaApplicationStub for Java Apps on Mac OS X that works with both Apple's and Oracle's plist format. It is released under the MIT License.
 
 
 Why
@@ -49,7 +49,7 @@ The shell script reads JVM properties from `Info.plist` regardless of which form
 		${JVMOptions:+$JVMOptions }\
 		${JVMDefaultOptions:+$JVMDefaultOptions }\
 		${JVMMainClass}\
-		${JVMArguments:+ $JVMArguments"}
+		${JVMArguments:+ $JVMArguments}
 ```
 
 It sets the classpath, the dock icon, the *AboutMenuName* (in Xdock style) and then every *JVMOptions*, *JVMDefaultOptions* or *JVMArguments* found in the `Info.plist` file.
@@ -121,6 +121,29 @@ At the moment, there's no support for
 * etc...
 
 An AppleScript dialog would be nice to prevent Java execution if the requirements aren't met.
+
+
+ChangeLog
+---------
+
+### v0.5 *(2014-06-30)*
+* bugfix for pathes / App bundles containing spaces (#2)
+
+### v0.4 *(2014-06-30)*
+* read and set WorkingDirectory based on the key in `Info.plist` (#1)
+ * interpret the 3 different values $JAVAROOT, $APP_PACKAGE, $USER_HOME
+ * fallback to root / as standard
+
+### v0.3 *(2014-03-16)*
+* enable drag&drop to the dock icon
+
+### v0.2 *(2014-03-16)*
+* trim whitespace from variables and commandline
+* don't show errors in output for Info.plist querying
+
+### v0.1 *(2014-03-09)*
+* initial release
+
 
 License
 -------
