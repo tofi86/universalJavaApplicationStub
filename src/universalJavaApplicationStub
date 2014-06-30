@@ -101,17 +101,17 @@ InfoPlistFile="${AppPackageFolder}"/Contents/Info.plist
 
 
 # read the program name from CFBundleName
-CFBundleName=`/usr/libexec/PlistBuddy -c "print :CFBundleName" ${InfoPlistFile}`
+CFBundleName=`/usr/libexec/PlistBuddy -c "print :CFBundleName" "${InfoPlistFile}"`
 
 # read the icon file name
-CFBundleIconFile=`/usr/libexec/PlistBuddy -c "print :CFBundleIconFile" ${InfoPlistFile}`
+CFBundleIconFile=`/usr/libexec/PlistBuddy -c "print :CFBundleIconFile" "${InfoPlistFile}"`
 
 
 # read Info.plist in Apple style
 if [ -d "${AppleJavaFolder}" ]; then
 
 	# read the Java WorkingDirectory
-	JVMWorkDir=`/usr/libexec/PlistBuddy -c "print :Java:WorkingDirectory" ${InfoPlistFile} 2> /dev/null | xargs`
+	JVMWorkDir=`/usr/libexec/PlistBuddy -c "print :Java:WorkingDirectory" "${InfoPlistFile}" 2> /dev/null | xargs`
 	
 	# set Working Directory based upon Plist info
 	if [ "${JVMWorkDir}" == "\$JAVAROOT" ]; then
@@ -133,16 +133,16 @@ if [ -d "${AppleJavaFolder}" ]; then
 	ResourcesFolder="${AppleResourcesFolder}"
 
 	# read the MainClass name
-	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" ${InfoPlistFile} 2> /dev/null`
+	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" "${InfoPlistFile}" 2> /dev/null`
 
 	# read the JVM Options
-	JVMOptions=`/usr/libexec/PlistBuddy -c "print :Java:Properties" ${InfoPlistFile} 2> /dev/null | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
+	JVMOptions=`/usr/libexec/PlistBuddy -c "print :Java:Properties" "${InfoPlistFile}" 2> /dev/null | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
 
 	# read the JVM Default Options
-	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :Java:VMOptions" ${InfoPlistFile} 2> /dev/null | xargs`
+	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :Java:VMOptions" "${InfoPlistFile}" 2> /dev/null | xargs`
 
 	# read the JVM Arguments
-	JVMArguments=`/usr/libexec/PlistBuddy -c "print :Java:Arguments" ${InfoPlistFile} 2> /dev/null | xargs`
+	JVMArguments=`/usr/libexec/PlistBuddy -c "print :Java:Arguments" "${InfoPlistFile}" 2> /dev/null | xargs`
 
 
 # read Info.plist in Oracle style
@@ -154,16 +154,16 @@ elif [ -d "${OracleJavaFolder}" ]; then
 	WorkingDirectory="${OracleJavaFolder}"
 
 	# read the MainClass name
-	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" ${InfoPlistFile} 2> /dev/null`
+	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" "${InfoPlistFile}" 2> /dev/null`
 
 	# read the JVM Options
-	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" ${InfoPlistFile} 2> /dev/null | grep " -" | tr '\n' ' ' | sed 's/  */ /g' | xargs`
+	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" "${InfoPlistFile}" 2> /dev/null | grep " -" | tr '\n' ' ' | sed 's/  */ /g' | xargs`
 
 	# read the JVM Default Options
-	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" ${InfoPlistFile} 2> /dev/null | grep -o "\-.*" | tr '\n' ' ' | xargs`
+	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" "${InfoPlistFile}" 2> /dev/null | grep -o "\-.*" | tr '\n' ' ' | xargs`
 
 	# read the JVM Arguments
-	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" ${InfoPlistFile} 2> /dev/null | tr '\n' ' ' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
+	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" "${InfoPlistFile}" 2> /dev/null | tr '\n' ' ' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
 
 fi
 
