@@ -13,8 +13,8 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2014-06-30                                                          #
-# @version   0.5                                                                 #
+# @date      2014-07-12                                                          #
+# @version   0.6                                                                 #
 #                                                                                #
 #                                                                                #
 ##################################################################################
@@ -122,6 +122,9 @@ if [ -d "${AppleJavaFolder}" ]; then
 		
 	elif [ "${JVMWorkDir}" == "\$USER_HOME" ]; then
 		WorkingDirectory="~"
+		
+	elif [[ ! -z ${JVMWorkDir} ]]; then
+		WorkingDirectory="${JVMWorkDir}"
 		
 	else
 		# root is the standard WorkingDirectory when the script is started

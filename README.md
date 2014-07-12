@@ -126,6 +126,9 @@ An AppleScript dialog would be nice to prevent Java execution if the requirement
 ChangeLog
 ---------
 
+### v0.6 *(2014-07-12)*
+* also catch fixed paths for Plist key `JVMWorkDir` *(thanks @dpolivaev)*
+
 ### v0.5 *(2014-06-30)*
 * bugfix for pathes / App bundles containing spaces (#2)
 
