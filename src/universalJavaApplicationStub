@@ -73,9 +73,13 @@ PROGDIR=`dirname "$PRG"`
 # set files and folders
 ############################################
 
-# the base path of the app package
+# the absolute path of the app package
 cd "$PROGDIR"/../../
 AppPackageFolder=`pwd`
+
+# the base path of the app package
+cd ..
+AppPackageRoot=`pwd`
 
 # set Apple's Java folder
 AppleJavaFolder="${AppPackageFolder}"/Contents/Resources/Java
@@ -127,8 +131,8 @@ if [ -d "${AppleJavaFolder}" ]; then
 		WorkingDirectory="${JVMWorkDir}"
 		
 	else
-		# root is the standard WorkingDirectory when the script is started
-		WorkingDirectory="/"
+		# AppPackageRoot is the standard WorkingDirectory when the script is started
+		WorkingDirectory="${AppPackageRoot}"
 	fi
 	
 	# set Java and Resources folder
