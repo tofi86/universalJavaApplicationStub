@@ -126,6 +126,9 @@ An AppleScript dialog would be nice to prevent Java execution if the requirement
 ChangeLog
 ---------
 
+### v0.6.1 (2014-07-27)
+* Standard Working Directory for Apple PList apparently is the AppRoot directory
+
 ### v0.6 *(2014-07-12)*
 * also catch fixed paths for Plist key `JVMWorkDir` *(thanks @dpolivaev)*
 
