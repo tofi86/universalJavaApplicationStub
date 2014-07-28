@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v0.6.2 (2014-07-28)
+* minor code refactoring and bugfixes
+
 ### v0.6.1 (2014-07-27)
 * Standard Working Directory for Apple PList apparently is the AppRoot directory
 
