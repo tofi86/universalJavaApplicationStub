@@ -211,7 +211,7 @@ fi
 # display error message if MainClassName is empty
 if [ ${JVMMainClass} == "" ]; then
 	# display error message with applescript
-	osascript -e "tell application \"System Events\" to display dialog \"ERROR launching ${CFBundleName}!\n\nNo MainClassName specified!\nJava application cannot be started!\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+	osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'!\n\n'MainClass' isn't specified!\nJava application cannot be started!\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
 	# exit with error
 	exit 1
 
@@ -246,7 +246,7 @@ elif [ -x "$JAVACMD" ]; then
 else
 
 	# display error message with applescript
-	osascript -e "tell application \"System Events\" to display dialog \"ERROR launching ${CFBundleName}!\n\nYou need to have JAVA installed on your Mac!\nVisit http://java.com for more information...\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+	osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'!\n\nYou need to have JAVA installed on your Mac!\nVisit http://java.com for more information...\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
 
 	# and open java.com
 	open http://java.com
