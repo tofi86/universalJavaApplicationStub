@@ -186,8 +186,8 @@ if [ -n "$JAVA_HOME" ] ; then
 	JAVACMD="$JAVA_HOME/bin/java"
 
 # otherwise check "/usr/libexec/java_home" symlinks
-elif [ -x /usr/libexec/java_home ]; then
-	JAVACMD="`/usr/libexec/java_home`/bin/java"
+elif [ -x /usr/libexec/java_home ] && [ -d "`/usr/libexec/java_home 2> /dev/null`" ] ; then
+	JAVACMD="`/usr/libexec/java_home 2> /dev/null`/bin/java"
 
 # otherwise check Java standard symlink (old Apple Java)
 elif [ -h /Library/Java/Home ]; then
