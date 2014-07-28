@@ -182,7 +182,7 @@ fi
 #################################
 
 # first check system variable "$JAVA_HOME"
-if [ -n "$JAVA_HOME" ]; then
+if [ -n "$JAVA_HOME" ] ; then
 	JAVACMD="$JAVA_HOME/bin/java"
 
 # otherwise check "/usr/libexec/java_home" symlinks
@@ -190,7 +190,7 @@ elif [ -x /usr/libexec/java_home ]; then
 	JAVACMD="`/usr/libexec/java_home`/bin/java"
 
 # otherwise check Java standard symlink (old Apple Java)
-elif test -h /Library/Java/Home; then
+elif [ -h /Library/Java/Home ]; then
 	JAVACMD="/Library/Java/Home/bin/java"
 
 # fallback: public JRE plugin (Oracle Java)
@@ -209,7 +209,7 @@ fi
 ####################################################
 
 # display error message if MainClassName is empty
-if [ ${JVMMainClass} == "" ]; then
+if [ -z ${JVMMainClass} ]; then
 	# display error message with applescript
 	osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'!\n\n'MainClass' isn't specified!\nJava application cannot be started!\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
 	# exit with error
