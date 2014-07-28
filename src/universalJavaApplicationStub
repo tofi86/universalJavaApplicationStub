@@ -216,8 +216,8 @@ if [ -z ${JVMMainClass} ]; then
 	exit 1
 
 
-# check whether $JAVACMD is executable
-elif [ -x "$JAVACMD" ]; then
+# check whether $JAVACMD is a file and executable
+elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 
 	# enable drag&drop to the dock icon
 	export CFProcessPath="$0"
