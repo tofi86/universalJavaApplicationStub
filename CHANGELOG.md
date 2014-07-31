@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v0.6.3 (2014-07-31)
+* check Info.plist for Apple style Java keys. Better indicator to distinguish between Apple or Oracle parsing...
+
 ### v0.6.2 (2014-07-28)
 * minor code refactoring and bugfixes
 
