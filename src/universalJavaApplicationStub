@@ -112,7 +112,7 @@ CFBundleIconFile=`/usr/libexec/PlistBuddy -c "print :CFBundleIconFile" "${InfoPl
 
 
 # check Info.plist for Apple style Java keys -> if key :Java is present, parse in apple mode
-/usr/libexec/PlistBuddy -c "print :Java" > /dev/null 2>&1 
+/usr/libexec/PlistBuddy -c "print :Java" "${InfoPlistFile}" > /dev/null 2>&1
 exitcode=$?
 
 # read Info.plist in Apple style if exit code returns 0 (true, :Java key is present)
