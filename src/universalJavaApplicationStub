@@ -173,17 +173,23 @@ else
 	ResourcesFolder="${OracleResourcesFolder}"
 	WorkingDirectory="${OracleJavaFolder}"
 
+	APP_ROOT="${AppPackageFolder}"
+
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" "${InfoPlistFile}" 2> /dev/null`
 
 	# read the JVM Options
 	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" "${InfoPlistFile}" 2> /dev/null | grep " -" | tr -d '\n' | sed 's/  */ /g' | xargs`
+	# replace occurances of $APP_ROOT with it's content
+	JVMOptions=`eval "echo ${JVMOptions}"`
 
 	# read the JVM Default Options
 	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" "${InfoPlistFile}" 2> /dev/null | grep -o "\-.*" | tr -d '\n' | xargs`
 
 	# read the JVM Arguments
 	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
+	# replace occurances of $APP_ROOT with it's content
+	JVMArguments=`eval "echo ${JVMArguments}"`
 
 	JVMClassPath="${JavaFolder}/*"
 fi
