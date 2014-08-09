@@ -143,11 +143,18 @@ if [ $exitcode -eq 0 ]; then
 	JavaFolder="${AppleJavaFolder}"
 	ResourcesFolder="${AppleResourcesFolder}"
 
+	APP_PACKAGE="${AppPackageFolder}"
+	JAVAROOT="${AppleJavaFolder}"
+
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" "${InfoPlistFile}" 2> /dev/null`
 
 	# read the JVM Options
 	JVMOptions=`/usr/libexec/PlistBuddy -c "print :Java:Properties" "${InfoPlistFile}" 2> /dev/null | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
+
+	# read the ClassPath
+	JVMClassPath=.`/usr/libexec/PlistBuddy -c "print :Java:ClassPath" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/^ */:/g' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
+	JVMClassPath=`eval "echo ${JVMClassPath}"`
 
 	# read the JVM Default Options
 	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :Java:VMOptions" "${InfoPlistFile}" 2> /dev/null | xargs`
@@ -175,6 +182,8 @@ else
 
 	# read the JVM Arguments
 	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
+
+	JVMClassPath="${JavaFolder}/*"
 fi
 
 
@@ -237,7 +246,7 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 	#	- main class
 	#	- JVM arguments
 	exec "$JAVACMD" \
-			-cp "${JavaFolder}/*" \
+			-cp "${JVMClassPath}" \
 			-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
 			-Xdock:name="${CFBundleName}" \
 			${JVMOptions:+$JVMOptions }\
@@ -257,4 +266,3 @@ else
 	# exit with error
 	exit 1
 fi
-
