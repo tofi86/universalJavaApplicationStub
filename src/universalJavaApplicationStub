@@ -145,6 +145,7 @@ if [ $exitcode -eq 0 ]; then
 
 	APP_PACKAGE="${AppPackageFolder}"
 	JAVAROOT="${AppleJavaFolder}"
+	USER_HOME="`eval echo ~`"
 
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" "${InfoPlistFile}" 2> /dev/null`
@@ -154,6 +155,7 @@ if [ $exitcode -eq 0 ]; then
 
 	# read the ClassPath
 	JVMClassPath=.`/usr/libexec/PlistBuddy -c "print :Java:ClassPath" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/^ */:/g' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
+	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
 	JVMClassPath=`eval "echo ${JVMClassPath}"`
 
 	# read the JVM Default Options
