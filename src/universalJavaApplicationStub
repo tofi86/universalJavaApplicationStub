@@ -153,8 +153,13 @@ if [ $exitcode -eq 0 ]; then
 	# read the JVM Options
 	JVMOptions=`/usr/libexec/PlistBuddy -c "print :Java:Properties" "${InfoPlistFile}" 2> /dev/null | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
 
-	# read the ClassPath
-	JVMClassPath=.`/usr/libexec/PlistBuddy -c "print :Java:ClassPath" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/^ */:/g' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
+	# read the ClassPath in either Array or String style
+	JVMClassPath_RAW=`/usr/libexec/PlistBuddy -c "print :Java:ClassPath" "${InfoPlistFile}" 2> /dev/null`
+	if [[ $JVMClassPath_RAW == *Array* ]] ; then
+		JVMClassPath=.`/usr/libexec/PlistBuddy -c "print :Java:ClassPath" "${InfoPlistFile}" 2> /dev/null | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs`
+	else
+		JVMClassPath=${JVMClassPath_RAW}
+	fi
 	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
 	JVMClassPath=`eval "echo ${JVMClassPath}"`
 
@@ -183,6 +188,8 @@ else
 	# replace occurances of $APP_ROOT with it's content
 	JVMOptions=`eval "echo ${JVMOptions}"`
 
+	JVMClassPath="${JavaFolder}/*"
+
 	# read the JVM Default Options
 	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" "${InfoPlistFile}" 2> /dev/null | grep -o "\-.*" | tr -d '\n' | xargs`
 
@@ -190,8 +197,6 @@ else
 	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
 	# replace occurances of $APP_ROOT with it's content
 	JVMArguments=`eval "echo ${JVMArguments}"`
-
-	JVMClassPath="${JavaFolder}/*"
 fi
 
 
