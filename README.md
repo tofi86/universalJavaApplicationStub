@@ -43,7 +43,7 @@ The shell script reads JVM properties from `Info.plist` regardless of which form
 #	- main class
 #	- JVM arguments
 	exec "$JAVACMD" \
-		-cp "${JavaFolder}/*" \
+		-cp "${JVMClassPath}" \
 		-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
 		-Xdock:name="${CFBundleName}" \
 		${JVMOptions:+$JVMOptions }\
