@@ -143,11 +143,25 @@ if [ $exitcode -eq 0 ]; then
 	JavaFolder="${AppleJavaFolder}"
 	ResourcesFolder="${AppleResourcesFolder}"
 
+	APP_PACKAGE="${AppPackageFolder}"
+	JAVAROOT="${AppleJavaFolder}"
+	USER_HOME="`eval echo ~`"
+
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" "${InfoPlistFile}" 2> /dev/null`
 
 	# read the JVM Options
 	JVMOptions=`/usr/libexec/PlistBuddy -c "print :Java:Properties" "${InfoPlistFile}" 2> /dev/null | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
+
+	# read the ClassPath in either Array or String style
+	JVMClassPath_RAW=`/usr/libexec/PlistBuddy -c "print :Java:ClassPath" "${InfoPlistFile}" 2> /dev/null`
+	if [[ $JVMClassPath_RAW == *Array* ]] ; then
+		JVMClassPath=.`/usr/libexec/PlistBuddy -c "print :Java:ClassPath" "${InfoPlistFile}" 2> /dev/null | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs`
+	else
+		JVMClassPath=${JVMClassPath_RAW}
+	fi
+	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+	JVMClassPath=`eval "echo ${JVMClassPath}"`
 
 	# read the JVM Default Options
 	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :Java:VMOptions" "${InfoPlistFile}" 2> /dev/null | xargs`
@@ -164,17 +178,25 @@ else
 	ResourcesFolder="${OracleResourcesFolder}"
 	WorkingDirectory="${OracleJavaFolder}"
 
+	APP_ROOT="${AppPackageFolder}"
+
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" "${InfoPlistFile}" 2> /dev/null`
 
 	# read the JVM Options
 	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" "${InfoPlistFile}" 2> /dev/null | grep " -" | tr -d '\n' | sed 's/  */ /g' | xargs`
+	# replace occurances of $APP_ROOT with it's content
+	JVMOptions=`eval "echo ${JVMOptions}"`
+
+	JVMClassPath="${JavaFolder}/*"
 
 	# read the JVM Default Options
 	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" "${InfoPlistFile}" 2> /dev/null | grep -o "\-.*" | tr -d '\n' | xargs`
 
 	# read the JVM Arguments
 	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
+	# replace occurances of $APP_ROOT with it's content
+	JVMArguments=`eval "echo ${JVMArguments}"`
 fi
 
 
@@ -237,7 +259,7 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 	#	- main class
 	#	- JVM arguments
 	exec "$JAVACMD" \
-			-cp "${JavaFolder}/*" \
+			-cp "${JVMClassPath}" \
 			-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
 			-Xdock:name="${CFBundleName}" \
 			${JVMOptions:+$JVMOptions }\
@@ -257,4 +279,3 @@ else
 	# exit with error
 	exit 1
 fi
-
