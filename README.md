@@ -72,8 +72,9 @@ What you need to do
 
 Use whichever ANT task you like:
 * the great opensource ["Jarbundler"](http://informagen.com/JarBundler/)
- * my JarBundler [fork on github](https://github.com/tofi86/Jarbundler) which supports *MixedLocalization*
+  * my JarBundler [fork on github](https://github.com/tofi86/Jarbundler) which supports *MixedLocalization*
 * Oracle's opensource ["Appbundler"](https://java.net/projects/appbundler)
+  * or [*infinitekind*'s fork](https://bitbucket.org/infinitekind/appbundler/overview)
 
 ### JarBundler example
 Just place the `universalJavaApplicationStub` from this repo in your build resources folder and link it in your ANT task (attribute `stubfile`):
@@ -94,7 +95,7 @@ You should get a fully functional Mac Application Bundle working with both Java 
 
 
 ### Appbundler example
-Just place the `universalJavaApplicationStub` from this repo in your build resources folder and link it in your ANT task (attribute `executableName`):
+Just place the `universalJavaApplicationStub` from this repo in your build resources folder and link it in your ANT task (attribute `executableName` from [*infinitekind*'s fork](https://bitbucket.org/infinitekind/appbundler/overview)):
 ```XML
 <appbundler
 	name="Your-App"
