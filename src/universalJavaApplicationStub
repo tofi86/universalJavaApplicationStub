@@ -129,7 +129,7 @@ if [ $exitcode -eq 0 ]; then
 		WorkingDirectory="${AppPackageFolder}"
 		
 	elif [ "${JVMWorkDir}" == "\$USER_HOME" ]; then
-		WorkingDirectory="~"
+		WorkingDirectory="$HOME"
 		
 	elif [[ ! -z ${JVMWorkDir} ]]; then
 		WorkingDirectory="${JVMWorkDir}"
@@ -145,7 +145,7 @@ if [ $exitcode -eq 0 ]; then
 
 	APP_PACKAGE="${AppPackageFolder}"
 	JAVAROOT="${AppleJavaFolder}"
-	USER_HOME="`eval echo ~`"
+	USER_HOME="$HOME"
 
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" "${InfoPlistFile}" 2> /dev/null`
