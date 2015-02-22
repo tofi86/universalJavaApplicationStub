@@ -1,10 +1,15 @@
 ChangeLog
 ---------
 
+### v0.8.0 (2015-02-22)
+* support for `JVMVersion` key (fixes #13, Thanks to @Dylan-M for his contribution)
+* use `$HOME` instead of `~` to set the users home directory (fixes #11)
+* WorkingDirectory: improved substitution of variables ($JAVAROOT, $APP_PACKAGE, $USER_HOME) (fixes #12)
+* use different non-zero exit codes
+
 ### v0.7.0 (2014-10-12)
 * read ClassPath from ApplePlist in either Array or String style (PR #5, Thanks to Philipp Holzschneider for his contribution)
 * read StartOnMainThread (issue #4, Thanks to @wrstlbrnft for his contribution)
-
 
 ### v0.6.3 (2014-07-31)
 * check Info.plist for Apple style Java keys. Better indicator to distinguish between Apple or Oracle parsing...
