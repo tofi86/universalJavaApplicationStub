@@ -118,10 +118,6 @@ Missing Features
 
 At the moment, there's no support for
 * required JVM architecture (like `x86_64`, etc.)
-* required JVM version (like `1.6+`, etc.)
-* etc...
-
-An AppleScript dialog would be nice to prevent Java execution if the requirements aren't met.
 
 
 License
