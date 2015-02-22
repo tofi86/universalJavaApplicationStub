@@ -118,27 +118,6 @@ exitcode=$?
 # read Info.plist in Apple style if exit code returns 0 (true, :Java key is present)
 if [ $exitcode -eq 0 ]; then
 
-	# read the Java WorkingDirectory
-	JVMWorkDir=`/usr/libexec/PlistBuddy -c "print :Java:WorkingDirectory" "${InfoPlistFile}" 2> /dev/null | xargs`
-	
-	# set Working Directory based upon Plist info
-	if [ "${JVMWorkDir}" == "\$JAVAROOT" ]; then
-		WorkingDirectory="${AppleJavaFolder}"
-		
-	elif [ "${JVMWorkDir}" == "\$APP_PACKAGE" ]; then
-		WorkingDirectory="${AppPackageFolder}"
-		
-	elif [ "${JVMWorkDir}" == "\$USER_HOME" ]; then
-		WorkingDirectory="$HOME"
-		
-	elif [[ ! -z ${JVMWorkDir} ]]; then
-		WorkingDirectory="${JVMWorkDir}"
-		
-	else
-		# AppPackageRoot is the standard WorkingDirectory when the script is started
-		WorkingDirectory="${AppPackageRoot}"
-	fi
-	
 	# set Java and Resources folder
 	JavaFolder="${AppleJavaFolder}"
 	ResourcesFolder="${AppleResourcesFolder}"
@@ -146,6 +125,22 @@ if [ $exitcode -eq 0 ]; then
 	APP_PACKAGE="${AppPackageFolder}"
 	JAVAROOT="${AppleJavaFolder}"
 	USER_HOME="$HOME"
+
+
+	# read the Java WorkingDirectory
+	JVMWorkDir=`/usr/libexec/PlistBuddy -c "print :Java:WorkingDirectory" "${InfoPlistFile}" 2> /dev/null | xargs`
+	
+	# set Working Directory based upon Plist info
+	if [[ ! -z ${JVMWorkDir} ]]; then
+		WorkingDirectory="${JVMWorkDir}"
+	else
+		# AppPackageRoot is the standard WorkingDirectory when the script is started
+		WorkingDirectory="${AppPackageRoot}"
+	fi
+
+	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+	WorkingDirectory=`eval "echo ${WorkingDirectory}"`
+
 
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :Java:MainClass" "${InfoPlistFile}" 2> /dev/null`
