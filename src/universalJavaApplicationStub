@@ -217,7 +217,7 @@ if [ -n "$JAVA_HOME" ] ; then
 	JAVACMD="$JAVA_HOME/bin/java"
 	
 # check for specified JVMversion in "/usr/libexec/java_home" symlinks
-elif [ ! -z ${JVMVersion} ] && [ -x /usr/libexec/java_home ] ; then
+elif [ ! -z ${JVMVersion} ] && [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F; then
 
 	if /usr/libexec/java_home -F -v ${JVMVersion}; then
 		JAVACMD="`/usr/libexec/java_home -F -v ${JVMVersion} 2> /dev/null`/bin/java"
@@ -229,7 +229,7 @@ elif [ ! -z ${JVMVersion} ] && [ -x /usr/libexec/java_home ] ; then
 	fi
 
 # otherwise check "/usr/libexec/java_home" symlinks
-elif [ -x /usr/libexec/java_home ] && [ -d "`/usr/libexec/java_home 2> /dev/null`" ] ; then
+elif [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F; then
 	JAVACMD="`/usr/libexec/java_home 2> /dev/null`/bin/java"
 
 # otherwise check Java standard symlink (old Apple Java)
