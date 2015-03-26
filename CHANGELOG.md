@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v0.8.1 (2015-03-26)
+* Bugfix for `JVMVersion` key present but no JVMs in `/usr/libexec/java_home`
+
 ### v0.8.0 (2015-02-22)
 * support for `JVMVersion` key (fixes #13, Thanks to @Dylan-M for his contribution)
 * use `$HOME` instead of `~` to set the users home directory (fixes #11)
