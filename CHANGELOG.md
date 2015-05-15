@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v0.9.0 (2015-05-15)
+* added support for `JavaX` Plist key (fixes #9)
+
 ### v0.8.1 (2015-03-26)
 * Bugfix for `JVMVersion` key present but no JVMs in `/usr/libexec/java_home`
 
