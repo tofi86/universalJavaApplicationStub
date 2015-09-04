@@ -203,7 +203,16 @@ else
 	# replace occurances of $APP_ROOT with it's content
 	JVMOptions=`eval "echo ${JVMOptions}"`
 
-	JVMClassPath="${JavaFolder}/*"
+	# read the ClassPath in either Array or String style 
+	JVMClassPath_RAW=`/usr/libexec/PlistBuddy -c "print JVMClassPath" "${InfoPlistFile}" 2> /dev/null` 
+	if [[ $JVMClassPath_RAW == *Array* ]] ; then 
+		JVMClassPath=.`/usr/libexec/PlistBuddy -c "print JVMClassPath" "${InfoPlistFile}" 2> /dev/null | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs` 
+	elif [[ ! -z ${JVMClassPath_RAW} ]] ; then 
+		JVMClassPath=${JVMClassPath_RAW} 
+	else 
+		#default: fallback to OracleJavaFolder 
+		JVMClassPath="${JavaFolder}/*"  
+	fi
 
 	# read the JVM Default Options
 	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" "${InfoPlistFile}" 2> /dev/null | grep -o "\-.*" | tr -d '\n' | xargs`
