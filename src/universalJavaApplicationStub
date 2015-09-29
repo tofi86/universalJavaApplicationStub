@@ -287,7 +287,7 @@ if [ -n "$JAVA_HOME" ] ; then
 elif [ ! -z ${JVMVersion} ] ; then
 
 	# first in "/usr/libexec/java_home" symlinks
-	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion}; then
+	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion} > /dev/null ; then
 		JAVACMD="`/usr/libexec/java_home -F -v ${JVMVersion} 2> /dev/null`/bin/java"
 	
 	# then in Apple JRE plugin
