@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2015-05-15                                                          #
+# @date      2015-09-29                                                          #
 # @version   0.9.0                                                               #
 #                                                                                #
 #                                                                                #
@@ -217,18 +217,87 @@ fi
 
 
 #
+# function: Java version tester
+############################################
+
+function JavaVersionSatisfiesRequirement() {
+  java_ver=$1
+  java_req=$2
+  
+  # e.g. 1.8*
+  if [[ ${java_req} =~ ^[0-9]\.[0-9]\*$ ]] ; then
+    java_req_num=${java_req:0:3}
+    java_ver_num=${java_ver:0:3}
+    if [ ${java_ver_num} == ${java_req_num} ] ; then
+      return 0
+    else
+      return 1
+    fi
+  
+  # e.g. 1.8+
+  elif [[ ${java_req} =~ ^[0-9]\.[0-9]\+$ ]] ; then
+    java_req_num=`echo ${java_req} | sed -E 's/[[:punct:]]//g'`
+    java_ver_num=`echo ${java_ver} | sed -E 's/[[:punct:]]//g'`
+    if [ ${java_ver_num} -ge ${java_req_num} ] ; then
+      return 0
+    else
+      return 1
+    fi
+  
+  # e.g. 1.8
+  elif [[ ${java_req} =~ ^[0-9]\.[0-9]$ ]] ; then
+    if [ ${java_ver} == ${java_req} ] ; then
+      return 0
+    else
+      return 1
+    fi
+  
+  # not matching any of the above patterns
+  else
+    return 2
+  fi
+}
+
+
+#
+# function: extract Java major version
+#           from java -version command
+############################################
+
+function extractJavaMajorVersion() {
+  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"([0-9.]{3})[0-9_.]{5}"/\1/g'`
+}
+
+
+
+#
 # find installed Java versions
 ############################################
+
+apple_jre_plugin="/Library/Java/Home/bin/java"
+apple_jre_version=`extractJavaMajorVersion "${apple_jre_plugin}"`
+oracle_jre_plugin="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java"
+oracle_jre_version=`extractJavaMajorVersion "${oracle_jre_plugin}"`
 
 # first check system variable "$JAVA_HOME"
 if [ -n "$JAVA_HOME" ] ; then
 	JAVACMD="$JAVA_HOME/bin/java"
 	
-# check for specified JVMversion in "/usr/libexec/java_home" symlinks
-elif [ ! -z ${JVMVersion} ] && [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F; then
+# check for JVMversion requirements
+elif [ ! -z ${JVMVersion} ] ; then
 
-	if /usr/libexec/java_home -F -v ${JVMVersion}; then
+	# first in "/usr/libexec/java_home" symlinks
+	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion}; then
 		JAVACMD="`/usr/libexec/java_home -F -v ${JVMVersion} 2> /dev/null`/bin/java"
+	
+	# then in Apple JRE plugin
+	elif [ -x "${apple_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${apple_jre_version} ${JVMVersion} ; then
+		JAVACMD="${apple_jre_plugin}"
+	
+	# then in Oracle JRE plugin
+	elif [ -x "${oracle_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${oracle_jre_version} ${JVMVersion} ; then
+		JAVACMD="${oracle_jre_plugin}"
+	
 	else
 		# display error message with applescript
 		osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'\n\nNo suitable Java version found on your system!\nThis program requires Java ${JVMVersion}\nMake sure you install the required Java version.\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
@@ -240,13 +309,13 @@ elif [ ! -z ${JVMVersion} ] && [ -x /usr/libexec/java_home ] && /usr/libexec/jav
 elif [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F; then
 	JAVACMD="`/usr/libexec/java_home 2> /dev/null`/bin/java"
 
-# otherwise check Java standard symlink (old Apple Java)
+# otherwise check Java standard symlink (old Apple JRE)
 elif [ -h /Library/Java/Home ]; then
-	JAVACMD="/Library/Java/Home/bin/java"
+	JAVACMD="${apple_jre_plugin}"
 
 # fallback: public JRE plugin (Oracle Java)
 else
-	JAVACMD="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java"
+	JAVACMD="${oracle_jre_plugin}"
 fi
 
 # fallback fallback: /usr/bin/java
