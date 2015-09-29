@@ -162,7 +162,6 @@ if [ $exitcode -eq 0 ]; then
 	# read StartOnMainThread
 	JVMStartOnMainThread=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:StartOnMainThread" "${InfoPlistFile}" 2> /dev/null`
 	if [ "${JVMStartOnMainThread}" == "true" ]; then
-		echo ${JVMStartOnMainThread} > ~/Desktop/test.txt
 		JVMOptions+=" -XstartOnFirstThread"
 	fi
 
