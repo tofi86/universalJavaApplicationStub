@@ -49,7 +49,7 @@
 
 #
 # resolve symlinks
-#####################
+############################################
 
 PRG=$0
 
@@ -101,10 +101,10 @@ JVMVersion=""
 
 
 
+
 #
 # read Info.plist and extract JVM options
 ############################################
-
 
 # read the program name from CFBundleName
 CFBundleName=`/usr/libexec/PlistBuddy -c "print :CFBundleName" "${InfoPlistFile}"`
@@ -219,7 +219,7 @@ fi
 
 #
 # find installed Java versions
-#################################
+############################################
 
 # first check system variable "$JAVA_HOME"
 if [ -n "$JAVA_HOME" ] ; then
