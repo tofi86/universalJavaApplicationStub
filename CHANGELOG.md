@@ -1,6 +1,16 @@
 ChangeLog
 ---------
 
+### v1.0.0 (2015-10-08)
+* Support for a splash file (PR #19)
+  * For details see https://github.com/tofi86/universalJavaApplicationStub/pull/19
+* Also search for JRE's (not only for JDK's) when a specific JVMversion is required (fixes #15)
+* Expand variables like $APP_ROOT or $JAVAROOT in Apple formatted Plist files so as to match the Oracle format  (PR #17, Thanks to @cxbrooks for his contribution)
+* support for `JVMClasspath` in Oracle formatted Plist files (PR #16, Thanks to @pedrofvteixeira for his contribution)
+* Mark script as executable (PR #18, Thanks to @yoe for his contribution)
+* bugfix: fix JVMDefaultOptions when retrieved from array
+* bugfix: hide the retrieved java home path in stdout
+
 ### v0.9.0 (2015-05-15)
 * added support for `JavaX` Plist key (fixes #9)
 
