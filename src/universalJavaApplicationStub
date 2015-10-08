@@ -156,6 +156,9 @@ if [ $exitcode -eq 0 ]; then
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:MainClass" "${InfoPlistFile}" 2> /dev/null`
 
+	# read the SplashFile name
+	JVMSplashFile=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:SplashFile" "${InfoPlistFile}" 2> /dev/null`
+
 	# read the JVM Options
 	JVMOptions=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:Properties" "${InfoPlistFile}" 2> /dev/null | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
 	# replace occurences of $APP_ROOT with its content
@@ -200,6 +203,9 @@ else
 
 	# read the MainClass name
 	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" "${InfoPlistFile}" 2> /dev/null`
+
+	# read the SplashFile name
+	JVMSplashFile=`/usr/libexec/PlistBuddy -c "print :JVMSplashFile" "${InfoPlistFile}" 2> /dev/null`
 
 	# read the JVM Options
 	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" "${InfoPlistFile}" 2> /dev/null | grep " -" | tr -d '\n' | sed 's/  */ /g' | xargs`
@@ -370,6 +376,7 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 	#	- JVM arguments
 	exec "$JAVACMD" \
 			-cp "${JVMClassPath}" \
+			-splash:"${ResourcesFolder}/${JVMSplashFile}" \
 			-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
 			-Xdock:name="${CFBundleName}" \
 			${JVMOptions:+$JVMOptions }\
