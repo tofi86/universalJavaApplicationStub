@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2015-09-29                                                          #
+# @date      2015-10-08                                                          #
 # @version   0.9.0                                                               #
 #                                                                                #
 #                                                                                #
@@ -185,8 +185,8 @@ if [ $exitcode -eq 0 ]; then
 	# replace occurences of $APP_ROOT with its content
 	JVMArguments=`eval "echo ${JVMArguments}"`
 
-        # read the Java version we want to find
-        JVMVersion=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:JVMVersion" "${InfoPlistFile}" 2> /dev/null | xargs`
+	# read the Java version we want to find
+	JVMVersion=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:JVMVersion" "${InfoPlistFile}" 2> /dev/null | xargs`
 
 # read Info.plist in Oracle style
 else
