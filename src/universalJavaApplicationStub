@@ -216,6 +216,8 @@ else
 		#default: fallback to OracleJavaFolder 
 		JVMClassPath="${JavaFolder}/*"  
 	fi
+	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+	JVMClassPath=`eval "echo ${JVMClassPath}"`
 
 	# read the JVM Default Options
 	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" "${InfoPlistFile}" 2> /dev/null | grep -o "\-.*" | tr -d '\n' | xargs`
