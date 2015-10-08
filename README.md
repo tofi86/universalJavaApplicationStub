@@ -108,7 +108,7 @@ You should get a functional Mac Application Bundle working with both Java distri
 > If you don't want to care about compatibility issues between OS X and Java versions, better use my JarBundler fork (see next example).
 
 ### My JarBundler fork (v2.4) example
-Download the latest release of my JarBundler fork [from it's github repo](https://github.com/tofi86/Jarbundler) and replace your old JarBundler library with the new one.
+Download the latest release of my JarBundler fork [from its github repo](https://github.com/tofi86/Jarbundler) and replace your old JarBundler library with the new one.
 
 Then place the `universalJavaApplicationStub` from this repo in your build resources folder and link it in your ANT task (attribute `stubfile`). Don't forget to set the newly introduced `useJavaXKey` option:
 ```XML
