@@ -1,6 +1,11 @@
 ChangeLog
 ---------
 
+### v1.0.1 (2015-11-02)
+*  Improved display error message with applescript (PR #22, Thanks to @ygesnel for his initial contribution)
+* Reorder search for Java VM locations when specific JVM version is required (PR #22, Thanks to @yoe for his contribution)
+
+
 ### v1.0.0 (2015-10-08)
 * Support for a splash file (PR #19)
   * For details see https://github.com/tofi86/universalJavaApplicationStub/pull/19
