@@ -388,10 +388,9 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 else
 
 	# display error message with applescript
-	osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'!\n\nYou need to have JAVA installed on your Mac!\nVisit http://java.com for more information...\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
-
-	# and open java.com
-	open http://java.com
+	osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'!\n\nYou need to have JAVA installed on your Mac!\nVisit java.com for installation instructions...\" with title \"${CFBundleName}\" buttons {\"Later\", \"Visit java.com\"} default button \"Visit java.com\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
+				-e "set response to button returned of the result" \
+				-e "if response is \"Visit java.com\" then open location \"http://java.com\""
 
 	# exit with error
 	exit 1
