@@ -50,18 +50,12 @@
 #
 # resolve symlinks
 ############################################
+# http://stackoverflow.com/a/25880707/3770260
+readlink_f() {
+    perl -MCwd=abs_path -le 'print abs_path readlink(shift);' "$1"
+}
 
-PRG=$0
-
-while [ -h "$PRG" ]; do
-    ls=`ls -ld "$PRG"`
-    link=`expr "$ls" : '^.*-> \(.*\)$' 2>/dev/null`
-    if expr "$link" : '^/' 2> /dev/null >/dev/null; then
-        PRG="$link"
-    else
-        PRG="`dirname "$PRG"`/$link"
-    fi
-done
+PRG=`readlink_f "$0"`
 
 # set the directory abspath of the current shell script
 PROGDIR=`dirname "$PRG"`
