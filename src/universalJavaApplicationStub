@@ -235,6 +235,27 @@ else
 fi
 
 
+#
+# internationalized messages
+#
+############################################
+
+LANG=`defaults read -g AppleLocale`
+if [[ $LANG == fr* ]] ; then
+	MSG_ERROR_LAUNCHING="Erreur au lancement de '${CFBundleName}'."
+	MSG_MISSING_MAINCLASS="'MainClass' n'est pas spécifié.\nL'application Java ne peut pas être lancée."
+	MSG_NO_SUITABLE_JAVA="La version de Java installée sur votre système ne convient pas.\nCe programme nécessite Java ${JVMVersion}.\nMerci de bien vouloir installer la version de Java requise."
+	MSG_INSTALL_JAVA="Java doit être installé sur votre système.\nRendez-vous sur java.com et suivez les instructions d'installation..."
+	MSG_LATER="Plus tard"
+	MSG_VISIT_JAVA_DOT_COM="Visiter java.com"
+else
+	MSG_ERROR_LAUNCHING="ERROR launching '${CFBundleName}'."
+	MSG_MISSING_MAINCLASS="'MainClass' isn't specified!\nJava application cannot be started!"
+	MSG_NO_SUITABLE_JAVA="No suitable Java version found on your system!\nThis program requires Java ${JVMVersion}\nMake sure you install the required Java version."
+	MSG_INSTALL_JAVA="You need to have JAVA installed on your Mac!\nVisit java.com for installation instructions..."
+	MSG_LATER="Later"
+	MSG_VISIT_JAVA_DOT_COM="Visit java.com"
+fi
 
 
 #
@@ -321,7 +342,7 @@ elif [ ! -z ${JVMVersion} ] ; then
 
 	else
 		# display error message with applescript
-		osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'\n\nNo suitable Java version found on your system!\nThis program requires Java ${JVMVersion}\nMake sure you install the required Java version.\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
 		# exit with error
 		exit 3
 	fi
@@ -352,7 +373,7 @@ fi
 # display error message if MainClassName is empty
 if [ -z ${JVMMainClass} ]; then
 	# display error message with applescript
-	osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'!\n\n'MainClass' isn't specified!\nJava application cannot be started!\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_MISSING_MAINCLASS}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
 	# exit with error
 	exit 2
 
@@ -388,9 +409,9 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 else
 
 	# display error message with applescript
-	osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'!\n\nYou need to have JAVA installed on your Mac!\nVisit java.com for installation instructions...\" with title \"${CFBundleName}\" buttons {\"Later\", \"Visit java.com\"} default button \"Visit java.com\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
+	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_INSTALL_JAVA}\" with title \"${CFBundleName}\" buttons {\"${MSG_LATER}\", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
 				-e "set response to button returned of the result" \
-				-e "if response is \"Visit java.com\" then open location \"http://java.com\""
+				-e "if response is \"${MSG_VISIT_JAVA_DOT_COM}\" then open location \"http://java.com\""
 
 	# exit with error
 	exit 1
