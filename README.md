@@ -72,7 +72,10 @@ There is some *foo* happening to determine which Java versions are installed –
 3. symlink for old Apple Java: `/Library/Java/Home/bin/java`
 4. hardcoded fallback to Oracle's JRE Plugin: `/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java`
 
-If none of these could be found or executed, an applescript error dialog is shown saying that Java need to be installed.
+If none of these could be found or executed, an applescript error dialog is shown saying that Java need to be installed:
+
+![Error Dialog No Java Found](/docs/java-error.png?raw=true)
+
 
 What you need to do
 -------------------
