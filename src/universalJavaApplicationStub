@@ -374,19 +374,16 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 	#	- JVM default options
 	#	- main class
 	#	- JVM arguments
-	command="$JAVACMD"
-        command+=" -cp ${JVMClassPath}"
-        command+=" -splash:${ResourcesFolder}/${JVMSplashFile}"
-        command+=" -Xdock:icon=${ResourcesFolder}/${CFBundleIconFile}"
-        command+=" -Xdock:name=${CFBundleName}"
-        command+=" ${JVMOptions:+$JVMOptions}"
-        command+=" ${JVMDefaultOptions:+$JVMDefaultOptions}"
-        command+="  ${JVMMainClass}"
-        command+=" ${JVMArguments:+ $JVMArguments}"
-        if [ "$#" -ne 0 ]; then
-                command+=" $@"
-        fi
-
+	exec "$JAVACMD" \
+			-cp "${JVMClassPath}" \
+			-splash:"${ResourcesFolder}/${JVMSplashFile}" \
+			-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
+			-Xdock:name="${CFBundleName}" \
+			${JVMOptions:+$JVMOptions }\
+			${JVMDefaultOptions:+$JVMDefaultOptions }\
+			${JVMMainClass}\
+			${JVMArguments:+ $JVMArguments}\
+			"$@"
 
 
 else
