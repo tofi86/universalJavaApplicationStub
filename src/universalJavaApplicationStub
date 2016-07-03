@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2015-11-02                                                          #
+# @date      2016-07-03                                                          #
 # @version   1.0.1                                                               #
 #                                                                                #
 #                                                                                #
@@ -320,8 +320,10 @@ elif [ ! -z ${JVMVersion} ] ; then
 		JAVACMD="${apple_jre_plugin}"
 
 	else
+		# display human readable java version (#28)
+		java_version_hr=`echo ${JVMVersion} | sed -E 's/[0-9]\.([0-9+*]+)/\1/g' | sed 's/+/ or later/' | sed 's/*/ (latest update)/'`
 		# display error message with applescript
-		osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'\n\nNo suitable Java version found on your system!\nThis program requires Java ${JVMVersion}\nMake sure you install the required Java version.\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+		osascript -e "tell application \"System Events\" to display dialog \"ERROR launching '${CFBundleName}'\n\nNo suitable Java version found on your system!\nThis program requires Java ${java_version_hr}\nMake sure you install the required Java version.\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
 		# exit with error
 		exit 3
 	fi

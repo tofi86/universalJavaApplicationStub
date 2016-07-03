@@ -1,8 +1,12 @@
 ChangeLog
 ---------
 
+### v1.1.0 (Work-In-Progress)
+*  Improve the version of Java reported in the error messages (fixes #28)
+
+
 ### v1.0.1 (2015-11-02)
-*  Improved display error message with applescript (PR #22, Thanks to @ygesnel for his initial contribution)
+* Improved display error message with applescript (PR #22, Thanks to @ygesnel for his initial contribution)
 * Reorder search for Java VM locations when specific JVM version is required (PR #22, Thanks to @yoe for his contribution)
 
 
