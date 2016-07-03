@@ -2,7 +2,8 @@ ChangeLog
 ---------
 
 ### v1.1.0 (Work-In-Progress)
-*  Improve the version of Java reported in the error messages (fixes #28)
+* Improve the version of Java reported in the error messages (fixes #28)
+* Send to java.com when the version of Java installed is too old (fixes #29)
 
 
 ### v1.0.1 (2015-11-02)
