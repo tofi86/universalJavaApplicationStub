@@ -15,12 +15,12 @@ Whilst developing some Java apps for Mac OS X I was facing the problem of suppor
   * Apple Java 1.5/1.6: `/System/Library/Java/JavaVirtualMachines/`
   * Oracle JRE 1.7/1.8: `/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/`
   * Oracle JDK 1.7/1.8: `/System/Library/Java/JavaVirtualMachines/`
- 
+
 2. Mac Apps built with tools designed for Apple's Java (like Apple's JarBundler or the [ANT task "Jarbundler"](http://informagen.com/JarBundler/)) won't work on Macs with Oracle Java 7 and no Apple Java installed.
   * This is because the Apple `JavaApplicationStub` only works for Apple's Java and their `Info.plist` style to store Java properties.
   * To support Oracle Java 7 you would need to built a separate App package with Oracles [ANT task "Appbundler"](https://java.net/projects/appbundler).
   * Thus you would need the user to know which Java distribution he has installed on his Mac. Not very user friendly...
- 
+
 3. Oracle uses a different syntax to store Java properties in the applications `Info.plist` file. A Java app packaged as a Mac app with Oracles Appbundler also needs a different `JavaApplicationStub` and therefore won't work on systems with Apple's Java...
 
 4. Starting with Mac OS X 10.10 *(Yosemite)*, app packages won't open up anymore if they contain the *deprecated* Plist `Java` dictionary. This isn't confirmed by Apple, but [issue #9](https://github.com/tofi86/universalJavaApplicationStub/issues/9) leads to this assumption:
@@ -76,6 +76,7 @@ If none of these could be found or executed, an applescript error dialog is show
 
 ![Error Dialog No Java Found](/docs/java-error.png?raw=true)
 
+Messages are localized and displayed either in English (Default), French or German. Language contributions are very welcome!
 
 What you need to do
 -------------------
@@ -92,7 +93,7 @@ Download the latest JarBundler release [from its github repo](https://github.com
 
 :exclamation: **Attention:**
 > Using an older version of JarBundler (e.g. [old JarBundler ≤ v2.3](http://informagen.com/JarBundler/) or [new JarBundler ≤ v3.2](https://github.com/UltraMixer/JarBundler)) might result in [issue #9](https://github.com/tofi86/universalJavaApplicationStub/issues/9) *(Mac OS X 10.10 asking to install deprecated Apple JRE 6 instead of using a newer Java version)*
-> 
+>
 > If you don't want to care about compatibility issues between OS X and Java versions, make sure to use the [latest JarBundler version ≥ 3.3](https://github.com/UltraMixer/JarBundler/releases)
 
 Then place the `universalJavaApplicationStub` from this repo in your build resources folder and link it in your ANT task (attribute `stubfile`). Don't forget to set the newly introduced `useJavaXKey` option:
@@ -104,7 +105,7 @@ Then place the `universalJavaApplicationStub` from this repo in your build resou
 	stubfile="${resources.dir}/universalJavaApplicationStub"
 	useJavaXKey="true"
 	... >
-	
+
 </jarbundler>
 ```
 
@@ -122,7 +123,7 @@ Just place the `universalJavaApplicationStub` from this repo in your build resou
 	icon="${resources.dir}/icon.icns"
 	executableName="${resources.dir}/universalJavaApplicationStub"
 	... >
-	
+
 </appbundler>
 ```
 
