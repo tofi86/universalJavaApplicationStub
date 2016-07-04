@@ -254,6 +254,18 @@ if [[ $LANG == fr* ]] ; then
 	MSG_LATER="Plus tard"
 	MSG_VISIT_JAVA_DOT_COM="Visiter java.com"
 
+# German localization
+elif [[ $LANG == de* ]] ; then
+	MSG_ERROR_LAUNCHING="FEHLER beim starten von '${CFBundleName}'."
+	MSG_MISSING_MAINCLASS="Die 'MainClass' ist nicht spezifiziert!\nDie Java-Anwendung kann nicht gestartet werden!"
+	MSG_NO_SUITABLE_JAVA="Es wurde keine passende Java-Version auf Ihrem System gefunden!\nDieses Programm benötigt Java"
+	MSG_JAVA_VERSION_OR_LATER="oder neuer"
+	MSG_JAVA_VERSION_LATEST="(neuste Unterversion)"
+	MSG_NO_SUITABLE_JAVA_CHECK="Stellen Sie sicher, dass die angeforderte Java-Version installiert ist."
+	MSG_INSTALL_JAVA="Auf Ihrem System muss die 'Java'-Software installiert sein.\nBesuchen Sie java.com für weitere Installationshinweise."
+	MSG_LATER="Später"
+	MSG_VISIT_JAVA_DOT_COM="java.com öffnen"
+
 # English default localization
 else
 	MSG_ERROR_LAUNCHING="ERROR launching '${CFBundleName}'."
