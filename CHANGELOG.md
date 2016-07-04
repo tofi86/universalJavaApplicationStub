@@ -2,6 +2,7 @@ ChangeLog
 ---------
 
 ### v1.1.0 (Work-In-Progress)
+* Localization of messages (English, German, French) (fixes #27 / PR #30, Thanks to @ebourg for his contribution)
 * Improve the version of Java reported in the error messages (fixes #28)
 * Send to java.com when the version of Java installed is too old (fixes #29)
 
