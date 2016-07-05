@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2016-07-03                                                          #
+# @date      2016-07-05                                                          #
 # @version   1.0.1                                                               #
 #                                                                                #
 #                                                                                #
@@ -247,7 +247,7 @@ if [[ $LANG == fr* ]] ; then
 	MSG_ERROR_LAUNCHING="Erreur au lancement de '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' n'est pas spécifié.\nL'application Java ne peut pas être lancée."
 	MSG_NO_SUITABLE_JAVA="La version de Java installée sur votre système ne convient pas.\nCe programme nécessite Java"
-	MSG_JAVA_VERSION_OR_LATER="ou plus tard"
+	MSG_JAVA_VERSION_OR_LATER="ou ultérieur"
 	MSG_JAVA_VERSION_LATEST="(dernière mise à jour)"
 	MSG_NO_SUITABLE_JAVA_CHECK="Merci de bien vouloir installer la version de Java requise."
 	MSG_INSTALL_JAVA="Java doit être installé sur votre système.\nRendez-vous sur java.com et suivez les instructions d'installation..."
