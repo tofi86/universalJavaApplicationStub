@@ -307,13 +307,13 @@ if [ -n "$JAVA_HOME" ] ; then
 # check for JVMversion requirements
 elif [ ! -z ${JVMVersion} ] ; then
 
-	# first in "/usr/libexec/java_home" symlinks
-	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion} > /dev/null ; then
-		JAVACMD="`/usr/libexec/java_home -F -v ${JVMVersion} 2> /dev/null`/bin/java"
-
-	# then in Oracle JRE plugin
-	elif [ -x "${oracle_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${oracle_jre_version} ${JVMVersion} ; then
+	# first in Oracle JRE plugin
+	if [ -x "${oracle_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${oracle_jre_version} ${JVMVersion} ; then
 		JAVACMD="${oracle_jre_plugin}"
+
+	# then in "/usr/libexec/java_home" symlinks
+	elif [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion} > /dev/null ; then
+		JAVACMD="`/usr/libexec/java_home -F -v ${JVMVersion} 2> /dev/null`/bin/java"
 
 	# then in Apple JRE plugin
 	elif [ -x "${apple_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${apple_jre_version} ${JVMVersion} ; then
