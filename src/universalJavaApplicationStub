@@ -408,17 +408,34 @@ elif [ ! -z ${JVMVersion} ] ; then
 		exit 3
 	fi
 
-# otherwise check "/usr/libexec/java_home" symlinks
-elif [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F > /dev/null; then
-	JAVACMD="`/usr/libexec/java_home 2> /dev/null`/bin/java"
-
-# otherwise check Java standard symlink (old Apple JRE)
-elif [ -h /Library/Java/Home ]; then
-	JAVACMD="${apple_jre_plugin}"
-
-# fallback: public JRE plugin (Oracle Java)
+# otherwise check "/usr/libexec/java_home" and Oracle and Apple JRE paths and use highest version available
 else
-	JAVACMD="${oracle_jre_plugin}"
+
+	# first check "/usr/libexec/java_home" symlinks
+	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F > /dev/null 2>&1 ; then
+		JAVACMD="`/usr/libexec/java_home 2> /dev/null`/bin/java"
+		JAVACMD_version=$(comparableJavaVersionNumber $(extractJavaVersionString "${JAVACMD}"))
+	fi
+
+	# then additionally check the Oracle JRE plugin whether it's a higher/newer compatible version
+	if [ -x "${oracle_jre_plugin}" ] ; then
+		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${oracle_jre_plugin}"))
+		# use this compatible version only if the above returned empty or if the version number is higher
+		if [ -z ${JAVACMD} ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
+			JAVACMD="${oracle_jre_plugin}"
+			JAVACMD_version=${this_java_ver}
+		fi
+	fi
+
+	# then additionally check the Apple JRE plugin whether it's a higher/newer compatible version
+	if [ -x "${apple_jre_plugin}" ] ; then
+		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${apple_jre_plugin}"))
+		# use this compatible version only if the above returned empty or if the version number is higher
+		if [ -z ${JAVACMD} ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
+			JAVACMD="${apple_jre_plugin}"
+			JAVACMD_version=${this_java_ver}
+		fi
+	fi
 fi
 
 # fallback fallback: /usr/bin/java
