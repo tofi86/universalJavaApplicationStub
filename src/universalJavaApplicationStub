@@ -329,7 +329,7 @@ function JavaVersionSatisfiesRequirement() {
 ############################################
 
 function extractJavaMajorVersion() {
-  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"([0-9.]{3})[0-9_.]{6}"/\1/g'`
+  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"([0-9.]{3})[0-9_.]{5,6}"/\1/g'`
 }
 
 
