@@ -5,6 +5,12 @@ ChangeLog
 * Localization of messages (English, German, French) (fixes #27 / PR #30, Thanks to @ebourg for his contribution)
 * Improve the version of Java reported in the error messages (fixes #28)
 * Send to java.com when the version of Java installed is too old (fixes #29)
+* Bugfix for parsing 3-digit java release/build numbers (e.g. for 1.8.0_101) (fixes #36)
+* Better search algorithm for specific Java version (fixes #35)
+* Use highest available Java version for execution if `JVMversion` is NOT specified (fixes #37)
+  * matches the new behaviour for when `JVMversion` IS specified (#35)
+* Switch to `/bin/bash` with changes in #35
+
 
 
 ### v1.0.1 (2015-11-02)

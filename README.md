@@ -1,7 +1,7 @@
 universalJavaApplicationStub
 =====================
 
-A shellscript JavaApplicationStub for Java Apps on Mac OS X that works with both Apple's and Oracle's plist format. It is released under the MIT License.
+A bash script *JavaApplicationStub* for Java Apps on Mac OS X that works with both Apple's and Oracle's plist format. It is released under the MIT License.
 
 
 Why
@@ -68,9 +68,10 @@ The name of the *main class* is also retrieved from `Info.plist`. If no *main cl
 There is some *foo* happening to determine which Java versions are installed – here's the list in which order system properties are checked:
 
 1. system variable `$JAVA_HOME`
-2. `/usr/libexec/java_home` symlinks
-3. symlink for old Apple Java: `/Library/Java/Home/bin/java`
-4. hardcoded fallback to Oracle's JRE Plugin: `/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java`
+2. highest available Java version found in one of these locations:
+  * `/usr/libexec/java_home` symlinks
+  * Oracle's JRE Plugin: `/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java`
+  * Symlink for old Apple Java: `/Library/Java/Home/bin/java`
 
 If none of these could be found or executed, an applescript error dialog is shown saying that Java need to be installed:
 
