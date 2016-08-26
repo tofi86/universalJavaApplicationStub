@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ##################################################################################
 #                                                                                #
 # universalJavaApplicationStub                                                   #
@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2016-08-26                                                          #
+# @date      2016-08-27                                                          #
 # @version   1.0.1                                                               #
 #                                                                                #
 #                                                                                #
@@ -22,7 +22,7 @@
 #                                                                                #
 # The MIT License (MIT)                                                          #
 #                                                                                #
-# Copyright (c) 2015 Tobias Fischer                                              #
+# Copyright (c) 2016 Tobias Fischer                                              #
 #                                                                                #
 # Permission is hereby granted, free of charge, to any person obtaining a copy   #
 # of this software and associated documentation files (the "Software"), to deal  #
@@ -279,19 +279,26 @@ fi
 
 
 
-#
-# function: extract Java major version
+# helper
+# function: extract Java version string
 #           from java -version command
 ############################################
 
-function extractJavaMajorVersion() {
-	"$1" -version
-  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"([0-9.]{3})[0-9_.]{5,6}"/\1/g'`
+function extractJavaVersionString() {
+  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g'`
 }
 
+# helper
+# function: extract Java major version
+#           from java version string
+############################################
 
+function extractJavaMajorVersion() {
+  version_str=$(extractJavaVersionString "$1")
+  echo ${version_str} | sed -E 's/([0-9.]{3})[0-9_.]{5,6}/\1/g'
+}
 
-#
+# helper
 # function: generate comparable Java version
 #           number from java version string
 ############################################
@@ -304,6 +311,8 @@ function comparableJavaVersionNumber() {
 
 #
 # function: Java version tester
+#           check whether a given java version
+#           satisfies the given requirement
 ############################################
 
 function JavaVersionSatisfiesRequirement() {
@@ -359,22 +368,36 @@ oracle_jre_version=`extractJavaMajorVersion "${oracle_jre_plugin}"`
 if [ -n "$JAVA_HOME" ] ; then
 	JAVACMD="$JAVA_HOME/bin/java"
 
-# check for JVMversion requirements
+# check for a specific Java version, specified in JVMversion Plist key
 elif [ ! -z ${JVMVersion} ] ; then
 
-	# first in "/usr/libexec/java_home" symlinks
-	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion} > /dev/null ; then
+	# first check "/usr/libexec/java_home" symlinks
+	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion} > /dev/null 2>&1 ; then
 		JAVACMD="`/usr/libexec/java_home -F -v ${JVMVersion} 2> /dev/null`/bin/java"
+		JAVACMD_version=$(comparableJavaVersionNumber $(extractJavaVersionString "${JAVACMD}"))
+	fi
 
-	# then in Oracle JRE plugin
-	elif [ -x "${oracle_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${oracle_jre_version} ${JVMVersion} ; then
-		JAVACMD="${oracle_jre_plugin}"
+	# then additionally check the Oracle JRE plugin whether it's a higher/newer compatible version
+	if [ -x "${oracle_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${oracle_jre_version} ${JVMVersion} ; then
+		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${oracle_jre_plugin}"))
+		# use this compatible version only if the above returned empty or if the version number is higher
+		if [ -z ${JAVACMD} ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
+			JAVACMD="${oracle_jre_plugin}"
+			JAVACMD_version=${this_java_ver}
+		fi
+	fi
 
-	# then in Apple JRE plugin
-	elif [ -x "${apple_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${apple_jre_version} ${JVMVersion} ; then
-		JAVACMD="${apple_jre_plugin}"
+	# then additionally check the Apple JRE plugin whether it's a higher/newer compatible version
+	if [ -x "${apple_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${apple_jre_version} ${JVMVersion} ; then
+		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${apple_jre_plugin}"))
+		# use this compatible version only if the above returned empty or if the version number is higher
+		if [ -z ${JAVACMD} ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
+			JAVACMD="${apple_jre_plugin}"
+			JAVACMD_version=${this_java_ver}
+		fi
+	fi
 
-	else
+	if [ -z "$JAVACMD" ] ; then
 		# display human readable java version (#28)
 		java_version_hr=`echo ${JVMVersion} | sed -E 's/[0-9]\.([0-9+*]+)/ \1/g' | sed "s/+/ ${MSG_JAVA_VERSION_OR_LATER}/" | sed "s/*/ ${MSG_JAVA_VERSION_LATEST}/"`
 		# display error message with applescript
