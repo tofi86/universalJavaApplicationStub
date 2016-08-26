@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2016-07-05                                                          #
+# @date      2016-08-26                                                          #
 # @version   1.0.1                                                               #
 #                                                                                #
 #                                                                                #
@@ -329,7 +329,7 @@ function JavaVersionSatisfiesRequirement() {
 ############################################
 
 function extractJavaMajorVersion() {
-  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"([0-9.]{3})[0-9_.]{5}"/\1/g'`
+  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"([0-9.]{3})[0-9_.]{6}"/\1/g'`
 }
 
 
