@@ -177,8 +177,13 @@ if [ $exitcode -eq 0 ]; then
 	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
 	JVMClassPath=`eval "echo ${JVMClassPath}"`
 
-	# read the JVM Default Options
-	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:VMOptions" "${InfoPlistFile}" 2> /dev/null | xargs`
+	# read the JVM Default Options in either Array or String style
+	JVMDefaultOptions_RAW=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:VMOptions" "${InfoPlistFile}" 2> /dev/null | xargs`
+	if [[ $JVMDefaultOptions_RAW == *Array* ]] ; then
+		JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:VMOptions" "${InfoPlistFile}" 2> /dev/null | grep "    " | sed 's/^ */ /g' | tr -d '\n' | xargs`
+	else
+		JVMDefaultOptions=${JVMDefaultOptions_RAW}
+	fi
 
 	# read the JVM Arguments
 	JVMArguments=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:Arguments" "${InfoPlistFile}" 2> /dev/null | xargs`
