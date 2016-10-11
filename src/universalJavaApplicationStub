@@ -485,7 +485,8 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 			${JVMOptions:+$JVMOptions }\
 			${JVMDefaultOptions:+$JVMDefaultOptions }\
 			${JVMMainClass}\
-			${JVMArguments:+ $JVMArguments}
+			${JVMArguments:+ $JVMArguments}\
+			"$@"
 
 
 else
