@@ -10,13 +10,12 @@ ChangeLog
 * Use highest available Java version for execution if `JVMversion` is NOT specified (fixes #37)
   * matches the new behaviour for when `JVMversion` IS specified (#35)
 * Switch to `/bin/bash` with changes in #35
-
-
+* Add support for arrays of VMOptions in Apple style Info.plists (PR #25, Thanks to @spectre683 for his contribution)
+* Pass command line arguments through to the application (PR #31, Thanks to @dbankieris for his contribution)
 
 ### v1.0.1 (2015-11-02)
 * Improved display error message with applescript (PR #22, Thanks to @ygesnel for his initial contribution)
 * Reorder search for Java VM locations when specific JVM version is required (PR #22, Thanks to @yoe for his contribution)
-
 
 ### v1.0.0 (2015-10-08)
 * Support for a splash file (PR #19)
