@@ -371,7 +371,11 @@ oracle_jre_version=`extractJavaMajorVersion "${oracle_jre_plugin}"`
 
 # first check system variable "$JAVA_HOME"
 if [ -n "$JAVA_HOME" ] ; then
-	JAVACMD="$JAVA_HOME/bin/java"
+    if [[ $JAVA_HOME == /* ]] ; then
+	    JAVACMD="$JAVA_HOME/bin/java"
+    else
+      JAVACMD="$AppPackageFolder/$JAVA_HOME/bin/java"
+    fi
 
 # check for a specific Java version, specified in JVMversion Plist key
 elif [ ! -z ${JVMVersion} ] ; then
