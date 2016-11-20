@@ -1,10 +1,24 @@
 ChangeLog
 ---------
 
-### v1.0.1 (2015-11-02)
-*  Improved display error message with applescript (PR #22, Thanks to @ygesnel for his initial contribution)
-* Reorder search for Java VM locations when specific JVM version is required (PR #22, Thanks to @yoe for his contribution)
+### v2.0.0 (2016-11-20)
+* Localization of messages (English, German, French) (fixes #27 / PR #30, Thanks to @ebourg for his contribution)
+* Improve the version of Java reported in the error messages (fixes #28)
+* Send to java.com when the version of Java installed is too old (fixes #29)
+* Bugfix for parsing 3-digit java release/build numbers (e.g. for 1.8.0_101) (fixes #36)
+* Better search algorithm for specific Java version (fixes #35)
+* Use highest available Java version for execution if `JVMversion` is NOT specified (fixes #37)
+  * matches the new behaviour for when `JVMversion` IS specified (#35)
+* Switch to `/bin/bash` with changes in #35
+* Add support for arrays of VMOptions in Apple style Info.plists (PR #25, Thanks to @spectre683 for his contribution)
+* Pass command line arguments through to the application (PR #31, Thanks to @dbankieris for his contribution)
+* Allow specifying `$JAVA_HOME` relative to `$AppPackageFolder` (fixes #7 / PR #26, Thanks to @toonetown for his contribution)
+  * This allows you to set a relative `$JAVA_HOME` via the `<LSEnvironment>` Plist key
+  * Which means you can bundle a custom version of Java inside your app!
 
+### v1.0.1 (2015-11-02)
+* Improved display error message with applescript (PR #22, Thanks to @ygesnel for his initial contribution)
+* Reorder search for Java VM locations when specific JVM version is required (PR #22, Thanks to @yoe for his contribution)
 
 ### v1.0.0 (2015-10-08)
 * Support for a splash file (PR #19)

@@ -1,12 +1,50 @@
-#!/bin/sh
+#!/bin/bash
 
 # Java JRE version tester
-# tofi86 @ 2015-09-29
+# tofi86 @ 2016-08-27
+
+
+
+# helper
+# function: extract Java version string
+#           from java -version command
+############################################
+
+function extractJavaVersionString() {
+  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g'`
+}
+
+# helper
+# function: extract Java major version
+#           from java version string
+############################################
+
+function extractJavaMajorVersion() {
+  version_str=$(extractJavaVersionString "$1")
+  echo ${version_str} | sed -E 's/([0-9.]{3})[0-9_.]{5,6}/\1/g'
+}
+
+# helper
+# function: generate comparable Java version
+#           number from java version string
+############################################
+
+function comparableJavaVersionNumber() {
+  echo $1 | sed -E 's/[[:punct:]]//g'
+}
+
+
+
+#
+# function: Java version tester
+#           check whether a given java version
+#           satisfies the given requirement
+############################################
 
 function JavaVersionSatisfiesRequirement() {
   java_ver=$1
   java_req=$2
-  
+
   # e.g. 1.8*
   if [[ ${java_req} =~ ^[0-9]\.[0-9]\*$ ]] ; then
     java_req_num=${java_req:0:3}
@@ -16,17 +54,17 @@ function JavaVersionSatisfiesRequirement() {
     else
       return 1
     fi
-  
+
   # e.g. 1.8+
   elif [[ ${java_req} =~ ^[0-9]\.[0-9]\+$ ]] ; then
-    java_req_num=`echo ${java_req} | sed -E 's/[[:punct:]]//g'`
-    java_ver_num=`echo ${java_ver} | sed -E 's/[[:punct:]]//g'`
+    java_req_num=$(comparableJavaVersionNumber ${java_req})
+    java_ver_num=$(comparableJavaVersionNumber ${java_ver})
     if [ ${java_ver_num} -ge ${java_req_num} ] ; then
       return 0
     else
       return 1
     fi
-  
+
   # e.g. 1.8
   elif [[ ${java_req} =~ ^[0-9]\.[0-9]$ ]] ; then
     if [ ${java_ver} == ${java_req} ] ; then
@@ -34,18 +72,12 @@ function JavaVersionSatisfiesRequirement() {
     else
       return 1
     fi
-  
+
   # not matching any of the above patterns
   else
     return 2
   fi
 }
-
-
-function extractJavaMajorVersion() {
-  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"([0-9.]{3})[0-9_.]{5}"/\1/g'`
-}
-
 
 
 apple_jre_plugin="/Library/Java/Home/bin/java"
