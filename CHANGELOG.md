@@ -1,7 +1,7 @@
 ChangeLog
 ---------
 
-### v1.1.0 (Work-In-Progress)
+### v2.0.0 (2016-11-20)
 * Localization of messages (English, German, French) (fixes #27 / PR #30, Thanks to @ebourg for his contribution)
 * Improve the version of Java reported in the error messages (fixes #28)
 * Send to java.com when the version of Java installed is too old (fixes #29)
@@ -12,7 +12,7 @@ ChangeLog
 * Switch to `/bin/bash` with changes in #35
 * Add support for arrays of VMOptions in Apple style Info.plists (PR #25, Thanks to @spectre683 for his contribution)
 * Pass command line arguments through to the application (PR #31, Thanks to @dbankieris for his contribution)
-* Allow specifying `$JAVA_HOME` relative to `$AppPackageFolder` (PR #26, Thanks to @toonetown for his contribution)
+* Allow specifying `$JAVA_HOME` relative to `$AppPackageFolder` (fixes #7 / PR #26, Thanks to @toonetown for his contribution)
   * This allows you to set a relative `$JAVA_HOME` via the `<LSEnvironment>` Plist key
   * Which means you can bundle a custom version of Java inside your app!
 
