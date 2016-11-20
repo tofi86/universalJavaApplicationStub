@@ -12,6 +12,9 @@ ChangeLog
 * Switch to `/bin/bash` with changes in #35
 * Add support for arrays of VMOptions in Apple style Info.plists (PR #25, Thanks to @spectre683 for his contribution)
 * Pass command line arguments through to the application (PR #31, Thanks to @dbankieris for his contribution)
+* Allow specifying `$JAVA_HOME` relative to `$AppPackageFolder` (PR #26, Thanks to @toonetown for his contribution)
+  * This allows you to set a relative `$JAVA_HOME` via the `<LSEnvironment>` Plist key
+  * Which means you can bundle a custom version of Java inside your app!
 
 ### v1.0.1 (2015-11-02)
 * Improved display error message with applescript (PR #22, Thanks to @ygesnel for his initial contribution)

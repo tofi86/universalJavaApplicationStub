@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2016-10-11                                                          #
+# @date      2016-11-20                                                          #
 # @version   1.0.1                                                               #
 #                                                                                #
 #                                                                                #
@@ -371,9 +371,14 @@ oracle_jre_version=`extractJavaMajorVersion "${oracle_jre_plugin}"`
 
 # first check system variable "$JAVA_HOME"
 if [ -n "$JAVA_HOME" ] ; then
+
+    # PR 26: Allow specifying "$JAVA_HOME" relative to "$AppPackageFolder"
+    # which allows for bundling a custom version of Java inside your app!
     if [[ $JAVA_HOME == /* ]] ; then
+      # if "$JAVA_HOME" starts with a Slash it's an absolute path
 	    JAVACMD="$JAVA_HOME/bin/java"
     else
+      # otherwise it's a relative path to "$AppPackageFolder"
       JAVACMD="$AppPackageFolder/$JAVA_HOME/bin/java"
     fi
 

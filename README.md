@@ -68,6 +68,8 @@ The name of the *main class* is also retrieved from `Info.plist`. If no *main cl
 There is some *foo* happening to determine which Java versions are installed – here's the list in which order system properties are checked:
 
 1. system variable `$JAVA_HOME`
+  * can also be set to a relative path using the [`<LSEnvironment>` Plist dictionary key](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/20001431-106825)
+    * which allows for bundling a custom version of Java inside your app!
 2. highest available Java version found in one of these locations:
   * `/usr/libexec/java_home` symlinks
   * Oracle's JRE Plugin: `/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java`
