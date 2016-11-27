@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v2.0.1 (2016-11-27)
+* Bugfix for regression in argument passthru introduced in 2.0.0 (fixes #39)
+
 ### v2.0.0 (2016-11-20)
 * Localization of messages (English, German, French) (fixes #27 / PR #30, Thanks to @ebourg for his contribution)
 * Improve the version of Java reported in the error messages (fixes #28)

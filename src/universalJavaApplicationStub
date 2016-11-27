@@ -13,8 +13,8 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2016-11-20                                                          #
-# @version   2.0.0                                                               #
+# @date      2016-11-27                                                          #
+# @version   2.0.1                                                               #
 #                                                                                #
 #                                                                                #
 ##################################################################################
@@ -474,6 +474,13 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 
 	# enable drag&drop to the dock icon
 	export CFProcessPath="$0"
+	
+	# remove Apples ProcessSerialNumber from passthru arguments (#39)
+	if [[ $@ == -psn* ]] ; then
+		ArgsPassthru=""
+	else
+		ArgsPassthru=$@
+	fi
 
 	# change to Working Directory based upon Apple/Oracle Plist info
 	cd "${WorkingDirectory}"
@@ -495,7 +502,7 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 			${JVMDefaultOptions:+$JVMDefaultOptions }\
 			${JVMMainClass}\
 			${JVMArguments:+ $JVMArguments}\
-			"$@"
+			${ArgsPassthru:+ $ArgsPassthru}
 
 
 else
