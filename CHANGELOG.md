@@ -1,7 +1,7 @@
 ChangeLog
 ---------
 
-### v2.0.1 (Work-In-Progress)
+### v2.0.1 (2016-11-27)
 * Bugfix for regression in argument passthru introduced in 2.0.0 (fixes #39)
 
 ### v2.0.0 (2016-11-20)
