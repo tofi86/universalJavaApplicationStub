@@ -13,8 +13,8 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2016-11-27                                                          #
-# @version   2.0.1                                                               #
+# @date      2017-11-27                                                          #
+# @version   2.0.2                                                               #
 #                                                                                #
 #                                                                                #
 ##################################################################################
@@ -218,14 +218,19 @@ else
 	JVMClassPath_RAW=`/usr/libexec/PlistBuddy -c "print JVMClassPath" "${InfoPlistFile}" 2> /dev/null`
 	if [[ $JVMClassPath_RAW == *Array* ]] ; then
 		JVMClassPath=.`/usr/libexec/PlistBuddy -c "print JVMClassPath" "${InfoPlistFile}" 2> /dev/null | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs`
+		# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+		JVMClassPath=`eval "echo ${JVMClassPath}"`
+
 	elif [[ ! -z ${JVMClassPath_RAW} ]] ; then
 		JVMClassPath=${JVMClassPath_RAW}
+		# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+		JVMClassPath=`eval "echo ${JVMClassPath}"`
+
 	else
 		#default: fallback to OracleJavaFolder
 		JVMClassPath="${JavaFolder}/*"
+		# Do NOT expand the default App.app/Contents/Java/* classpath (#42)
 	fi
-	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
-	JVMClassPath=`eval "echo ${JVMClassPath}"`
 
 	# read the JVM Default Options
 	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" "${InfoPlistFile}" 2> /dev/null | grep -o " \-.*" | tr -d '\n' | xargs`
@@ -474,7 +479,7 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 
 	# enable drag&drop to the dock icon
 	export CFProcessPath="$0"
-	
+
 	# remove Apples ProcessSerialNumber from passthru arguments (#39)
 	if [[ $@ == -psn* ]] ; then
 		ArgsPassthru=""

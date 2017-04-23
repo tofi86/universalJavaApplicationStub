@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v2.0.2 (2017-04-23)
+* Bugfix: do NOT expand/evaluate the default Oracle Classpath (`App.app/Contents/Java/*`) (PR #42, Thanks to @mguessan for his contribution)
+
 ### v2.0.1 (2016-11-27)
 * Bugfix for regression in argument passthru introduced in 2.0.0 (fixes #39)
 
