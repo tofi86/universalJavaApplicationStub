@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v2.1.0 (2017-xx-xx)
+* Support for Java 9 with new version number schema (fixes #43)
+
 ### v2.0.2 (2017-04-23)
 * Bugfix: do NOT expand/evaluate the default Oracle Classpath (`App.app/Contents/Java/*`) (PR #42, Thanks to @mguessan for his contribution)
 
