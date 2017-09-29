@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2017-07-28                                                          #
+# @date      2017-09-29                                                          #
 # @version   2.1.0                                                               #
 #                                                                                #
 #                                                                                #
@@ -413,7 +413,7 @@ elif [ ! -z ${JVMVersion} ] ; then
 	if [ -x "${oracle_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${oracle_jre_version} ${JVMVersion} ; then
 		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${oracle_jre_plugin}"))
 		# use this compatible version only if the above returned empty or if the version number is higher
-		if [ -z ${JAVACMD} ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
+		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${oracle_jre_plugin}"
 			JAVACMD_version=${this_java_ver}
 		fi
@@ -423,13 +423,13 @@ elif [ ! -z ${JVMVersion} ] ; then
 	if [ -x "${apple_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${apple_jre_version} ${JVMVersion} ; then
 		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${apple_jre_plugin}"))
 		# use this compatible version only if the above returned empty or if the version number is higher
-		if [ -z ${JAVACMD} ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
+		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${apple_jre_plugin}"
 			JAVACMD_version=${this_java_ver}
 		fi
 	fi
 
-	if [ -z "$JAVACMD" ] ; then
+	if [ -z "${JAVACMD}" ] ; then
 		# display human readable java version (#28)
 		java_version_hr=`echo ${JVMVersion} | sed -E 's/[0-9]\.([0-9+*]+)/ \1/g' | sed "s/+/ ${MSG_JAVA_VERSION_OR_LATER}/" | sed "s/*/ ${MSG_JAVA_VERSION_LATEST}/"`
 		# display error message with applescript
@@ -453,7 +453,7 @@ else
 	if [ -x "${oracle_jre_plugin}" ] ; then
 		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${oracle_jre_plugin}"))
 		# use this compatible version only if the above returned empty or if the version number is higher
-		if [ -z ${JAVACMD} ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
+		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${oracle_jre_plugin}"
 			JAVACMD_version=${this_java_ver}
 		fi
@@ -463,7 +463,7 @@ else
 	if [ -x "${apple_jre_plugin}" ] ; then
 		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${apple_jre_plugin}"))
 		# use this compatible version only if the above returned empty or if the version number is higher
-		if [ -z ${JAVACMD} ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
+		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${apple_jre_plugin}"
 			JAVACMD_version=${this_java_ver}
 		fi
@@ -487,8 +487,8 @@ if [ -z ${JVMMainClass} ]; then
 	exit 2
 
 
-# check whether $JAVACMD is a file and executable
-elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
+# check whether ${JAVACMD} is a file and executable
+elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 
 	# enable drag&drop to the dock icon
 	export CFProcessPath="$0"
@@ -511,7 +511,7 @@ elif [ -f "$JAVACMD" ] && [ -x "$JAVACMD" ] ; then
 	#	- JVM default options
 	#	- main class
 	#	- JVM arguments
-	exec "$JAVACMD" \
+	exec "${JAVACMD}" \
 			-cp "${JVMClassPath}" \
 			-splash:"${ResourcesFolder}/${JVMSplashFile}" \
 			-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
