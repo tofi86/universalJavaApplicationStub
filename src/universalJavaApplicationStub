@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2017-10-28                                                          #
+# @date      2017-10-29                                                          #
 # @version   2.1.0                                                               #
 #                                                                                #
 #                                                                                #
@@ -46,6 +46,19 @@
 
 
 
+# helper function:
+# A logger which logs to the macOS Console.app
+################################################
+function stubLogger() {
+	syslog -s -k \
+		Facility com.apple.console \
+		Level Notice \
+		Sender "$(basename "$0")" \
+		Message "[$$][${CFBundleName:-$(basename "$0")}] $1"
+}
+
+
+
 #
 # set the directory abspath of the current
 # shell script with symlinks being resolved
@@ -62,6 +75,7 @@ while [ -h "$PRG" ]; do
 	fi
 done
 PROGDIR=`dirname "$PRG"`
+stubLogger "[StubDir] $PROGDIR"
 
 
 
@@ -123,6 +137,7 @@ fi
 
 # read Info.plist in Apple style if exit code returns 0 (true, :Java key is present)
 if [ $exitcode -eq 0 ]; then
+	stubLogger "[PlistStyle] Apple"
 
 	# set Java and Resources folder
 	JavaFolder="${AppleJavaFolder}"
@@ -193,6 +208,7 @@ if [ $exitcode -eq 0 ]; then
 
 # read Info.plist in Oracle style
 else
+	stubLogger "[PlistStyle] Oracle"
 
 	# set Working Directory and Java and Resources folder
 	JavaFolder="${OracleJavaFolder}"
@@ -247,6 +263,7 @@ fi
 ############################################
 
 LANG=`defaults read -g AppleLocale`
+stubLogger "[Language] $LANG"
 
 # French localization
 if [[ $LANG == fr* ]] ; then
@@ -387,6 +404,7 @@ oracle_jre_version=$(extractJavaMajorVersion $(extractJavaVersionString "${oracl
 
 # first check system variable "$JAVA_HOME"
 if [ -n "$JAVA_HOME" ] ; then
+	stubLogger '[JavaSearch] Checking $JAVA_HOME'
 
 	# PR 26: Allow specifying "$JAVA_HOME" relative to "$AppPackageFolder"
 	# which allows for bundling a custom version of Java inside your app!
@@ -400,6 +418,7 @@ if [ -n "$JAVA_HOME" ] ; then
 
 # check for a specific Java version, specified in JVMversion Plist key
 elif [ ! -z ${JVMVersion} ] ; then
+	stubLogger "[JavaSearch] Checking for specific Java version '${JVMVersion}'"
 
 	# first check "/usr/libexec/java_home" symlinks
 	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion} > /dev/null 2>&1 ; then
@@ -430,6 +449,8 @@ elif [ ! -z ${JVMVersion} ] ; then
 	if [ -z "${JAVACMD}" ] ; then
 		# display human readable java version (#28)
 		java_version_hr=`echo ${JVMVersion} | sed -E 's/[0-9]\.([0-9+*]+)/ \1/g' | sed "s/+/ ${MSG_JAVA_VERSION_OR_LATER}/" | sed "s/*/ ${MSG_JAVA_VERSION_LATEST}/"`
+		# log exit cause
+		stubLogger "[EXIT 3] ${MSG_NO_SUITABLE_JAVA}${java_version_hr}"
 		# display error message with applescript
 		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA}${java_version_hr}.\n${MSG_NO_SUITABLE_JAVA_CHECK}\" with title \"${CFBundleName}\"  buttons {\" OK \", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
 				-e "set response to button returned of the result" \
@@ -440,6 +461,7 @@ elif [ ! -z ${JVMVersion} ] ; then
 
 # otherwise check "/usr/libexec/java_home" and Oracle and Apple JRE paths and use highest version available
 else
+	stubLogger "[JavaSearch] Checking for other Java versions"
 
 	# first check "/usr/libexec/java_home" symlinks
 	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F > /dev/null 2>&1 ; then
@@ -468,6 +490,10 @@ else
 	fi
 fi
 
+# log the Java Command and the extracted version number
+stubLogger "[JavaCommand] $JAVACMD"
+stubLogger "[JavaVersion] $(extractJavaVersionString "${JAVACMD}")${JAVACMD_version:+ / $JAVACMD_version}"
+
 # fallback fallback: /usr/bin/java
 # but this would prompt to install deprecated Apple Java 6
 
@@ -479,6 +505,8 @@ fi
 
 # display error message if MainClassName is empty
 if [ -z ${JVMMainClass} ]; then
+	# log exit cause
+	stubLogger "[EXIT 2] ${MSG_MISSING_MAINCLASS}"
 	# display error message with applescript
 	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_MISSING_MAINCLASS}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
 	# exit with error
@@ -500,6 +528,7 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 
 	# change to Working Directory based upon Apple/Oracle Plist info
 	cd "${WorkingDirectory}"
+	stubLogger "[WorkingDirectory] ${WorkingDirectory}"
 
 	# execute Java and set
 	# - classpath
@@ -511,6 +540,7 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 	# - main class
 	# - main arguments
 	# - passthru arguments
+	stubLogger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptions:+$JVMOptions }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgs:+ $MainArgs}${ArgsPassthru:+ $ArgsPassthru}"
 	exec "${JAVACMD}" \
 			-cp "${JVMClassPath}" \
 			-splash:"${ResourcesFolder}/${JVMSplashFile}" \
@@ -524,6 +554,8 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 
 
 else
+	# log exit cause
+	stubLogger "[EXIT 1] ${MSG_ERROR_LAUNCHING}"
 	# display error message with applescript
 	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_INSTALL_JAVA}\" with title \"${CFBundleName}\" buttons {\"${MSG_LATER}\", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
 				-e "set response to button returned of the result" \

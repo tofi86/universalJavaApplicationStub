@@ -162,6 +162,15 @@ Supported PList keys
 
 
 
+Logging
+-------
+
+Starting with version 2.2.0 `universalJavaApplicationStub` logs data to the `syslog` which can be easily accessed with the `Console.app` utility by searching for *syslog*:
+
+![Example log data in Console.app](/docs/ConsoleAppLogging.png?raw=true)
+
+
+
 Missing Features
 ----------------
 
