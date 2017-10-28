@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2017-09-29                                                          #
+# @date      2017-10-28                                                          #
 # @version   2.1.0                                                               #
 #                                                                                #
 #                                                                                #
@@ -186,9 +186,9 @@ if [ $exitcode -eq 0 ]; then
 	fi
 
 	# read the JVM Arguments
-	JVMArguments=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:Arguments" "${InfoPlistFile}" 2> /dev/null | xargs`
+	MainArgs=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:Arguments" "${InfoPlistFile}" 2> /dev/null | xargs`
 	# replace occurences of $APP_ROOT with its content
-	JVMArguments=`eval "echo ${JVMArguments}"`
+	MainArgs=`eval "echo ${MainArgs}"`
 
 	# read the Java version we want to find
 	JVMVersion=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:JVMVersion" "${InfoPlistFile}" 2> /dev/null | xargs`
@@ -235,10 +235,10 @@ else
 	# read the JVM Default Options
 	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" "${InfoPlistFile}" 2> /dev/null | grep -o " \-.*" | tr -d '\n' | xargs`
 
-	# read the JVM Arguments
-	JVMArguments=`/usr/libexec/PlistBuddy -c "print :JVMArguments" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
+	# read the Main Arguments from JVMArguments key (see #46 for naming details)
+	MainArgs=`/usr/libexec/PlistBuddy -c "print :JVMArguments" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
 	# replace occurences of $APP_ROOT with its content
-	JVMArguments=`eval "echo ${JVMArguments}"`
+	MainArgs=`eval "echo ${MainArgs}"`
 fi
 
 
@@ -510,7 +510,8 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 	#	- JVM options
 	#	- JVM default options
 	#	- main class
-	#	- JVM arguments
+	#	- main arguments
+	#	- passthru arguments
 	exec "${JAVACMD}" \
 			-cp "${JVMClassPath}" \
 			-splash:"${ResourcesFolder}/${JVMSplashFile}" \
@@ -519,7 +520,7 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 			${JVMOptions:+$JVMOptions }\
 			${JVMDefaultOptions:+$JVMDefaultOptions }\
 			${JVMMainClass}\
-			${JVMArguments:+ $JVMArguments}\
+			${MainArgs:+ $MainArgs}\
 			${ArgsPassthru:+ $ArgsPassthru}
 
 
