@@ -142,6 +142,26 @@ The ANT task will care about the rest...
 You should get a fully functional Mac Application Bundle working with both Java distributions from Apple and Oracle and all Mac OS X versions.
 
 
+
+Supported PList keys
+--------------------
+
+| Function                        | Apple PList key        | Oracle PList key      |
+|---------------------------------|------------------------|-----------------------|
+| **App Name** (Dock Name)        | `:CFBundleName`        | `:CFBundleName`       |
+| **App Icon** (Dock Icon)        | `:CFBundleIconFile`    | `:CFBundleIconFile`   |
+| **Working Directory**           | `:Java(X):WorkingDirectory`<br/>fallback to `name.app/` | *not supported*<br/>default: `name.app/Contents/Java/` |
+| **Java Version Requirement**    | `:Java(X):JVMVersion`  | *not supported*       |
+| **Java ClassPath** (`-cp …`)    | `:Java(X):ClassPath`   | `:JVMClassPath`       |
+| **Java Main Class**             | `:Java(X):MainClass`   | `:JVMMainClassName`   |
+| **Splash Image** (`-splash:…`)  | `:Java(X):SplashFile`  | `:JVMSplashFile`      |
+| **Java VM Options** (`-X…`)     | `:Java(X):VMOptions`   | `:JVMDefaultOptions`  |
+| **`-XstartOnFirstThread`** [*](https://stackoverflow.com/questions/28149634/what-does-the-xstartonfirstthread-vm-argument-do-mean) | `:Java(X):StartOnMainThread` | *not supported*       |
+| **Java Properties** (`-D…`)     | `:Java(X):Properties`  | `:JVMOptions`         |
+| **Main Class Arguments**        | `:Java(X):Arguments`   | `:JVMArguments`       |
+
+
+
 Missing Features
 ----------------
 
