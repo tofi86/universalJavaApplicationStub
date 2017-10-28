@@ -47,22 +47,20 @@
 
 
 #
-# resolve symlinks
+# set the directory abspath of the current
+# shell script with symlinks being resolved
 ############################################
 
 PRG=$0
-
 while [ -h "$PRG" ]; do
-    ls=`ls -ld "$PRG"`
-    link=`expr "$ls" : '^.*-> \(.*\)$' 2>/dev/null`
-    if expr "$link" : '^/' 2> /dev/null >/dev/null; then
-        PRG="$link"
-    else
-        PRG="`dirname "$PRG"`/$link"
-    fi
+	ls=`ls -ld "$PRG"`
+	link=`expr "$ls" : '^.*-> \(.*\)$' 2>/dev/null`
+	if expr "$link" : '^/' 2> /dev/null >/dev/null; then
+		PRG="$link"
+	else
+		PRG="`dirname "$PRG"`/$link"
+	fi
 done
-
-# set the directory abspath of the current shell script
 PROGDIR=`dirname "$PRG"`
 
 
@@ -390,15 +388,15 @@ oracle_jre_version=$(extractJavaMajorVersion $(extractJavaVersionString "${oracl
 # first check system variable "$JAVA_HOME"
 if [ -n "$JAVA_HOME" ] ; then
 
-    # PR 26: Allow specifying "$JAVA_HOME" relative to "$AppPackageFolder"
-    # which allows for bundling a custom version of Java inside your app!
-    if [[ $JAVA_HOME == /* ]] ; then
-      # if "$JAVA_HOME" starts with a Slash it's an absolute path
-	    JAVACMD="$JAVA_HOME/bin/java"
-    else
-      # otherwise it's a relative path to "$AppPackageFolder"
-      JAVACMD="$AppPackageFolder/$JAVA_HOME/bin/java"
-    fi
+	# PR 26: Allow specifying "$JAVA_HOME" relative to "$AppPackageFolder"
+	# which allows for bundling a custom version of Java inside your app!
+	if [[ $JAVA_HOME == /* ]] ; then
+		# if "$JAVA_HOME" starts with a Slash it's an absolute path
+		JAVACMD="$JAVA_HOME/bin/java"
+	else
+		# otherwise it's a relative path to "$AppPackageFolder"
+		JAVACMD="$AppPackageFolder/$JAVA_HOME/bin/java"
+	fi
 
 # check for a specific Java version, specified in JVMversion Plist key
 elif [ ! -z ${JVMVersion} ] ; then
@@ -436,7 +434,7 @@ elif [ ! -z ${JVMVersion} ] ; then
 		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA}${java_version_hr}.\n${MSG_NO_SUITABLE_JAVA_CHECK}\" with title \"${CFBundleName}\"  buttons {\" OK \", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
 				-e "set response to button returned of the result" \
 				-e "if response is \"${MSG_VISIT_JAVA_DOT_COM}\" then open location \"http://java.com\""
-    # exit with error
+		# exit with error
 		exit 3
 	fi
 
@@ -504,14 +502,15 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 	cd "${WorkingDirectory}"
 
 	# execute Java and set
-	#	- classpath
-	#	- dock icon
-	#	- application name
-	#	- JVM options
-	#	- JVM default options
-	#	- main class
-	#	- main arguments
-	#	- passthru arguments
+	# - classpath
+	# - splash image
+	# - dock icon
+	# - app name
+	# - JVM options
+	# - JVM default options
+	# - main class
+	# - main arguments
+	# - passthru arguments
 	exec "${JAVACMD}" \
 			-cp "${JVMClassPath}" \
 			-splash:"${ResourcesFolder}/${JVMSplashFile}" \
@@ -525,12 +524,10 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 
 
 else
-
 	# display error message with applescript
 	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_INSTALL_JAVA}\" with title \"${CFBundleName}\" buttons {\"${MSG_LATER}\", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
 				-e "set response to button returned of the result" \
 				-e "if response is \"${MSG_VISIT_JAVA_DOT_COM}\" then open location \"http://java.com\""
-
 	# exit with error
 	exit 1
 fi
