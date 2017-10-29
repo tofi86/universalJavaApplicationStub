@@ -259,7 +259,6 @@ fi
 
 #
 # internationalized messages
-#
 ############################################
 
 LANG=`defaults read -g AppleLocale`
@@ -269,7 +268,7 @@ stubLogger "[Language] $LANG"
 if [[ $LANG == fr* ]] ; then
 	MSG_ERROR_LAUNCHING="Erreur au lancement de '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' n'est pas spécifié.\nL'application Java ne peut pas être lancée."
-	MSG_NO_SUITABLE_JAVA="La version de Java installée sur votre système ne convient pas.\nCe programme nécessite Java"
+	MSG_NO_SUITABLE_JAVA="La version de Java installée sur votre système ne convient pas.\nCe programme nécessite Java %s."
 	MSG_JAVA_VERSION_OR_LATER="ou ultérieur"
 	MSG_JAVA_VERSION_LATEST="(dernière mise à jour)"
 	MSG_NO_SUITABLE_JAVA_CHECK="Merci de bien vouloir installer la version de Java requise."
@@ -281,7 +280,7 @@ if [[ $LANG == fr* ]] ; then
 elif [[ $LANG == de* ]] ; then
 	MSG_ERROR_LAUNCHING="FEHLER beim Starten von '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="Die 'MainClass' ist nicht spezifiziert!\nDie Java-Anwendung kann nicht gestartet werden!"
-	MSG_NO_SUITABLE_JAVA="Es wurde keine passende Java-Version auf Ihrem System gefunden!\nDieses Programm benötigt Java"
+	MSG_NO_SUITABLE_JAVA="Es wurde keine passende Java-Version auf Ihrem System gefunden!\nDieses Programm benötigt Java %s."
 	MSG_JAVA_VERSION_OR_LATER="oder neuer"
 	MSG_JAVA_VERSION_LATEST="(neuste Unterversion)"
 	MSG_NO_SUITABLE_JAVA_CHECK="Stellen Sie sicher, dass die angeforderte Java-Version installiert ist."
@@ -293,7 +292,7 @@ elif [[ $LANG == de* ]] ; then
 else
 	MSG_ERROR_LAUNCHING="ERROR launching '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' isn't specified!\nJava application cannot be started!"
-	MSG_NO_SUITABLE_JAVA="No suitable Java version found on your system!\nThis program requires Java"
+	MSG_NO_SUITABLE_JAVA="No suitable Java version found on your system!\nThis program requires Java %s."
 	MSG_JAVA_VERSION_OR_LATER="or later"
 	MSG_JAVA_VERSION_LATEST="(latest update)"
 	MSG_NO_SUITABLE_JAVA_CHECK="Make sure you install the required Java version."
@@ -448,11 +447,12 @@ elif [ ! -z ${JVMVersion} ] ; then
 
 	if [ -z "${JAVACMD}" ] ; then
 		# display human readable java version (#28)
-		java_version_hr=`echo ${JVMVersion} | sed -E 's/[0-9]\.([0-9+*]+)/ \1/g' | sed "s/+/ ${MSG_JAVA_VERSION_OR_LATER}/" | sed "s/*/ ${MSG_JAVA_VERSION_LATEST}/"`
+		java_version_hr=$(echo ${JVMVersion} | sed -E 's/^1\.([0-9+*]+)$/ \1/g' | sed "s/+/ ${MSG_JAVA_VERSION_OR_LATER}/" | sed "s/*/ ${MSG_JAVA_VERSION_LATEST}/")
+		MSG_NO_SUITABLE_JAVA_EXPANDED=$(printf "${MSG_NO_SUITABLE_JAVA}" "${java_version_hr}")
 		# log exit cause
-		stubLogger "[EXIT 3] ${MSG_NO_SUITABLE_JAVA}${java_version_hr}"
-		# display error message with applescript
-		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA}${java_version_hr}.\n${MSG_NO_SUITABLE_JAVA_CHECK}\" with title \"${CFBundleName}\"  buttons {\" OK \", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
+		stubLogger "[EXIT 3] ${MSG_NO_SUITABLE_JAVA_EXPANDED}"
+		# display error message with AppleScript
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA_EXPANDED}\n${MSG_NO_SUITABLE_JAVA_CHECK}\" with title \"${CFBundleName}\"  buttons {\" OK \", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
 				-e "set response to button returned of the result" \
 				-e "if response is \"${MSG_VISIT_JAVA_DOT_COM}\" then open location \"http://java.com\""
 		# exit with error
@@ -507,7 +507,7 @@ stubLogger "[JavaVersion] $(extractJavaVersionString "${JAVACMD}")${JAVACMD_vers
 if [ -z ${JVMMainClass} ]; then
 	# log exit cause
 	stubLogger "[EXIT 2] ${MSG_MISSING_MAINCLASS}"
-	# display error message with applescript
+	# display error message with AppleScript
 	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_MISSING_MAINCLASS}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
 	# exit with error
 	exit 2
@@ -556,7 +556,7 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 else
 	# log exit cause
 	stubLogger "[EXIT 1] ${MSG_ERROR_LAUNCHING}"
-	# display error message with applescript
+	# display error message with AppleScript
 	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_INSTALL_JAVA}\" with title \"${CFBundleName}\" buttons {\"${MSG_LATER}\", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
 				-e "set response to button returned of the result" \
 				-e "if response is \"${MSG_VISIT_JAVA_DOT_COM}\" then open location \"http://java.com\""
