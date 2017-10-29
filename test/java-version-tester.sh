@@ -24,11 +24,11 @@ function extractJavaVersionString() {
 ##########################################################
 function extractJavaMajorVersion() {
   java_ver=$1
-  # Java 6, 7, 8 starts with 1.x
+  # Java 6, 7, 8 start with '1.x'
   if [ "${java_ver:0:2}" == "1." ] ; then
-    echo ${java_ver} | sed -E 's/1\.([0-9])[0-9_.]{2,6}/\1/g'
+    echo ${java_ver} | sed -E 's/1\.([0-8])[0-9_.]{2,6}/\1/g'
   else
-    # Java 9+ starts with x using semver versioning
+    # Java 9+ start with 'x' using semver versioning
     echo ${java_ver} | sed -E 's/([0-9]+)(-ea|(\.[0-9]+)*)/\1/g'
   fi
 }
