@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Java JRE version tester
-# tofi86 @ 2017-06-12
+# tofi86 @ 2017-10-29
 
 
 
@@ -116,32 +116,32 @@ echo "########################################################"
 echo "Testing function extractJavaMajorVersion()"
 echo ""
 echo "Tests with Java 1.6:"
-testExtractMajor 1.6.0 6
-testExtractMajor 1.6.0_07 6
-testExtractMajor 1.6.0_45 6
+testExtractMajor "1.6.0" "6"
+testExtractMajor "1.6.0_07" "6"
+testExtractMajor "1.6.0_45" "6"
 echo ""
 echo "Tests with Java 1.7:"
-testExtractMajor 1.7.0 7
-testExtractMajor 1.7.0_09 7
-testExtractMajor 1.7.0_79 7
+testExtractMajor "1.7.0" "7"
+testExtractMajor "1.7.0_09" "7"
+testExtractMajor "1.7.0_79" "7"
 echo ""
 echo "Tests with Java 1.8:"
-testExtractMajor 1.8.0 8
-testExtractMajor 1.8.0_05 8
-testExtractMajor 1.8.0_91 8
-testExtractMajor 1.8.0_131 8
+testExtractMajor "1.8.0" "8"
+testExtractMajor "1.8.0_05" "8"
+testExtractMajor "1.8.0_91" "8"
+testExtractMajor "1.8.0_131" "8"
 echo ""
 echo "Tests with Java 9:"
-testExtractMajor 9-ea 9
-testExtractMajor 9.0.1 9
-testExtractMajor 9.0.23 9
-testExtractMajor 9.10.120 9
+testExtractMajor "9-ea" "9"
+testExtractMajor "9.0.1" "9"
+testExtractMajor "9.0.23" "9"
+testExtractMajor "9.10.120" "9"
 echo ""
 echo "Tests with Java 10:"
-testExtractMajor 10-ea 10
-testExtractMajor 10.0.1 10
-testExtractMajor 10.0.23 10
-testExtractMajor 10.10.120 10
+testExtractMajor "10-ea" "10"
+testExtractMajor "10.0.1" "10"
+testExtractMajor "10.0.23" "10"
+testExtractMajor "10.10.120" "10"
 
 
 # test function:
