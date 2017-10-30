@@ -6,12 +6,12 @@
 
 
 # helper function:
-# extract Java version string from `java -version` command
+# extract Java version string from 'java -version' command
 # works for both old (1.8) and new (9) version schema
 ##########################################################
 function extractJavaVersionString() {
   # second sed command strips " and -ea from the version string
-  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g'`
+  echo $("$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g')
 }
 
 
@@ -96,7 +96,7 @@ function JavaVersionSatisfiesRequirement() {
 function testExtractMajor() {
   java_version=$1
   expected_major=$2
-  actual_major=`extractJavaMajorVersion $java_version`
+  actual_major=$(extractJavaMajorVersion "$java_version")
   if [ ${expected_major} == ${actual_major} ] ; then
     echo "[TEST OK] Extracted Java major version '${actual_major}' for Java '${java_version}'"
   else
@@ -226,7 +226,7 @@ function testSatisfies() {
   java_version=$1
   java_requirement=$2
   expected_result=$3
-  actual_result=`JavaVersionSatisfiesRequirement $java_version $java_requirement ; echo $?`
+  actual_result=$(JavaVersionSatisfiesRequirement $java_version $java_requirement ; echo $?)
   if [ ${expected_result} == ${actual_result} ] ; then
     case $expected_result in
       0)

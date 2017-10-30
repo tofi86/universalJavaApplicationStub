@@ -304,12 +304,12 @@ fi
 
 
 # helper function:
-# extract Java version string from `java -version` command
+# extract Java version string from 'java -version' command
 # works for both old (1.8) and new (9) version schema
 ##########################################################
 function extractJavaVersionString() {
   # second sed command strips " and -ea from the version string
-  echo `"$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g'`
+  echo $("$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g')
 }
 
 
