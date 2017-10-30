@@ -5,29 +5,40 @@
 
 
 
-# helper function:
-# extract Java version string from 'java -version' command
+# function 'get_java_version_from_cmd()'
+#
+# returns Java version string from 'java -version' command
 # works for both old (1.8) and new (9) version schema
-##########################################################
-function extractJavaVersionString() {
+#
+# @param1  path to a java JVM executable
+# @return  the Java version number as displayed in 'java -version' command
+################################################################################
+function get_java_version_from_cmd() {
   # second sed command strips " and -ea from the version string
   echo $("$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g')
 }
 
 
-# helper function:
-# extract Java major version from a Java version string
-##########################################################
-function extractJavaMajorVersion() {
+# function 'extract_java_major_version()'
+#
+# extract Java major version from a version string
+#
+# @param1  a Java version number ('1.8.0_45') or requirement string ('1.8+')
+# @return  the major version (e.g. '7', '8' or '9', etc.)
+################################################################################
+function extract_java_major_version() {
   echo $(echo "$1" | sed -E 's/^1\.//;s/^([0-9]+)(-ea|(\.[0-9_.]{1,7})?)[+*]?$/\1/')
 }
 
 
-# helper function:
-# return comparable version for java version string
-# return value is an 8 digit numeral
-##########################################################
-function comparableJavaVersionNumber() {
+# function 'get_comparable_java_version()'
+#
+# return comparable version for a Java version number or requirement string
+#
+# @param1  a Java version number ('1.8.0_45') or requirement string ('1.8+')
+# @return  an 8 digit numeral ('1.8.0_45'->'08000045'; '9.1.13'->'09001013')
+################################################################################
+function get_comparable_java_version() {
   # cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
   cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
   # splitting at '.' into an array
@@ -37,14 +48,16 @@ function comparableJavaVersionNumber() {
 }
 
 
-# function:
-# Java version tester checks whether a given java version
+# function 'does_java_version_satisfy_requirement()'
+#
+# this function checks whether a given java version number
 # satisfies the given requirement
-# - parameter1: the java major version (6, 7, 8, 9, etc.)
-# - parameter2: the java requirement (1.6, 1.7+, etc.)
-# - return: 0 (satiesfies), 1 (does not), 2 (error)
-##########################################################
-function JavaVersionSatisfiesRequirement() {
+#
+# @param1  the java major version (6, 7, 8, 9, etc.)
+# @param2  the java requirement (1.6, 1.7+, etc.)
+# @return  an exit code: 0 (satiesfies), 1 (does not), 2 (error)
+################################################################################
+function does_java_version_satisfy_requirement() {
   java_ver=$1
   java_req=$2
 
@@ -62,8 +75,8 @@ function JavaVersionSatisfiesRequirement() {
   # matches requirements with + modifier
   # e.g. 1.8+, 9+, 9.1+, 9.2.4+, 10+, 10.1+, 10.1.35+
   elif [[ ${java_req} =~ ^[0-9]+(\.[0-9]+)*\+$ ]] ; then
-    java_req_num=$(comparableJavaVersionNumber ${java_req})
-    java_ver_num=$(comparableJavaVersionNumber ${java_ver})
+    java_req_num=$(get_comparable_java_version ${java_req})
+    java_ver_num=$(get_comparable_java_version ${java_ver})
     if [ ${java_ver_num} -ge ${java_req_num} ] ; then
       return 0
     else
@@ -91,12 +104,12 @@ function JavaVersionSatisfiesRequirement() {
 
 
 # test function:
-# tests the extractJavaMajorVersion() function
+# tests the extract_java_major_version() function
 ##########################################################
 function testExtractMajor() {
   java_version=$1
   expected_major=$2
-  actual_major=$(extractJavaMajorVersion "$java_version")
+  actual_major=$(extract_java_major_version "$java_version")
   if [ ${expected_major} == ${actual_major} ] ; then
     echo "[TEST OK] Extracted Java major version '${actual_major}' for Java '${java_version}'"
   else
@@ -107,7 +120,7 @@ function testExtractMajor() {
 
 echo ""
 echo "########################################################"
-echo "Testing function extractJavaMajorVersion()"
+echo "Testing function extract_java_major_version()"
 echo ""
 echo "Tests with Java 1.6:"
 testExtractMajor "1.6" "6"
@@ -156,12 +169,12 @@ testExtractMajor "10.100.120+" "10"
 
 
 # test function:
-# tests the comparableJavaVersionNumber() function
+# tests the get_comparable_java_version() function
 ##########################################################
 function testComparable() {
   version=$1
   expected=$2
-  actual=$(comparableJavaVersionNumber $version)
+  actual=$(get_comparable_java_version $version)
   if [ "$actual" == "$expected" ] ; then
     echo "[TEST OK] Version number '$version' has comparable form '$actual' (matches expected result '$expected')"
   else
@@ -173,7 +186,7 @@ function testComparable() {
 echo ""
 echo ""
 echo "########################################################"
-echo "Testing function JavaVersionSatisfiesRequirement()"
+echo "Testing function does_java_version_satisfy_requirement()"
 echo ""
 echo "Tests with Java 1.6:"
 testComparable "1.6" "06000000"
@@ -220,13 +233,13 @@ testComparable "10.10.113" "10010113"
 
 
 # test function:
-# tests the JavaVersionSatisfiesRequirement() function
+# tests the does_java_version_satisfy_requirement() function
 ##########################################################
 function testSatisfies() {
   java_version=$1
   java_requirement=$2
   expected_result=$3
-  actual_result=$(JavaVersionSatisfiesRequirement $java_version $java_requirement ; echo $?)
+  actual_result=$(does_java_version_satisfy_requirement $java_version $java_requirement ; echo $?)
   if [ ${expected_result} == ${actual_result} ] ; then
     case $expected_result in
       0)
@@ -248,7 +261,7 @@ function testSatisfies() {
 echo ""
 echo ""
 echo "########################################################"
-echo "Testing function JavaVersionSatisfiesRequirement()"
+echo "Testing function does_java_version_satisfy_requirement()"
 echo ""
 echo "Tests with Java 1.6:"
 testSatisfies "1.6" "1.6" "0"

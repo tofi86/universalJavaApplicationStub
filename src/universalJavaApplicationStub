@@ -3,22 +3,18 @@
 #                                                                                #
 # universalJavaApplicationStub                                                   #
 #                                                                                #
-#                                                                                #
 # A shellscript JavaApplicationStub for Java Apps on Mac OS X                    #
 # that works with both Apple's and Oracle's plist format.                        #
 #                                                                                #
 # Inspired by Ian Roberts stackoverflow answer                                   #
 # at http://stackoverflow.com/a/17546508/1128689                                 #
 #                                                                                #
-#                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
 # @date      2017-10-30                                                          #
 # @version   2.1.0                                                               #
 #                                                                                #
-#                                                                                #
 ##################################################################################
-#                                                                                #
 #                                                                                #
 # The MIT License (MIT)                                                          #
 #                                                                                #
@@ -46,10 +42,14 @@
 
 
 
-# helper function:
-# A logger which logs to the macOS Console.app
-################################################
-function stubLogger() {
+# function 'stub_logger()'
+#
+# A logger which logs to the macOS Console.app using the 'syslog' command
+#
+# @param1  the log message
+# @return  void
+################################################################################
+function stub_logger() {
 	syslog -s -k \
 		Facility com.apple.console \
 		Level Notice \
@@ -59,7 +59,6 @@ function stubLogger() {
 
 
 
-#
 # set the directory abspath of the current
 # shell script with symlinks being resolved
 ############################################
@@ -75,11 +74,10 @@ while [ -h "$PRG" ]; do
 	fi
 done
 PROGDIR=`dirname "$PRG"`
-stubLogger "[StubDir] $PROGDIR"
+stub_logger "[StubDir] $PROGDIR"
 
 
 
-#
 # set files and folders
 ############################################
 
@@ -111,7 +109,6 @@ JVMVersion=""
 
 
 
-#
 # read Info.plist and extract JVM options
 ############################################
 
@@ -137,7 +134,7 @@ fi
 
 # read Info.plist in Apple style if exit code returns 0 (true, :Java key is present)
 if [ $exitcode -eq 0 ]; then
-	stubLogger "[PlistStyle] Apple"
+	stub_logger "[PlistStyle] Apple"
 
 	# set Java and Resources folder
 	JavaFolder="${AppleJavaFolder}"
@@ -206,9 +203,10 @@ if [ $exitcode -eq 0 ]; then
 	# read the Java version we want to find
 	JVMVersion=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:JVMVersion" "${InfoPlistFile}" 2> /dev/null | xargs`
 
+
 # read Info.plist in Oracle style
 else
-	stubLogger "[PlistStyle] Oracle"
+	stub_logger "[PlistStyle] Oracle"
 
 	# set Working Directory and Java and Resources folder
 	JavaFolder="${OracleJavaFolder}"
@@ -257,12 +255,11 @@ fi
 
 
 
-#
 # internationalized messages
 ############################################
 
 LANG=`defaults read -g AppleLocale`
-stubLogger "[Language] $LANG"
+stub_logger "[Language] $LANG"
 
 # French localization
 if [[ $LANG == fr* ]] ; then
@@ -303,29 +300,40 @@ fi
 
 
 
-# helper function:
-# extract Java version string from 'java -version' command
+# function 'get_java_version_from_cmd()'
+#
+# returns Java version string from 'java -version' command
 # works for both old (1.8) and new (9) version schema
-##########################################################
-function extractJavaVersionString() {
+#
+# @param1  path to a java JVM executable
+# @return  the Java version number as displayed in 'java -version' command
+################################################################################
+function get_java_version_from_cmd() {
   # second sed command strips " and -ea from the version string
   echo $("$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g')
 }
 
 
-# helper function:
-# extract Java major version from a Java version string
-##########################################################
-function extractJavaMajorVersion() {
+# function 'extract_java_major_version()'
+#
+# extract Java major version from a version string
+#
+# @param1  a Java version number ('1.8.0_45') or requirement string ('1.8+')
+# @return  the major version (e.g. '7', '8' or '9', etc.)
+################################################################################
+function extract_java_major_version() {
   echo $(echo "$1" | sed -E 's/^1\.//;s/^([0-9]+)(-ea|(\.[0-9_.]{1,7})?)[+*]?$/\1/')
 }
 
 
-# helper function:
-# return comparable version for java version string
-# return value is an 8 digit numeral
-##########################################################
-function comparableJavaVersionNumber() {
+# function 'get_comparable_java_version()'
+#
+# return comparable version for a Java version number or requirement string
+#
+# @param1  a Java version number ('1.8.0_45') or requirement string ('1.8+')
+# @return  an 8 digit numeral ('1.8.0_45'->'08000045'; '9.1.13'->'09001013')
+################################################################################
+function get_comparable_java_version() {
   # cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
   cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
   # splitting at '.' into an array
@@ -335,14 +343,16 @@ function comparableJavaVersionNumber() {
 }
 
 
-# function:
-# Java version tester checks whether a given java version
+# function 'does_java_version_satisfy_requirement()'
+#
+# this function checks whether a given java version number
 # satisfies the given requirement
-# - parameter1: the java major version (6, 7, 8, 9, etc.)
-# - parameter2: the java requirement (1.6, 1.7+, etc.)
-# - return: 0 (satiesfies), 1 (does not), 2 (error)
-##########################################################
-function JavaVersionSatisfiesRequirement() {
+#
+# @param1  the java major version (6, 7, 8, 9, etc.)
+# @param2  the java requirement (1.6, 1.7+, etc.)
+# @return  an exit code: 0 (satiesfies), 1 (does not), 2 (error)
+################################################################################
+function does_java_version_satisfy_requirement() {
   java_ver=$1
   java_req=$2
 
@@ -360,8 +370,8 @@ function JavaVersionSatisfiesRequirement() {
   # matches requirements with + modifier
   # e.g. 1.8+, 9+, 9.1+, 9.2.4+, 10+, 10.1+, 10.1.35+
   elif [[ ${java_req} =~ ^[0-9]+(\.[0-9]+)*\+$ ]] ; then
-    java_req_num=$(comparableJavaVersionNumber ${java_req})
-    java_ver_num=$(comparableJavaVersionNumber ${java_ver})
+    java_req_num=$(get_comparable_java_version ${java_req})
+    java_ver_num=$(get_comparable_java_version ${java_ver})
     if [ ${java_ver_num} -ge ${java_req_num} ] ; then
       return 0
     else
@@ -386,18 +396,17 @@ function JavaVersionSatisfiesRequirement() {
 
 
 
-#
 # find installed Java versions
 ############################################
 
 apple_jre_plugin="/Library/Java/Home/bin/java"
-apple_jre_version=$(extractJavaMajorVersion $(extractJavaVersionString "${apple_jre_plugin}"))
+apple_jre_version=$(extract_java_major_version $(get_java_version_from_cmd "${apple_jre_plugin}"))
 oracle_jre_plugin="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java"
-oracle_jre_version=$(extractJavaMajorVersion $(extractJavaVersionString "${oracle_jre_plugin}"))
+oracle_jre_version=$(extract_java_major_version $(get_java_version_from_cmd "${oracle_jre_plugin}"))
 
 # first check system variable "$JAVA_HOME"
 if [ -n "$JAVA_HOME" ] ; then
-	stubLogger '[JavaSearch] Checking $JAVA_HOME'
+	stub_logger '[JavaSearch] Checking $JAVA_HOME'
 
 	# PR 26: Allow specifying "$JAVA_HOME" relative to "$AppPackageFolder"
 	# which allows for bundling a custom version of Java inside your app!
@@ -411,17 +420,17 @@ if [ -n "$JAVA_HOME" ] ; then
 
 # check for a specific Java version, specified in JVMversion Plist key
 elif [ ! -z ${JVMVersion} ] ; then
-	stubLogger "[JavaSearch] Checking for specific Java version '${JVMVersion}'"
+	stub_logger "[JavaSearch] Checking for specific Java version '${JVMVersion}'"
 
 	# first check "/usr/libexec/java_home" symlinks
 	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion} > /dev/null 2>&1 ; then
 		JAVACMD="`/usr/libexec/java_home -F -v ${JVMVersion} 2> /dev/null`/bin/java"
-		JAVACMD_version=$(comparableJavaVersionNumber $(extractJavaVersionString "${JAVACMD}"))
+		JAVACMD_version=$(get_comparable_java_version $(get_java_version_from_cmd "${JAVACMD}"))
 	fi
 
 	# then additionally check the Oracle JRE plugin whether it's a higher/newer compatible version
-	if [ -x "${oracle_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${oracle_jre_version} ${JVMVersion} ; then
-		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${oracle_jre_plugin}"))
+	if [ -x "${oracle_jre_plugin}" ] && does_java_version_satisfy_requirement ${oracle_jre_version} ${JVMVersion} ; then
+		this_java_ver=$(get_comparable_java_version $(get_java_version_from_cmd "${oracle_jre_plugin}"))
 		# use this compatible version only if the above returned empty or if the version number is higher
 		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${oracle_jre_plugin}"
@@ -430,8 +439,8 @@ elif [ ! -z ${JVMVersion} ] ; then
 	fi
 
 	# then additionally check the Apple JRE plugin whether it's a higher/newer compatible version
-	if [ -x "${apple_jre_plugin}" ] && JavaVersionSatisfiesRequirement ${apple_jre_version} ${JVMVersion} ; then
-		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${apple_jre_plugin}"))
+	if [ -x "${apple_jre_plugin}" ] && does_java_version_satisfy_requirement ${apple_jre_version} ${JVMVersion} ; then
+		this_java_ver=$(get_comparable_java_version $(get_java_version_from_cmd "${apple_jre_plugin}"))
 		# use this compatible version only if the above returned empty or if the version number is higher
 		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${apple_jre_plugin}"
@@ -444,7 +453,7 @@ elif [ ! -z ${JVMVersion} ] ; then
 		java_version_hr=$(echo ${JVMVersion} | sed -E 's/^1\.([0-9+*]+)$/ \1/g' | sed "s/+/ ${MSG_JAVA_VERSION_OR_LATER}/" | sed "s/*/ ${MSG_JAVA_VERSION_LATEST}/")
 		MSG_NO_SUITABLE_JAVA_EXPANDED=$(printf "${MSG_NO_SUITABLE_JAVA}" "${java_version_hr}")
 		# log exit cause
-		stubLogger "[EXIT 3] ${MSG_NO_SUITABLE_JAVA_EXPANDED}"
+		stub_logger "[EXIT 3] ${MSG_NO_SUITABLE_JAVA_EXPANDED}"
 		# display error message with AppleScript
 		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA_EXPANDED}\n${MSG_NO_SUITABLE_JAVA_CHECK}\" with title \"${CFBundleName}\"  buttons {\" OK \", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
 				-e "set response to button returned of the result" \
@@ -455,17 +464,17 @@ elif [ ! -z ${JVMVersion} ] ; then
 
 # otherwise check "/usr/libexec/java_home" and Oracle and Apple JRE paths and use highest version available
 else
-	stubLogger "[JavaSearch] Checking for other Java versions"
+	stub_logger "[JavaSearch] Checking for other Java versions"
 
 	# first check "/usr/libexec/java_home" symlinks
 	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F > /dev/null 2>&1 ; then
 		JAVACMD="`/usr/libexec/java_home 2> /dev/null`/bin/java"
-		JAVACMD_version=$(comparableJavaVersionNumber $(extractJavaVersionString "${JAVACMD}"))
+		JAVACMD_version=$(get_comparable_java_version $(get_java_version_from_cmd "${JAVACMD}"))
 	fi
 
 	# then additionally check the Oracle JRE plugin whether it's a higher/newer compatible version
 	if [ -x "${oracle_jre_plugin}" ] ; then
-		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${oracle_jre_plugin}"))
+		this_java_ver=$(get_comparable_java_version $(get_java_version_from_cmd "${oracle_jre_plugin}"))
 		# use this compatible version only if the above returned empty or if the version number is higher
 		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${oracle_jre_plugin}"
@@ -475,7 +484,7 @@ else
 
 	# then additionally check the Apple JRE plugin whether it's a higher/newer compatible version
 	if [ -x "${apple_jre_plugin}" ] ; then
-		this_java_ver=$(comparableJavaVersionNumber $(extractJavaVersionString "${apple_jre_plugin}"))
+		this_java_ver=$(get_comparable_java_version $(get_java_version_from_cmd "${apple_jre_plugin}"))
 		# use this compatible version only if the above returned empty or if the version number is higher
 		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${apple_jre_plugin}"
@@ -485,22 +494,21 @@ else
 fi
 
 # log the Java Command and the extracted version number
-stubLogger "[JavaCommand] $JAVACMD"
-stubLogger "[JavaVersion] $(extractJavaVersionString "${JAVACMD}")${JAVACMD_version:+ / $JAVACMD_version}"
+stub_logger "[JavaCommand] $JAVACMD"
+stub_logger "[JavaVersion] $(get_java_version_from_cmd "${JAVACMD}")${JAVACMD_version:+ / $JAVACMD_version}"
 
 # fallback fallback: /usr/bin/java
 # but this would prompt to install deprecated Apple Java 6
 
 
 
-#
-# execute JAVA commandline and do some pre-checks
-####################################################
+# execute $JAVACMD and do some pre-checks
+############################################
 
 # display error message if MainClassName is empty
 if [ -z ${JVMMainClass} ]; then
 	# log exit cause
-	stubLogger "[EXIT 2] ${MSG_MISSING_MAINCLASS}"
+	stub_logger "[EXIT 2] ${MSG_MISSING_MAINCLASS}"
 	# display error message with AppleScript
 	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_MISSING_MAINCLASS}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
 	# exit with error
@@ -522,7 +530,7 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 
 	# change to Working Directory based upon Apple/Oracle Plist info
 	cd "${WorkingDirectory}"
-	stubLogger "[WorkingDirectory] ${WorkingDirectory}"
+	stub_logger "[WorkingDirectory] ${WorkingDirectory}"
 
 	# execute Java and set
 	# - classpath
@@ -534,7 +542,7 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 	# - main class
 	# - main arguments
 	# - passthru arguments
-	stubLogger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptions:+$JVMOptions }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgs:+ $MainArgs}${ArgsPassthru:+ $ArgsPassthru}"
+	stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptions:+$JVMOptions }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgs:+ $MainArgs}${ArgsPassthru:+ $ArgsPassthru}"
 	exec "${JAVACMD}" \
 			-cp "${JVMClassPath}" \
 			-splash:"${ResourcesFolder}/${JVMSplashFile}" \
@@ -549,7 +557,7 @@ elif [ -f "${JAVACMD}" ] && [ -x "${JAVACMD}" ] ; then
 
 else
 	# log exit cause
-	stubLogger "[EXIT 1] ${MSG_ERROR_LAUNCHING}"
+	stub_logger "[EXIT 1] ${MSG_ERROR_LAUNCHING}"
 	# display error message with AppleScript
 	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_INSTALL_JAVA}\" with title \"${CFBundleName}\" buttons {\"${MSG_LATER}\", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
 				-e "set response to button returned of the result" \
