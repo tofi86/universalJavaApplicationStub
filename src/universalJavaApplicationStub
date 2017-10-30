@@ -13,7 +13,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2017-10-29                                                          #
+# @date      2017-10-30                                                          #
 # @version   2.1.0                                                               #
 #                                                                                #
 #                                                                                #
@@ -323,10 +323,15 @@ function extractJavaMajorVersion() {
 
 # helper function:
 # return comparable version for java version string
-# basically just strip punctuation and leading '1.'
+# return value is an 8 digit numeral
 ##########################################################
 function comparableJavaVersionNumber() {
-  echo $1 | sed -E 's/^1\.//g;s/[[:punct:]]//g'
+  # cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
+  cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
+  # splitting at '.' into an array
+  arr=( ${cleaned//./ } )
+  # echo a string with left padded version numbers
+  echo "$(printf '%02s' ${arr[0]})$(printf '%03s' ${arr[1]})$(printf '%03s' ${arr[2]})"
 }
 
 

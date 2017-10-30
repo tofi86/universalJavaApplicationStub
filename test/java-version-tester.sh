@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Java JRE version tester
-# tofi86 @ 2017-10-29
+# tofi86 @ 2017-10-30
 
 
 
@@ -25,10 +25,15 @@ function extractJavaMajorVersion() {
 
 # helper function:
 # return comparable version for java version string
-# basically just strip punctuation and leading '1.'
+# return value is an 8 digit numeral
 ##########################################################
 function comparableJavaVersionNumber() {
-  echo $1 | sed -E 's/^1\.//g;s/[[:punct:]]//g'
+  # cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
+  cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
+  # splitting at '.' into an array
+  arr=( ${cleaned//./ } )
+  # echo a string with left padded version numbers
+  echo "$(printf '%02s' ${arr[0]})$(printf '%03s' ${arr[1]})$(printf '%03s' ${arr[2]})"
 }
 
 
@@ -147,6 +152,71 @@ testExtractMajor "10.0.23" "10"
 testExtractMajor "10.10.120" "10"
 testExtractMajor "10.10.120+" "10"
 testExtractMajor "10.100.120+" "10"
+
+
+
+# test function:
+# tests the comparableJavaVersionNumber() function
+##########################################################
+function testComparable() {
+  version=$1
+  expected=$2
+  actual=$(comparableJavaVersionNumber $version)
+  if [ "$actual" == "$expected" ] ; then
+    echo "[TEST OK] Version number '$version' has comparable form '$actual' (matches expected result '$expected')"
+  else
+    echo "[TEST FAILED] Version number '$version' has comparable form '$actual' (DOES NOT MATCH expected result '$expected')"
+  fi
+}
+
+
+echo ""
+echo ""
+echo "########################################################"
+echo "Testing function JavaVersionSatisfiesRequirement()"
+echo ""
+echo "Tests with Java 1.6:"
+testComparable "1.6" "06000000"
+testComparable "1.6+" "06000000"
+testComparable "1.6.0_45" "06000045"
+testComparable "1.6.0_100" "06000100"
+testComparable "1.6.1_87" "06001087"
+echo ""
+echo "Tests with Java 1.7:"
+testComparable "1.7.0_76" "07000076"
+testComparable "1.7.0_144" "07000144"
+echo ""
+echo "Tests with Java 1.8:"
+testComparable "1.8" "08000000"
+testComparable "1.8*" "08000000"
+testComparable "1.8.0_98" "08000098"
+testComparable "1.8.0_151" "08000151"
+echo ""
+echo "Tests with Java 9:"
+testComparable "9" "09000000"
+testComparable "9+" "09000000"
+testComparable "9-ea" "09000000"
+testComparable "9.2" "09002000"
+testComparable "9.2*" "09002000"
+testComparable "9.0.1" "09000001"
+testComparable "9.0.13" "09000013"
+testComparable "9.1.3" "09001003"
+testComparable "9.11" "09011000"
+testComparable "9.10.23" "09010023"
+testComparable "9.10.101" "09010101"
+echo ""
+echo "Tests with Java 10:"
+testComparable "10" "10000000"
+testComparable "10*" "10000000"
+testComparable "10-ea" "10000000"
+testComparable "10.1" "10001000"
+testComparable "10.1+" "10001000"
+testComparable "10.0.1" "10000001"
+testComparable "10.0.13" "10000013"
+testComparable "10.1.3" "10001003"
+testComparable "10.12" "10012000"
+testComparable "10.10.23" "10010023"
+testComparable "10.10.113" "10010113"
 
 
 # test function:
