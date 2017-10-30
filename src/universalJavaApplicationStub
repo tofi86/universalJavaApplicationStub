@@ -314,21 +314,10 @@ function extractJavaVersionString() {
 
 
 # helper function:
-# extract Java major version from java version string
-# - input '1.7.0_76' returns '7'
-# - input '1.8.0_121' returns '8'
-# - input '9-ea' returns '9'
-# - input '9.0.3' returns '9'
+# extract Java major version from a Java version string
 ##########################################################
 function extractJavaMajorVersion() {
-  java_ver=$1
-  # Java 6, 7, 8 start with '1.x'
-  if [ "${java_ver:0:2}" == "1." ] ; then
-    echo ${java_ver} | sed -E 's/1\.([0-8])[0-9_.]{2,6}/\1/g'
-  else
-    # Java 9+ start with 'x' using semver versioning
-    echo ${java_ver} | sed -E 's/([0-9]+)(-ea|(\.[0-9]+)*)/\1/g'
-  fi
+  echo $(echo "$1" | sed -E 's/^1\.//;s/^([0-9]+)(-ea|(\.[0-9_.]{1,7})?)[+*]?$/\1/')
 }
 
 
