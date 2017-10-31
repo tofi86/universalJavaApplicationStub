@@ -274,8 +274,9 @@ stub_logger "[Language] $LANG"
 
 # French localization
 if [[ $LANG == fr* ]] ; then
-	MSG_ERROR_LAUNCHING="Erreur au lancement de '${CFBundleName}'."
+	MSG_ERROR_LAUNCHING="ERREUR au lancement de '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' n'est pas spécifié.\nL'application Java ne peut pas être lancée."
+	MSG_JVMVERSION_REQ_INVALID="La syntaxe de la version Java demandée est invalide: '%s'\nVeuillez contacter le développeur de l'application."
 	MSG_NO_SUITABLE_JAVA="La version de Java installée sur votre système ne convient pas.\nCe programme nécessite Java %s."
 	MSG_JAVA_VERSION_OR_LATER="ou ultérieur"
 	MSG_JAVA_VERSION_LATEST="(dernière mise à jour)"
@@ -288,6 +289,7 @@ if [[ $LANG == fr* ]] ; then
 elif [[ $LANG == de* ]] ; then
 	MSG_ERROR_LAUNCHING="FEHLER beim Starten von '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="Die 'MainClass' ist nicht spezifiziert!\nDie Java-Anwendung kann nicht gestartet werden!"
+	MSG_JVMVERSION_REQ_INVALID="Die Syntax der angeforderten Java-Version ist ungültig: %s\nBitte kontaktieren Sie den Entwickler der App."
 	MSG_NO_SUITABLE_JAVA="Es wurde keine passende Java-Version auf Ihrem System gefunden!\nDieses Programm benötigt Java %s."
 	MSG_JAVA_VERSION_OR_LATER="oder neuer"
 	MSG_JAVA_VERSION_LATEST="(neuste Unterversion)"
@@ -300,6 +302,7 @@ elif [[ $LANG == de* ]] ; then
 else
 	MSG_ERROR_LAUNCHING="ERROR launching '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' isn't specified!\nJava application cannot be started!"
+	MSG_JVMVERSION_REQ_INVALID="The syntax of the required Java version is invalid: '%s'\nPlease contact the App developer."
 	MSG_NO_SUITABLE_JAVA="No suitable Java version found on your system!\nThis program requires Java %s."
 	MSG_JAVA_VERSION_OR_LATER="or later"
 	MSG_JAVA_VERSION_LATEST="(latest update)"
@@ -351,6 +354,51 @@ function get_comparable_java_version() {
   local arr=( ${cleaned//./ } )
   # echo a string with left padded version numbers
   echo "$(printf '%02s' ${arr[0]})$(printf '%03s' ${arr[1]})$(printf '%03s' ${arr[2]})"
+}
+
+
+# function 'is_valid_requirement_pattern()'
+#
+# check whether the Java requirement is a valid requirement pattern
+#
+# supported requirements are for example:
+# - 1.6       requires Java 6 (any update)      [1.6, 1.6.0_45, 1.6.0_88]
+# - 1.6*      requires Java 6 (any update)      [1.6, 1.6.0_45, 1.6.0_88]
+# - 1.6+      requires Java 6 or higher         [1.6, 1.6.0_45, 1.8, 9, etc.]
+# - 1.6.0     requires Java 6 (any update)      [1.6, 1.6.0_45, 1.6.0_88]
+# - 1.6.0_45  requires Java 6u45                [1.6.0_45]
+# - 1.6.0_45+ requires Java 6u45 or higher      [1.6.0_45, 1.6.0_88, 1.8, etc.]
+# - 9         requires Java 9 (any update)      [9.0.*, 9.1, 9.3, etc.]
+# - 9*        requires Java 9 (any update)      [9.0.*, 9.1, 9.3, etc.]
+# - 9+        requires Java 9 or higher         [9.0, 9.1, 10, etc.]
+# - 9.1       requires Java 9.1 (any update)    [9.1.*, 9.1.2, 9.1.13, etc.]
+# - 9.1*      requires Java 9.1 (any update)    [9.1.*, 9.1.2, 9.1.13, etc.]
+# - 9.1+      requires Java 9.1 or higher       [9.1, 9.2, 10, etc.]
+# - 9.1.3     requires Java 9.1.3               [9.1.3]
+# - 9.1.3*    requires Java 9.1.3 (any update)  [9.1.3]
+# - 9.1.3+    requires Java 9.1.3 or higher     [9.1.3, 9.1.4, 9.2.*, 10, etc.]
+# - 10-ea     requires Java 10 (early access release)
+#
+# unsupported requirement patterns are for example:
+# - 1.2, 1.3, 1.9       Java 2, 3 are not supported
+# - 1.9                 Java 9 introduced a new versioning scheme
+# - 6u45                known versioning syntax, but unsupported
+# - 9-ea*, 9-ea+        early access releases paired with */+
+# - 9., 9.*, 9.+        version ending with a .
+# - 9.1., 9.1.*, 9.1.+  version ending with a .
+# - 9.3.5.6             4 part version number is unsupported
+#
+# @param1  a Java requirement string ('1.8+')
+# @return  boolean exit code: 0 (is valid), 1 (is not valid)
+################################################################################
+function is_valid_requirement_pattern() {
+  local java_req=$1
+  # first test matches old Java versioning scheme (up to 1.8), second test matches new scheme (starting with 9)
+  if [[ ${java_req} =~ ^1\.[4-8](\.0)?(\.0_[0-9]+)?[*+]?$ ]] || [[ ${java_req} =~ ^(9|1[0-9])(-ea|[*+]|(\.[0-9]+){1,2}[*+]?)?$ ]]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 
@@ -432,6 +480,17 @@ if [ -n "$JAVA_HOME" ] ; then
 # check for a specific Java version, specified in JVMversion Plist key
 elif [ ! -z ${JVMVersion} ] ; then
 	stub_logger "[JavaSearch] Checking for specific Java version '${JVMVersion}'"
+
+	# first check whether JVMVersion string is a valid requirement string
+	if ! is_valid_requirement_pattern ${JVMVersion} ; then
+		MSG_JVMVERSION_REQ_INVALID_EXPANDED=$(printf "${MSG_JVMVERSION_REQ_INVALID}" "${JVMVersion}")
+		# log exit cause
+		stub_logger "[EXIT 4] ${MSG_JVMVERSION_REQ_INVALID_EXPANDED}"
+		# display error message with AppleScript
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_JVMVERSION_REQ_INVALID_EXPANDED}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+		# exit with error
+		exit 4
+	fi
 
 	# first check "/usr/libexec/java_home" symlinks
 	if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -F -v ${JVMVersion} > /dev/null 2>&1 ; then
