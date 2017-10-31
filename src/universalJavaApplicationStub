@@ -11,7 +11,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2017-10-30                                                          #
+# @date      2017-10-31                                                          #
 # @version   2.1.0                                                               #
 #                                                                                #
 ##################################################################################
@@ -111,6 +111,17 @@ JVMVersion=""
 
 # read Info.plist and extract JVM options
 ############################################
+
+# function 'plist_get()'
+#
+# read a specific Plist key with 'PlistBuddy' utility
+#
+# @param1  the Plist key without leading colon ':'
+# @return  the value as String or Array
+################################################################################
++plist_get(){
+	/usr/libexec/PlistBuddy -c "print :$1" "${InfoPlistFile}"
++}
 
 # read the program name from CFBundleName
 CFBundleName=`/usr/libexec/PlistBuddy -c "print :CFBundleName" "${InfoPlistFile}"`
@@ -335,9 +346,9 @@ function extract_java_major_version() {
 ################################################################################
 function get_comparable_java_version() {
   # cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
-  cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
+  local cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
   # splitting at '.' into an array
-  arr=( ${cleaned//./ } )
+  local arr=( ${cleaned//./ } )
   # echo a string with left padded version numbers
   echo "$(printf '%02s' ${arr[0]})$(printf '%03s' ${arr[1]})$(printf '%03s' ${arr[2]})"
 }
@@ -353,8 +364,8 @@ function get_comparable_java_version() {
 # @return  an exit code: 0 (satiesfies), 1 (does not), 2 (error)
 ################################################################################
 function does_java_version_satisfy_requirement() {
-  java_ver=$1
-  java_req=$2
+  local java_ver=$1
+  local java_req=$2
 
   # matches requirements with * modifier
   # e.g. 1.8*, 9*, 9.1*, 9.2.4*, 10*, 10.1*, 10.1.35*
@@ -370,8 +381,8 @@ function does_java_version_satisfy_requirement() {
   # matches requirements with + modifier
   # e.g. 1.8+, 9+, 9.1+, 9.2.4+, 10+, 10.1+, 10.1.35+
   elif [[ ${java_req} =~ ^[0-9]+(\.[0-9]+)*\+$ ]] ; then
-    java_req_num=$(get_comparable_java_version ${java_req})
-    java_ver_num=$(get_comparable_java_version ${java_ver})
+    local java_req_num=$(get_comparable_java_version ${java_req})
+    local java_ver_num=$(get_comparable_java_version ${java_ver})
     if [ ${java_ver_num} -ge ${java_req_num} ] ; then
       return 0
     else

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Java JRE version tester
-# tofi86 @ 2017-10-30
+# tofi86 @ 2017-10-31
 
 
 
@@ -40,9 +40,9 @@ function extract_java_major_version() {
 ################################################################################
 function get_comparable_java_version() {
   # cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
-  cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
+  local cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
   # splitting at '.' into an array
-  arr=( ${cleaned//./ } )
+  local arr=( ${cleaned//./ } )
   # echo a string with left padded version numbers
   echo "$(printf '%02s' ${arr[0]})$(printf '%03s' ${arr[1]})$(printf '%03s' ${arr[2]})"
 }
@@ -58,8 +58,8 @@ function get_comparable_java_version() {
 # @return  an exit code: 0 (satiesfies), 1 (does not), 2 (error)
 ################################################################################
 function does_java_version_satisfy_requirement() {
-  java_ver=$1
-  java_req=$2
+  local java_ver=$1
+  local java_req=$2
 
   # matches requirements with * modifier
   # e.g. 1.8*, 9*, 9.1*, 9.2.4*, 10*, 10.1*, 10.1.35*
@@ -75,8 +75,8 @@ function does_java_version_satisfy_requirement() {
   # matches requirements with + modifier
   # e.g. 1.8+, 9+, 9.1+, 9.2.4+, 10+, 10.1+, 10.1.35+
   elif [[ ${java_req} =~ ^[0-9]+(\.[0-9]+)*\+$ ]] ; then
-    java_req_num=$(get_comparable_java_version ${java_req})
-    java_ver_num=$(get_comparable_java_version ${java_ver})
+    local java_req_num=$(get_comparable_java_version ${java_req})
+    local java_ver_num=$(get_comparable_java_version ${java_ver})
     if [ ${java_ver_num} -ge ${java_req_num} ] ; then
       return 0
     else
@@ -107,9 +107,9 @@ function does_java_version_satisfy_requirement() {
 # tests the extract_java_major_version() function
 ##########################################################
 function testExtractMajor() {
-  java_version=$1
-  expected_major=$2
-  actual_major=$(extract_java_major_version "$java_version")
+  local java_version=$1
+  local expected_major=$2
+  local actual_major=$(extract_java_major_version "$java_version")
   if [ ${expected_major} == ${actual_major} ] ; then
     echo "[TEST OK] Extracted Java major version '${actual_major}' for Java '${java_version}'"
   else
@@ -172,9 +172,9 @@ testExtractMajor "10.100.120+" "10"
 # tests the get_comparable_java_version() function
 ##########################################################
 function testComparable() {
-  version=$1
-  expected=$2
-  actual=$(get_comparable_java_version $version)
+  local version=$1
+  local expected=$2
+  local actual=$(get_comparable_java_version $version)
   if [ "$actual" == "$expected" ] ; then
     echo "[TEST OK] Version number '$version' has comparable form '$actual' (matches expected result '$expected')"
   else
@@ -236,10 +236,10 @@ testComparable "10.10.113" "10010113"
 # tests the does_java_version_satisfy_requirement() function
 ##########################################################
 function testSatisfies() {
-  java_version=$1
-  java_requirement=$2
-  expected_result=$3
-  actual_result=$(does_java_version_satisfy_requirement $java_version $java_requirement ; echo $?)
+  local java_version=$1
+  local java_requirement=$2
+  local expected_result=$3
+  local actual_result=$(does_java_version_satisfy_requirement $java_version $java_requirement ; echo $?)
   if [ ${expected_result} == ${actual_result} ] ; then
     case $expected_result in
       0)
