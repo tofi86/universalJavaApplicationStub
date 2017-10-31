@@ -11,7 +11,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2017-10-31                                                          #
+# @date      2017-11-01                                                          #
 # @version   2.1.0                                                               #
 #                                                                                #
 ##################################################################################
@@ -109,25 +109,39 @@ JVMVersion=""
 
 
 
-# read Info.plist and extract JVM options
-############################################
-
 # function 'plist_get()'
 #
 # read a specific Plist key with 'PlistBuddy' utility
 #
-# @param1  the Plist key without leading colon ':'
+# @param1  the Plist key with leading colon ':'
 # @return  the value as String or Array
 ################################################################################
-+plist_get(){
-	/usr/libexec/PlistBuddy -c "print :$1" "${InfoPlistFile}"
-+}
+plist_get(){
+	/usr/libexec/PlistBuddy -c "print $1" "${InfoPlistFile}" 2> /dev/null
+}
+
+# function 'plist_get_java()'
+#
+# read a specific Plist key with 'PlistBuddy' utility
+# in the 'Java' or 'JavaX' dictionary (<dict>)
+#
+# @param1  the Plist :Java(X):Key with leading colon ':'
+# @return  the value as String or Array
+################################################################################
+plist_get_java(){
+	plist_get ${JavaKey:-":Java"}$1
+}
+
+
+
+# read Info.plist and extract JVM options
+############################################
 
 # read the program name from CFBundleName
-CFBundleName=`/usr/libexec/PlistBuddy -c "print :CFBundleName" "${InfoPlistFile}"`
+CFBundleName=$(plist_get ':CFBundleName')
 
 # read the icon file name
-CFBundleIconFile=`/usr/libexec/PlistBuddy -c "print :CFBundleIconFile" "${InfoPlistFile}"`
+CFBundleIconFile=$(plist_get ':CFBundleIconFile')
 
 
 # check Info.plist for Apple style Java keys -> if key :Java is present, parse in apple mode
@@ -143,7 +157,7 @@ if [ $exitcode -ne 0 ]; then
 fi
 
 
-# read Info.plist in Apple style if exit code returns 0 (true, :Java key is present)
+# read 'Info.plist' file in Apple style if exit code returns 0 (true, ':Java' key is present)
 if [ $exitcode -eq 0 ]; then
 	stub_logger "[PlistStyle] Apple"
 
@@ -157,65 +171,63 @@ if [ $exitcode -eq 0 ]; then
 
 
 	# read the Java WorkingDirectory
-	JVMWorkDir=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:WorkingDirectory" "${InfoPlistFile}" 2> /dev/null | xargs`
-
-	# set Working Directory based upon Plist info
+	JVMWorkDir=$(plist_get_java ':WorkingDirectory' | xargs)
+	# set Working Directory based upon PList value
 	if [[ ! -z ${JVMWorkDir} ]]; then
 		WorkingDirectory="${JVMWorkDir}"
 	else
 		# AppPackageRoot is the standard WorkingDirectory when the script is started
 		WorkingDirectory="${AppPackageRoot}"
 	fi
-
 	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
-	WorkingDirectory=`eval "echo ${WorkingDirectory}"`
+	WorkingDirectory=$(eval echo "${WorkingDirectory}")
 
 
 	# read the MainClass name
-	JVMMainClass=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:MainClass" "${InfoPlistFile}" 2> /dev/null`
+	JVMMainClass=$(plist_get_java ':MainClass')
 
 	# read the SplashFile name
-	JVMSplashFile=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:SplashFile" "${InfoPlistFile}" 2> /dev/null`
+	JVMSplashFile=$(plist_get_java ':SplashFile')
 
-	# read the JVM Options
-	JVMOptions=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:Properties" "${InfoPlistFile}" 2> /dev/null | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs`
+	# read the JVM Properties
+	JVMOptions=$(plist_get_java ':Properties' | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs)
 	# replace occurences of $APP_ROOT with its content
-	JVMOptions=`eval "echo ${JVMOptions}"`
-
-	# read StartOnMainThread
-	JVMStartOnMainThread=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:StartOnMainThread" "${InfoPlistFile}" 2> /dev/null`
-	if [ "${JVMStartOnMainThread}" == "true" ]; then
-		JVMOptions+=" -XstartOnFirstThread"
-	fi
+	JVMOptions=$(eval echo "${JVMOptions}")
 
 	# read the ClassPath in either Array or String style
-	JVMClassPath_RAW=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:ClassPath" "${InfoPlistFile}" 2> /dev/null`
+	JVMClassPath_RAW=$(plist_get_java ':ClassPath' | xargs)
 	if [[ $JVMClassPath_RAW == *Array* ]] ; then
-		JVMClassPath=.`/usr/libexec/PlistBuddy -c "print ${JavaKey}:ClassPath" "${InfoPlistFile}" 2> /dev/null | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs`
+		JVMClassPath=.$(plist_get_java ':ClassPath' | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs)
 	else
 		JVMClassPath=${JVMClassPath_RAW}
 	fi
 	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
-	JVMClassPath=`eval "echo ${JVMClassPath}"`
+	JVMClassPath=$(eval echo "${JVMClassPath}")
 
-	# read the JVM Default Options in either Array or String style
-	JVMDefaultOptions_RAW=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:VMOptions" "${InfoPlistFile}" 2> /dev/null | xargs`
+	# read the JVM Options in either Array or String style
+	JVMDefaultOptions_RAW=$(plist_get_java ':VMOptions' | xargs)
 	if [[ $JVMDefaultOptions_RAW == *Array* ]] ; then
-		JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:VMOptions" "${InfoPlistFile}" 2> /dev/null | grep "    " | sed 's/^ */ /g' | tr -d '\n' | xargs`
+		JVMDefaultOptions=$(plist_get_java ':VMOptions' | grep "    " | sed 's/^ */ /g' | tr -d '\n' | xargs)
 	else
 		JVMDefaultOptions=${JVMDefaultOptions_RAW}
 	fi
 
+	# read StartOnMainThread and add as -XstartOnFirstThread
+	JVMStartOnMainThread=$(plist_get_java ':StartOnMainThread')
+	if [ "${JVMStartOnMainThread}" == "true" ]; then
+		JVMDefaultOptions+=" -XstartOnFirstThread"
+	fi
+
 	# read the JVM Arguments
-	MainArgs=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:Arguments" "${InfoPlistFile}" 2> /dev/null | xargs`
+	MainArgs=$(plist_get_java ':Arguments')
 	# replace occurences of $APP_ROOT with its content
-	MainArgs=`eval "echo ${MainArgs}"`
+	MainArgs=$(eval echo "${MainArgs}")
 
 	# read the Java version we want to find
-	JVMVersion=`/usr/libexec/PlistBuddy -c "print ${JavaKey}:JVMVersion" "${InfoPlistFile}" 2> /dev/null | xargs`
+	JVMVersion=$(plist_get_java ':JVMVersion' | xargs)
 
 
-# read Info.plist in Oracle style
+# read 'Info.plist' file in Oracle style
 else
 	stub_logger "[PlistStyle] Oracle"
 
@@ -227,41 +239,41 @@ else
 	APP_ROOT="${AppPackageFolder}"
 
 	# read the MainClass name
-	JVMMainClass=`/usr/libexec/PlistBuddy -c "print :JVMMainClassName" "${InfoPlistFile}" 2> /dev/null`
+	JVMMainClass=$(plist_get ':JVMMainClassName')
 
 	# read the SplashFile name
-	JVMSplashFile=`/usr/libexec/PlistBuddy -c "print :JVMSplashFile" "${InfoPlistFile}" 2> /dev/null`
+	JVMSplashFile=$(plist_get ':JVMSplashFile')
 
 	# read the JVM Options
-	JVMOptions=`/usr/libexec/PlistBuddy -c "print :JVMOptions" "${InfoPlistFile}" 2> /dev/null | grep " -" | tr -d '\n' | sed 's/  */ /g' | xargs`
+	JVMOptions=$(plist_get ':JVMOptions' | grep " -" | tr -d '\n' | sed 's/  */ /g' | xargs)
 	# replace occurences of $APP_ROOT with its content
-	JVMOptions=`eval "echo ${JVMOptions}"`
+	JVMOptions=$(eval echo "${JVMOptions}")
 
 	# read the ClassPath in either Array or String style
-	JVMClassPath_RAW=`/usr/libexec/PlistBuddy -c "print JVMClassPath" "${InfoPlistFile}" 2> /dev/null`
+	JVMClassPath_RAW=$(plist_get ':JVMClassPath')
 	if [[ $JVMClassPath_RAW == *Array* ]] ; then
-		JVMClassPath=.`/usr/libexec/PlistBuddy -c "print JVMClassPath" "${InfoPlistFile}" 2> /dev/null | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs`
+		JVMClassPath=.$(plist_get ':JVMClassPath' | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs)
 		# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
-		JVMClassPath=`eval "echo ${JVMClassPath}"`
+		JVMClassPath=$(eval echo "${JVMClassPath}")
 
 	elif [[ ! -z ${JVMClassPath_RAW} ]] ; then
 		JVMClassPath=${JVMClassPath_RAW}
 		# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
-		JVMClassPath=`eval "echo ${JVMClassPath}"`
+		JVMClassPath=$(eval echo "${JVMClassPath}")
 
 	else
 		#default: fallback to OracleJavaFolder
 		JVMClassPath="${JavaFolder}/*"
-		# Do NOT expand the default App.app/Contents/Java/* classpath (#42)
+		# Do NOT expand the default 'AppName.app/Contents/Java/*' classpath (#42)
 	fi
 
 	# read the JVM Default Options
-	JVMDefaultOptions=`/usr/libexec/PlistBuddy -c "print :JVMDefaultOptions" "${InfoPlistFile}" 2> /dev/null | grep -o " \-.*" | tr -d '\n' | xargs`
+	JVMDefaultOptions=$(plist_get ':JVMDefaultOptions' | grep -o " \-.*" | tr -d '\n' | xargs)
 
 	# read the Main Arguments from JVMArguments key (see #46 for naming details)
-	MainArgs=`/usr/libexec/PlistBuddy -c "print :JVMArguments" "${InfoPlistFile}" 2> /dev/null | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs`
+	MainArgs=$(plist_get ':JVMArguments' | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs)
 	# replace occurences of $APP_ROOT with its content
-	MainArgs=`eval "echo ${MainArgs}"`
+	MainArgs=$(eval echo "${MainArgs}")
 fi
 
 
@@ -276,7 +288,7 @@ stub_logger "[Language] $LANG"
 if [[ $LANG == fr* ]] ; then
 	MSG_ERROR_LAUNCHING="ERREUR au lancement de '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' n'est pas spécifié.\nL'application Java ne peut pas être lancée."
-	MSG_JVMVERSION_REQ_INVALID="La syntaxe de la version Java demandée est invalide: '%s'\nVeuillez contacter le développeur de l'application."
+	MSG_JVMVERSION_REQ_INVALID="La syntaxe de la version Java demandée est invalide: %s\nVeuillez contacter le développeur de l'application."
 	MSG_NO_SUITABLE_JAVA="La version de Java installée sur votre système ne convient pas.\nCe programme nécessite Java %s."
 	MSG_JAVA_VERSION_OR_LATER="ou ultérieur"
 	MSG_JAVA_VERSION_LATEST="(dernière mise à jour)"
@@ -302,7 +314,7 @@ elif [[ $LANG == de* ]] ; then
 else
 	MSG_ERROR_LAUNCHING="ERROR launching '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' isn't specified!\nJava application cannot be started!"
-	MSG_JVMVERSION_REQ_INVALID="The syntax of the required Java version is invalid: '%s'\nPlease contact the App developer."
+	MSG_JVMVERSION_REQ_INVALID="The syntax of the required Java version is invalid: %s\nPlease contact the App developer."
 	MSG_NO_SUITABLE_JAVA="No suitable Java version found on your system!\nThis program requires Java %s."
 	MSG_JAVA_VERSION_OR_LATER="or later"
 	MSG_JAVA_VERSION_LATEST="(latest update)"
