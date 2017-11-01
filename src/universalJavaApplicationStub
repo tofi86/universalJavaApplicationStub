@@ -495,10 +495,12 @@ function does_java_version_satisfy_requirement() {
 # find installed Java versions
 ############################################
 
+# default Apple JRE plugin path
 apple_jre_plugin="/Library/Java/Home/bin/java"
-apple_jre_version=$(extract_java_major_version $(get_java_version_from_cmd "${apple_jre_plugin}"))
+apple_jre_version=$(get_java_version_from_cmd "${apple_jre_plugin}")
+# default Oracle JRE plugin path
 oracle_jre_plugin="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java"
-oracle_jre_version=$(extract_java_major_version $(get_java_version_from_cmd "${oracle_jre_plugin}"))
+oracle_jre_version=$(get_java_version_from_cmd "${oracle_jre_plugin}")
 
 # first check system variable "$JAVA_HOME"
 if [ -n "$JAVA_HOME" ] ; then
@@ -557,7 +559,7 @@ elif [ ! -z ${JVMVersion} ] ; then
 
 	if [ -z "${JAVACMD}" ] ; then
 		# display human readable java version (#28)
-		java_version_hr=$(echo ${JVMVersion} | sed -E 's/^1\.([0-9+*]+)$/ \1/g' | sed "s/+/ ${MSG_JAVA_VERSION_OR_LATER}/" | sed "s/*/ ${MSG_JAVA_VERSION_LATEST}/")
+		java_version_hr=$(echo ${JVMVersion} | sed -E 's/^1\.([0-9+*]+)$/ \1/g' | sed "s/+/ ${MSG_JAVA_VERSION_OR_LATER}/;s/*/ ${MSG_JAVA_VERSION_LATEST}/")
 		MSG_NO_SUITABLE_JAVA_EXPANDED=$(printf "${MSG_NO_SUITABLE_JAVA}" "${java_version_hr}")
 		# log exit cause
 		stub_logger "[EXIT 3] ${MSG_NO_SUITABLE_JAVA_EXPANDED}"
