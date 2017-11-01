@@ -414,33 +414,58 @@ function is_valid_requirement_pattern() {
 }
 
 
+# function 'pad_version_to_semver()'
+#
+# adds '.0' minor/bugfix version parts to a short version number (e.g. 9, 10)
+# to make it semver compatible
+#
+# @param1  a Java version number in short form (9, 10, etc.)
+# @return  a right-padded semver version number (e.g. 9.0.0, 10.0.0)
+################################################################################
+function pad_short_version_to_semver() {
+  local java_ver=$1
+  if [[ ${java_ver} =~ ^[0-9]+$ ]] ; then
+    java_ver="${java_ver}.0.0"
+  elif [[ ${java_ver} =~ ^[0-9]+\.0$ ]] ; then
+    java_ver="${java_ver}.0"
+  fi
+  echo ${java_ver}
+}
+
+
 # function 'does_java_version_satisfy_requirement()'
 #
 # this function checks whether a given java version number
 # satisfies the given requirement
 #
-# @param1  the java major version (6, 7, 8, 9, etc.)
-# @param2  the java requirement (1.6, 1.7+, etc.)
-# @return  an exit code: 0 (satiesfies), 1 (does not), 2 (error)
+# the function returns with an error (exit 2) if the requirement string
+# is not supported
+#
+# @param1  the java version in plain form as 'java -version' returns it
+# @param2  the java requirement (1.6, 1.7+, 9, 9.1*, 9.2.3, etc.)
+# @return  an exit code: 0 (satiesfies), 1 (does not), 2 (invalid requirement)
 ################################################################################
 function does_java_version_satisfy_requirement() {
-  local java_ver=$1
+  # update short versions (9, 9.1, 10) to semver form (9.0.0, 9.1.0, 10.0.0)
+  local java_ver=$(pad_short_version_to_semver $1)
   local java_req=$2
 
-  # matches requirements with * modifier
+  if ! is_valid_requirement_pattern ${java_req} ; then
+    return 2
+
+  # requirement ends with * modifier
   # e.g. 1.8*, 9*, 9.1*, 9.2.4*, 10*, 10.1*, 10.1.35*
-  if [[ ${java_req} =~ ^[0-9]+(\.[0-9]+)*\*$ ]] ; then
-    # remove last char (*) from requirement string for comparison
-    java_req_num=${java_req::${#java_req}-1}
-    if [ ${java_ver} == ${java_req_num} ] ; then
+  elif [[ ${java_req} == *\* ]] ; then
+    # use the * modifier from the requirement string as wildcard for a 'starts with' comparison
+    if [[ ${java_ver} == ${java_req} ]] ; then
       return 0
     else
       return 1
     fi
 
-  # matches requirements with + modifier
+  # requirement ends with * modifier
   # e.g. 1.8+, 9+, 9.1+, 9.2.4+, 10+, 10.1+, 10.1.35+
-  elif [[ ${java_req} =~ ^[0-9]+(\.[0-9]+)*\+$ ]] ; then
+  elif [[ ${java_req} == *+ ]] ; then
     local java_req_num=$(get_comparable_java_version ${java_req})
     local java_ver_num=$(get_comparable_java_version ${java_ver})
     if [ ${java_ver_num} -ge ${java_req_num} ] ; then
@@ -451,17 +476,17 @@ function does_java_version_satisfy_requirement() {
 
   # matches standard requirements without modifier
   # e.g. 1.8, 9, 9.1, 9.2.4, 10, 10.1, 10.1.35
-  elif [[ ${java_req} =~ ^[0-9]+(\.[0-9]+)*$ ]] ; then
+  else
+    # java version equals requirement string (1.8.0_45 == 1.8.0.45)
     if [ ${java_ver} == ${java_req} ] ; then
+      return 0
+    # java version starts with requirement string (1.8.0_45 == 1.8)
+    elif [[ ${java_ver} == ${java_req}* ]] ; then
       return 0
     else
       return 1
     fi
 
-  # not matching any of the above patterns
-  # results in an error
-  else
-    return 2
   fi
 }
 
