@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Java JRE version tester
-# tofi86 @ 2017-11-01
+# tofi86 @ 2018-01-07
 
 
 
@@ -84,8 +84,10 @@ function get_comparable_java_version() {
 ################################################################################
 function is_valid_requirement_pattern() {
   local java_req=$1
-  # first test matches old Java versioning scheme (up to 1.8), second test matches new scheme (starting with 9)
-  if [[ ${java_req} =~ ^1\.[4-8](\.0)?(\.0_[0-9]+)?[*+]?$ ]] || [[ ${java_req} =~ ^(9|1[0-9])(-ea|[*+]|(\.[0-9]+){1,2}[*+]?)?$ ]]; then
+  java8pattern='1\.[4-8](\.0)?(\.0_[0-9]+)?[*+]?'
+  java9pattern='(9|1[0-9])(-ea|[*+]|(\.[0-9]+){1,2}[*+]?)?'
+  # test matches either old Java versioning scheme (up to 1.8) or new scheme (starting with 9)
+  if [[ ${java_req} =~ ^(${java8pattern}|${java9pattern})$ ]]; then
     return 0
   else
     return 1
@@ -142,7 +144,7 @@ function does_java_version_satisfy_requirement() {
       return 1
     fi
 
-  # requirement ends with * modifier
+  # requirement ends with + modifier
   # e.g. 1.8+, 9+, 9.1+, 9.2.4+, 10+, 10.1+, 10.1.35+
   elif [[ ${java_req} == *+ ]] ; then
     local java_req_num=$(get_comparable_java_version ${java_req})
