@@ -273,7 +273,19 @@ elif [[ $LANG == de* ]] ; then
 	MSG_INSTALL_JAVA="Auf Ihrem System muss die 'Java'-Software installiert sein.\nBesuchen Sie java.com für weitere Installationshinweise."
 	MSG_LATER="Später"
 	MSG_VISIT_JAVA_DOT_COM="java.com öffnen"
-
+	
+# Simplifyed Chinese localization
+elif [[ $LANG == zh* ]] ; then
+	MSG_ERROR_LAUNCHING="无法启动 '${CFBundleName}'."
+	MSG_MISSING_MAINCLASS="没有指定主类 'MainClass'！\nJava程序无法启动!"
+	MSG_NO_SUITABLE_JAVA="没有在系统中找到合适的Java版本！\n必须安装Java才能够使用该程序！"
+	MSG_JAVA_VERSION_OR_LATER="及以上版本"
+	MSG_JAVA_VERSION_LATEST="（最新版本）"
+	MSG_NO_SUITABLE_JAVA_CHECK="请确保系统中安装了所需的Java版本"
+	MSG_INSTALL_JAVA="你需要在Mac中安装Java运行环境！\n访问 java.com 了解如何安装。"
+	MSG_LATER="稍后"
+	MSG_VISIT_JAVA_DOT_COM="访问 java.com"
+	
 # English default localization
 else
 	MSG_ERROR_LAUNCHING="ERROR launching '${CFBundleName}'."
