@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Java JRE version tester
-# tofi86 @ 2018-01-07
+# tofi86 @ 2018-02-11
 
 
 
@@ -14,8 +14,8 @@
 # @return  the Java version number as displayed in 'java -version' command
 ################################################################################
 function get_java_version_from_cmd() {
-  # second sed command strips " and -ea from the version string
-  echo $("$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g')
+	# second sed command strips " and -ea from the version string
+	echo $("$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g')
 }
 
 
@@ -27,7 +27,7 @@ function get_java_version_from_cmd() {
 # @return  the major version (e.g. '7', '8' or '9', etc.)
 ################################################################################
 function extract_java_major_version() {
-  echo $(echo "$1" | sed -E 's/^1\.//;s/^([0-9]+)(-ea|(\.[0-9_.]{1,7})?)[+*]?$/\1/')
+	echo $(echo "$1" | sed -E 's/^1\.//;s/^([0-9]+)(-ea|(\.[0-9_.]{1,7})?)[+*]?$/\1/')
 }
 
 
@@ -39,12 +39,12 @@ function extract_java_major_version() {
 # @return  an 8 digit numeral ('1.8.0_45'->'08000045'; '9.1.13'->'09001013')
 ################################################################################
 function get_comparable_java_version() {
-  # cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
-  local cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
-  # splitting at '.' into an array
-  local arr=( ${cleaned//./ } )
-  # echo a string with left padded version numbers
-  echo "$(printf '%02s' ${arr[0]})$(printf '%03s' ${arr[1]})$(printf '%03s' ${arr[2]})"
+	# cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
+	local cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
+	# splitting at '.' into an array
+	local arr=( ${cleaned//./ } )
+	# echo a string with left padded version numbers
+	echo "$(printf '%02s' ${arr[0]})$(printf '%03s' ${arr[1]})$(printf '%03s' ${arr[2]})"
 }
 
 
@@ -83,15 +83,15 @@ function get_comparable_java_version() {
 # @return  boolean exit code: 0 (is valid), 1 (is not valid)
 ################################################################################
 function is_valid_requirement_pattern() {
-  local java_req=$1
-  java8pattern='1\.[4-8](\.0)?(\.0_[0-9]+)?[*+]?'
-  java9pattern='(9|1[0-9])(-ea|[*+]|(\.[0-9]+){1,2}[*+]?)?'
-  # test matches either old Java versioning scheme (up to 1.8) or new scheme (starting with 9)
-  if [[ ${java_req} =~ ^(${java8pattern}|${java9pattern})$ ]]; then
-    return 0
-  else
-    return 1
-  fi
+	local java_req=$1
+	java8pattern='1\.[4-8](\.0)?(\.0_[0-9]+)?[*+]?'
+	java9pattern='(9|1[0-9])(-ea|[*+]|(\.[0-9]+){1,2}[*+]?)?'
+	# test matches either old Java versioning scheme (up to 1.8) or new scheme (starting with 9)
+	if [[ ${java_req} =~ ^(${java8pattern}|${java9pattern})$ ]]; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 
@@ -104,13 +104,13 @@ function is_valid_requirement_pattern() {
 # @return  a right-padded semver version number (e.g. 9.0.0, 10.0.0)
 ################################################################################
 function pad_short_version_to_semver() {
-  local java_ver=$1
-  if [[ ${java_ver} =~ ^[0-9]+$ ]] ; then
-    java_ver="${java_ver}.0.0"
-  elif [[ ${java_ver} =~ ^[0-9]+\.0$ ]] ; then
-    java_ver="${java_ver}.0"
-  fi
-  echo ${java_ver}
+	local java_ver=$1
+	if [[ ${java_ver} =~ ^[0-9]+$ ]] ; then
+		java_ver="${java_ver}.0.0"
+	elif [[ ${java_ver} =~ ^[0-9]+\.0$ ]] ; then
+		java_ver="${java_ver}.0"
+	fi
+	echo ${java_ver}
 }
 
 
@@ -127,48 +127,48 @@ function pad_short_version_to_semver() {
 # @return  an exit code: 0 (satiesfies), 1 (does not), 2 (invalid requirement)
 ################################################################################
 function does_java_version_satisfy_requirement() {
-  # update short versions (9, 9.1, 10) to semver form (9.0.0, 9.1.0, 10.0.0)
-  local java_ver=$(pad_short_version_to_semver $1)
-  local java_req=$2
+	# update short versions (9, 9.1, 10) to semver form (9.0.0, 9.1.0, 10.0.0)
+	local java_ver=$(pad_short_version_to_semver $1)
+	local java_req=$2
 
-  if ! is_valid_requirement_pattern ${java_req} ; then
-    return 2
+	if ! is_valid_requirement_pattern ${java_req} ; then
+		return 2
 
-  # requirement ends with * modifier
-  # e.g. 1.8*, 9*, 9.1*, 9.2.4*, 10*, 10.1*, 10.1.35*
-  elif [[ ${java_req} == *\* ]] ; then
-    # use the * modifier from the requirement string as wildcard for a 'starts with' comparison
-    if [[ ${java_ver} == ${java_req} ]] ; then
-      return 0
-    else
-      return 1
-    fi
+	# requirement ends with * modifier
+	# e.g. 1.8*, 9*, 9.1*, 9.2.4*, 10*, 10.1*, 10.1.35*
+	elif [[ ${java_req} == *\* ]] ; then
+		# use the * modifier from the requirement string as wildcard for a 'starts with' comparison
+		if [[ ${java_ver} == ${java_req} ]] ; then
+			return 0
+		else
+			return 1
+		fi
 
-  # requirement ends with + modifier
-  # e.g. 1.8+, 9+, 9.1+, 9.2.4+, 10+, 10.1+, 10.1.35+
-  elif [[ ${java_req} == *+ ]] ; then
-    local java_req_num=$(get_comparable_java_version ${java_req})
-    local java_ver_num=$(get_comparable_java_version ${java_ver})
-    if [ ${java_ver_num} -ge ${java_req_num} ] ; then
-      return 0
-    else
-      return 1
-    fi
+	# requirement ends with + modifier
+	# e.g. 1.8+, 9+, 9.1+, 9.2.4+, 10+, 10.1+, 10.1.35+
+	elif [[ ${java_req} == *+ ]] ; then
+		local java_req_num=$(get_comparable_java_version ${java_req})
+		local java_ver_num=$(get_comparable_java_version ${java_ver})
+		if [ ${java_ver_num} -ge ${java_req_num} ] ; then
+			return 0
+		else
+			return 1
+		fi
 
-  # matches standard requirements without modifier
-  # e.g. 1.8, 9, 9.1, 9.2.4, 10, 10.1, 10.1.35
-  else
-    # java version equals requirement string (1.8.0_45 == 1.8.0.45)
-    if [ ${java_ver} == ${java_req} ] ; then
-      return 0
-    # java version starts with requirement string (1.8.0_45 == 1.8)
-    elif [[ ${java_ver} == ${java_req}* ]] ; then
-      return 0
-    else
-      return 1
-    fi
+	# matches standard requirements without modifier
+	# e.g. 1.8, 9, 9.1, 9.2.4, 10, 10.1, 10.1.35
+	else
+		# java version equals requirement string (1.8.0_45 == 1.8.0.45)
+		if [ ${java_ver} == ${java_req} ] ; then
+			return 0
+		# java version starts with requirement string (1.8.0_45 == 1.8)
+		elif [[ ${java_ver} == ${java_req}* ]] ; then
+			return 0
+		else
+			return 1
+		fi
 
-  fi
+	fi
 }
 
 
@@ -179,14 +179,14 @@ function does_java_version_satisfy_requirement() {
 # tests the extract_java_major_version() function
 ##########################################################
 function testExtractMajor() {
-  local java_version=$1
-  local expected_major=$2
-  local actual_major=$(extract_java_major_version "$java_version")
-  if [ ${expected_major} == ${actual_major} ] ; then
-    echo "[TEST OK] Extracted Java major version '${actual_major}' for Java '${java_version}'"
-  else
-    echo "[TEST FAILED] Extracted Java major version '${actual_major}' for Java '${java_version}' but expected '${expected_major}'"
-  fi
+	local java_version=$1
+	local expected_major=$2
+	local actual_major=$(extract_java_major_version "$java_version")
+	if [ ${expected_major} == ${actual_major} ] ; then
+		echo "[TEST OK] Extracted Java major version '${actual_major}' for Java '${java_version}'"
+	else
+		echo "[TEST FAILED] Extracted Java major version '${actual_major}' for Java '${java_version}' but expected '${expected_major}'"
+	fi
 }
 
 
@@ -244,14 +244,14 @@ testExtractMajor "10.100.120+" "10"
 # tests the get_comparable_java_version() function
 ##########################################################
 function testComparable() {
-  local version=$1
-  local expected=$2
-  local actual=$(get_comparable_java_version $version)
-  if [ "$actual" == "$expected" ] ; then
-    echo "[TEST OK] Version number '$version' has comparable form '$actual' (matches expected result '$expected')"
-  else
-    echo "[TEST FAILED] Version number '$version' has comparable form '$actual' (DOES NOT MATCH expected result '$expected')"
-  fi
+	local version=$1
+	local expected=$2
+	local actual=$(get_comparable_java_version $version)
+	if [ "$actual" == "$expected" ] ; then
+		echo "[TEST OK] Version number '$version' has comparable form '$actual' (matches expected result '$expected')"
+	else
+		echo "[TEST FAILED] Version number '$version' has comparable form '$actual' (DOES NOT MATCH expected result '$expected')"
+	fi
 }
 
 
@@ -309,21 +309,21 @@ testComparable "10.10.113" "10010113"
 # tests the is_valid_requirement_pattern() function
 ##########################################################
 function testValidReqPattern() {
-  local pattern=$1
-  local expected=$2
-  local actual=$(is_valid_requirement_pattern "$pattern" ; echo $?)
-  if [ "$expected" == "$actual" ] ; then
-    case $expected in
-      0)
-        echo "[TEST OK] [${expected}==${actual}] Requirement pattern '$pattern' is valid"
-        ;;
-      1)
-        echo "[TEST OK] [${expected}==${actual}] Requirement pattern '$pattern' is not valid"
-        ;;
-    esac
-  else
-    echo "[TEST FAILED] [${expected}!=${actual}] Requirement ${pattern} ; Expected: ${expected} ; Actual: ${actual}"
-  fi
+	local pattern=$1
+	local expected=$2
+	local actual=$(is_valid_requirement_pattern "$pattern" ; echo $?)
+	if [ "$expected" == "$actual" ] ; then
+		case $expected in
+			0)
+				echo "[TEST OK] [${expected}==${actual}] Requirement pattern '$pattern' is valid"
+				;;
+			1)
+				echo "[TEST OK] [${expected}==${actual}] Requirement pattern '$pattern' is not valid"
+				;;
+		esac
+	else
+		echo "[TEST FAILED] [${expected}!=${actual}] Requirement ${pattern} ; Expected: ${expected} ; Actual: ${actual}"
+	fi
 }
 
 
@@ -408,25 +408,25 @@ testValidReqPattern "9.3.5.6" "1"
 # tests the does_java_version_satisfy_requirement() function
 ##########################################################
 function testSatisfies() {
-  local java_version=$1
-  local java_requirement=$2
-  local expected_result=$3
-  local actual_result=$(does_java_version_satisfy_requirement $java_version $java_requirement ; echo $?)
-  if [ ${expected_result} == ${actual_result} ] ; then
-    case $expected_result in
-      0)
-        echo "[TEST OK] [${expected_result}==${actual_result}] Java version ${java_version} satisfies requirement ${java_requirement}"
-        ;;
-      1)
-        echo "[TEST OK] [${expected_result}==${actual_result}] Java version ${java_version} does not satisfy requirement ${java_requirement}"
-        ;;
-      2)
-        echo "[TEST OK] [${expected_result}==${actual_result}] Invalid Java version requirement ${java_requirement}"
-        ;;
-    esac
-  else
-    echo "[TEST FAILED] [${expected_result}!=${actual_result}] Java version: ${java_version} ; Requirement ${java_requirement} ; Expected: ${expected_result} ; Actual: ${actual_result}"
-  fi
+	local java_version=$1
+	local java_requirement=$2
+	local expected_result=$3
+	local actual_result=$(does_java_version_satisfy_requirement $java_version $java_requirement ; echo $?)
+	if [ ${expected_result} == ${actual_result} ] ; then
+		case $expected_result in
+			0)
+				echo "[TEST OK] [${expected_result}==${actual_result}] Java version ${java_version} satisfies requirement ${java_requirement}"
+				;;
+			1)
+				echo "[TEST OK] [${expected_result}==${actual_result}] Java version ${java_version} does not satisfy requirement ${java_requirement}"
+				;;
+			2)
+				echo "[TEST OK] [${expected_result}==${actual_result}] Invalid Java version requirement ${java_requirement}"
+				;;
+		esac
+	else
+		echo "[TEST FAILED] [${expected_result}!=${actual_result}] Java version: ${java_version} ; Requirement ${java_requirement} ; Expected: ${expected_result} ; Actual: ${actual_result}"
+	fi
 }
 
 
