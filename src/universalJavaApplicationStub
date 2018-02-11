@@ -11,7 +11,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2018-01-07                                                          #
+# @date      2018-02-11                                                          #
 # @version   2.1.0                                                               #
 #                                                                                #
 ##################################################################################
@@ -106,6 +106,7 @@ InfoPlistFile="${AppPackageFolder}"/Contents/Info.plist
 
 # set the default JVM Version to a null string
 JVMVersion=""
+JVMMaxVersion=""
 
 
 
@@ -225,6 +226,13 @@ if [ $exitcode -eq 0 ]; then
 
 	# read the Java version we want to find
 	JVMVersion=$(plist_get_java ':JVMVersion' | xargs)
+	if [[ ${JVMVersion} == *";"* ]]; then
+		minMaxArray=(${JVMVersion//;/ })
+		JVMVersion=$(echo ${minMaxArray[0]} | sed 's/+//')
+		JVMMaxVersion=$(echo ${minMaxArray[1]} | sed 's/+//')
+		stub_logger "[JavaRequirement] JVM minimum version: ${JVMVersion}"
+		stub_logger "[JavaRequirement] JVM maximum version: ${JVMMaxVersion}"
+	fi
 
 
 # read 'Info.plist' file in Oracle style
