@@ -593,7 +593,7 @@ else
 
 	# then additionally check the Oracle JRE plugin whether it's a higher/newer compatible version
 	if [ -x "${oracle_jre_plugin}" ] ; then
-		this_java_ver=$(get_comparable_java_version $(get_java_version_from_cmd "${oracle_jre_plugin}"))
+		this_java_ver=$(get_comparable_java_version ${oracle_jre_version})
 		# use this compatible version only if the above returned empty or if the version number is higher
 		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${oracle_jre_plugin}"
@@ -603,7 +603,7 @@ else
 
 	# then additionally check the Apple JRE plugin whether it's a higher/newer compatible version
 	if [ -x "${apple_jre_plugin}" ] ; then
-		this_java_ver=$(get_comparable_java_version $(get_java_version_from_cmd "${apple_jre_plugin}"))
+		this_java_ver=$(get_comparable_java_version ${apple_jre_version})
 		# use this compatible version only if the above returned empty or if the version number is higher
 		if [ -z "${JAVACMD}" ] || [ ${this_java_ver} -ge ${JAVACMD_version} ] ; then
 			JAVACMD="${apple_jre_plugin}"
