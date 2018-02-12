@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Java JRE version tester
-# tofi86 @ 2018-02-11
+# Tests for the functions used in universalJavaApplicationStub script
+# tofi86 @ 2018-02-12
 
 
 
@@ -92,25 +92,6 @@ function is_valid_requirement_pattern() {
 	else
 		return 1
 	fi
-}
-
-
-# function 'pad_version_to_semver()'
-#
-# adds '.0' minor/bugfix version parts to a short version number (e.g. 9, 10)
-# to make it semver compatible
-#
-# @param1  a Java version number in short form (9, 10, etc.)
-# @return  a right-padded semver version number (e.g. 9.0.0, 10.0.0)
-################################################################################
-function pad_short_version_to_semver() {
-	local java_ver=$1
-	if [[ ${java_ver} =~ ^[0-9]+$ ]] ; then
-		java_ver="${java_ver}.0.0"
-	elif [[ ${java_ver} =~ ^[0-9]+\.0$ ]] ; then
-		java_ver="${java_ver}.0"
-	fi
-	echo ${java_ver}
 }
 
 
@@ -258,7 +239,7 @@ function testComparable() {
 echo ""
 echo ""
 echo "########################################################"
-echo "Testing function does_java_version_satisfy_requirement()"
+echo "Testing function get_comparable_java_version()"
 echo ""
 echo "Tests with Java 1.6:"
 testComparable "1.6" "06000000"
@@ -402,219 +383,3 @@ testValidReqPattern "9.2.15." "1"
 testValidReqPattern "9.2.15.*" "1"
 testValidReqPattern "9.2.15.+" "1"
 testValidReqPattern "9.3.5.6" "1"
-
-
-# test function:
-# tests the does_java_version_satisfy_requirement() function
-##########################################################
-function testSatisfies() {
-	local java_version=$1
-	local java_requirement=$2
-	local expected_result=$3
-	local actual_result=$(does_java_version_satisfy_requirement $java_version $java_requirement ; echo $?)
-	if [ ${expected_result} == ${actual_result} ] ; then
-		case $expected_result in
-			0)
-				echo "[TEST OK] [${expected_result}==${actual_result}] Java version ${java_version} satisfies requirement ${java_requirement}"
-				;;
-			1)
-				echo "[TEST OK] [${expected_result}==${actual_result}] Java version ${java_version} does not satisfy requirement ${java_requirement}"
-				;;
-			2)
-				echo "[TEST OK] [${expected_result}==${actual_result}] Invalid Java version requirement ${java_requirement}"
-				;;
-		esac
-	else
-		echo "[TEST FAILED] [${expected_result}!=${actual_result}] Java version: ${java_version} ; Requirement ${java_requirement} ; Expected: ${expected_result} ; Actual: ${actual_result}"
-	fi
-}
-
-
-echo ""
-echo ""
-echo "########################################################"
-echo "Testing function does_java_version_satisfy_requirement()"
-echo ""
-echo "Tests with Java 1.6:"
-testSatisfies "1.6.0_39" "1.6" "0"
-testSatisfies "1.6.0_39" "1.6*" "0"
-testSatisfies "1.6.0_39" "1.6+" "0"
-testSatisfies "1.6.0_39" "1.6.0_20" "1"
-testSatisfies "1.6.0_39" "1.6.0_20*" "1"
-testSatisfies "1.6.0_39" "1.6.0_20+" "0"
-testSatisfies "1.6.0_39" "1.6.0_39" "0"
-testSatisfies "1.6.0_39" "1.6.0_39*" "0"
-testSatisfies "1.6.0_39" "1.6.0_39+" "0"
-testSatisfies "1.6.0_39" "1.6.0_45" "1"
-testSatisfies "1.6.0_39" "1.6.0_45*" "1"
-testSatisfies "1.6.0_39" "1.6.0_45+" "1"
-testSatisfies "1.6.0_39" "1.7" "1"
-testSatisfies "1.6.0_39" "1.7+" "1"
-testSatisfies "1.6.0_39" "1.7*" "1"
-testSatisfies "1.6.0_39" "1.7.0_71" "1"
-testSatisfies "1.6.0_39" "1.8" "1"
-testSatisfies "1.6.0_39" "1.8+" "1"
-testSatisfies "1.6.0_39" "1.8*" "1"
-testSatisfies "1.6.0_39" "1.8.0_121" "1"
-testSatisfies "1.6.0_39" "9" "1"
-testSatisfies "1.6.0_39" "9+" "1"
-testSatisfies "1.6.0_39" "9*" "1"
-testSatisfies "1.6.0_39" "9.1.2" "1"
-echo ""
-echo "Tests with Java 1.7:"
-testSatisfies "1.7.0_40" "1.6" "1"
-testSatisfies "1.7.0_40" "1.6+" "0"
-testSatisfies "1.7.0_40" "1.6*" "1"
-testSatisfies "1.7.0_40" "1.6.0_45" "1"
-testSatisfies "1.7.0_40" "1.7" "0"
-testSatisfies "1.7.0_40" "1.7+" "0"
-testSatisfies "1.7.0_40" "1.7*" "0"
-testSatisfies "1.7.0_40" "1.7.0_5" "1"
-testSatisfies "1.7.0_40" "1.7.0_5*" "1"
-testSatisfies "1.7.0_40" "1.7.0_5+" "0"
-testSatisfies "1.7.0_40" "1.7.0_40" "0"
-testSatisfies "1.7.0_40" "1.7.0_40*" "0"
-testSatisfies "1.7.0_40" "1.7.0_40+" "0"
-testSatisfies "1.7.0_40" "1.7.0_79" "1"
-testSatisfies "1.7.0_40" "1.7.0_79*" "1"
-testSatisfies "1.7.0_40" "1.7.0_79+" "1"
-testSatisfies "1.7.0_40" "1.8" "1"
-testSatisfies "1.7.0_40" "1.8+" "1"
-testSatisfies "1.7.0_40" "1.8*" "1"
-testSatisfies "1.7.0_40" "1.8.0_121" "1"
-testSatisfies "1.7.0_40" "9" "1"
-testSatisfies "1.7.0_40" "9+" "1"
-testSatisfies "1.7.0_40" "9*" "1"
-testSatisfies "1.7.0_40" "9.1.2" "1"
-echo ""
-echo "Tests with Java 1.8:"
-testSatisfies "1.8.0_60" "1.6" "1"
-testSatisfies "1.8.0_60" "1.6+" "0"
-testSatisfies "1.8.0_60" "1.6*" "1"
-testSatisfies "1.8.0_60" "1.6.0_45" "1"
-testSatisfies "1.8.0_60" "1.7" "1"
-testSatisfies "1.8.0_60" "1.7+" "0"
-testSatisfies "1.8.0_60" "1.7*" "1"
-testSatisfies "1.8.0_60" "1.7.0_71" "1"
-testSatisfies "1.8.0_60" "1.8" "0"
-testSatisfies "1.8.0_60" "1.8+" "0"
-testSatisfies "1.8.0_60" "1.8*" "0"
-testSatisfies "1.8.0_60" "1.8.0_40" "1"
-testSatisfies "1.8.0_60" "1.8.0_40*" "1"
-testSatisfies "1.8.0_60" "1.8.0_40+" "0"
-testSatisfies "1.8.0_60" "1.8.0_60" "0"
-testSatisfies "1.8.0_60" "1.8.0_60*" "0"
-testSatisfies "1.8.0_60" "1.8.0_60+" "0"
-testSatisfies "1.8.0_60" "1.8.0_151" "1"
-testSatisfies "1.8.0_60" "1.8.0_151*" "1"
-testSatisfies "1.8.0_60" "1.8.0_151+" "1"
-testSatisfies "1.8.0_60" "9" "1"
-testSatisfies "1.8.0_60" "9+" "1"
-testSatisfies "1.8.0_60" "9*" "1"
-testSatisfies "1.8.0_60" "9.1.2" "1"
-echo ""
-echo "Tests with Java 9:"
-testSatisfies "9" "1.6" "1"
-testSatisfies "9" "1.6+" "0"
-testSatisfies "9" "1.6*" "1"
-testSatisfies "9" "1.6.0_45" "1"
-testSatisfies "9" "1.7" "1"
-testSatisfies "9" "1.7+" "0"
-testSatisfies "9" "1.7*" "1"
-testSatisfies "9" "1.7.0_71" "1"
-testSatisfies "9" "1.8" "1"
-testSatisfies "9" "1.8+" "0"
-testSatisfies "9" "1.8*" "1"
-testSatisfies "9" "1.8.0_121" "1"
-testSatisfies "9" "9-ea" "1"
-testSatisfies "9" "9" "0"
-testSatisfies "9" "9+" "0"
-testSatisfies "9" "9*" "0"
-testSatisfies "9" "9.0" "0"
-testSatisfies "9" "9.0+" "0"
-testSatisfies "9" "9.0*" "0"
-testSatisfies "9" "9.1" "1"
-testSatisfies "9" "9.1+" "1"
-testSatisfies "9" "9.1*" "1"
-testSatisfies "9.0.2" "9" "0"
-testSatisfies "9.0.2" "9+" "0"
-testSatisfies "9.0.2" "9*" "0"
-testSatisfies "9.0.2" "9.0" "0"
-testSatisfies "9.0.2" "9.0+" "0"
-testSatisfies "9.0.2" "9.0*" "0"
-testSatisfies "9.0.2" "9.1+" "1"
-testSatisfies "9.0.2" "9.1*" "1"
-testSatisfies "9.0.2" "9.1.2" "1"
-testSatisfies "9.1" "9" "0"
-testSatisfies "9.1" "9+" "0"
-testSatisfies "9.1" "9*" "0"
-testSatisfies "9.1" "9.0" "1"
-testSatisfies "9.1" "9.0+" "0"
-testSatisfies "9.1" "9.0*" "1"
-testSatisfies "9.1" "9.1" "0"
-testSatisfies "9.1" "9.1+" "0"
-testSatisfies "9.1" "9.1*" "0"
-testSatisfies "9.1.2" "9" "0"
-testSatisfies "9.1.2" "9+" "0"
-testSatisfies "9.1.2" "9*" "0"
-testSatisfies "9.1.2" "9.0" "1"
-testSatisfies "9.1.2" "9.0+" "0"
-testSatisfies "9.1.2" "9.0*" "1"
-testSatisfies "9.1.2" "9.1+" "0"
-testSatisfies "9.1.2" "9.1*" "0"
-testSatisfies "9.1.2" "9.1.2" "0"
-echo ""
-echo "Tests with Java 10:"
-testSatisfies "10" "1.6" "1"
-testSatisfies "10" "1.6+" "0"
-testSatisfies "10" "1.6*" "1"
-testSatisfies "10" "1.6.0_45" "1"
-testSatisfies "10" "1.7" "1"
-testSatisfies "10" "1.7+" "0"
-testSatisfies "10" "1.7*" "1"
-testSatisfies "10" "1.7.0_71" "1"
-testSatisfies "10" "1.8" "1"
-testSatisfies "10" "1.8+" "0"
-testSatisfies "10" "1.8*" "1"
-testSatisfies "10" "1.8.0_121" "1"
-testSatisfies "10" "9" "1"
-testSatisfies "10" "9+" "0"
-testSatisfies "10" "9*" "1"
-testSatisfies "10" "9.1.2" "1"
-testSatisfies "10" "10-ea" "1"
-testSatisfies "10" "10" "0"
-testSatisfies "10" "10+" "0"
-testSatisfies "10" "10*" "0"
-testSatisfies "10" "10.0" "0"
-testSatisfies "10" "10.0+" "0"
-testSatisfies "10" "10.0*" "0"
-testSatisfies "10" "10.1" "1"
-testSatisfies "10" "10.1+" "1"
-testSatisfies "10" "10.1*" "1"
-testSatisfies "10.0.2" "10" "0"
-testSatisfies "10.0.2" "10+" "0"
-testSatisfies "10.0.2" "10*" "0"
-testSatisfies "10.0.2" "10.0" "0"
-testSatisfies "10.0.2" "10.0+" "0"
-testSatisfies "10.0.2" "10.0*" "0"
-testSatisfies "10.0.2" "10.1+" "1"
-testSatisfies "10.0.2" "10.1*" "1"
-testSatisfies "10.0.2" "10.1.2" "1"
-testSatisfies "10.1" "10" "0"
-testSatisfies "10.1" "10+" "0"
-testSatisfies "10.1" "10*" "0"
-testSatisfies "10.1" "10.0" "1"
-testSatisfies "10.1" "10.0+" "0"
-testSatisfies "10.1" "10.0*" "1"
-testSatisfies "10.1" "10.1" "0"
-testSatisfies "10.1" "10.1+" "0"
-testSatisfies "10.1" "10.1*" "0"
-testSatisfies "10.1.2" "10" "0"
-testSatisfies "10.1.2" "10+" "0"
-testSatisfies "10.1.2" "10*" "0"
-testSatisfies "10.1.2" "10.0" "1"
-testSatisfies "10.1.2" "10.0+" "0"
-testSatisfies "10.1.2" "10.0*" "1"
-testSatisfies "10.1.2" "10.1+" "0"
-testSatisfies "10.1.2" "10.1*" "0"
-testSatisfies "10.1.2" "10.1.2" "0"
