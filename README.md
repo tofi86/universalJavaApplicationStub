@@ -151,7 +151,7 @@ Supported PList keys
 | **App Name** (Dock Name)        | `:CFBundleName`        | `:CFBundleName`       |
 | **App Icon** (Dock Icon)        | `:CFBundleIconFile`    | `:CFBundleIconFile`   |
 | **Working Directory**           | `:Java(X):WorkingDirectory`<br/>fallback to `name.app/` | *not supported*<br/>default: `name.app/Contents/Java/` |
-| **Java Version Requirement**    | `:Java(X):JVMVersion`  | *not supported*       |
+| **Java Min/Max[*](https://github.com/tofi86/universalJavaApplicationStub/issues/51) Version Requirement** | `:Java(X):JVMVersion`  | *not supported*       |
 | **Java ClassPath** (`-cp …`)    | `:Java(X):ClassPath`   | `:JVMClassPath`       |
 | **Java Main Class**             | `:Java(X):MainClass`   | `:JVMMainClassName`   |
 | **Splash Image** (`-splash:…`)  | `:Java(X):SplashFile`  | `:JVMSplashFile`      |
