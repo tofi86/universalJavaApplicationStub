@@ -40,18 +40,20 @@ How the script works
 
 You don't need a native `JavaApplicationStub` file anymore. The Shell script needs to be executable – that's all.
 
-The script reads JVM properties from `Info.plist` regardless of whether it's Apple or Oracle flavour and feeds it to a commandline `java` call like the following:
+The script reads JVM properties from `Info.plist` regardless of whether it's Apple or Oracle style and feeds them to a commandline `java` call like the following:
 
 ```Bash
 # execute Java and set
-#	- classpath
-#	- dock icon
-#	- application name
-#	- JVM options
-#	- JVM default options
-#	- main class
-#	- JVM arguments
-exec "$JAVACMD" \
+# - classpath
+# - splash image
+# - dock icon
+# - app name
+# - JVM options
+# - JVM default options
+# - main class
+# - main arguments
+# - passthru arguments
+exec "${JAVACMD}" \
     -cp "${JVMClassPath}" \
     -splash:"${ResourcesFolder}/${JVMSplashFile}" \
     -Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
@@ -59,7 +61,7 @@ exec "$JAVACMD" \
     ${JVMOptions:+$JVMOptions }\
     ${JVMDefaultOptions:+$JVMDefaultOptions }\
     ${JVMMainClass}\
-    ${JVMArguments:+ $JVMArguments}\
+    ${MainArgs:+ $MainArgs}\
     ${ArgsPassthru:+ $ArgsPassthru}
 ```
 
@@ -67,7 +69,7 @@ It sets the classpath, the dock icon, the *AboutMenuName* (in Xdock style) and t
 
 The WorkingDirectory is either retrieved from Apple's Plist key `Java/WorkingDirectory` or set to the JavaRoot directory within the app bundle.
 
-The name of the *main class* is also retrieved from `Info.plist`. If no *main class* is found, an applescript error dialog is shown and the script exits with *exit code 1*.
+The name of the *main class* is also retrieved from `Info.plist`. If no *main class* is found, an AppleScript error dialog is shown and the script exits with *exit code 1*.
 
 There is some *foo* happening to determine which Java versions are installed – here's the list in which order system properties are checked:
 
@@ -81,7 +83,7 @@ There is some *foo* happening to determine which Java versions are installed –
 3. If you require a specific Java version with the Plist key `JVMVersion` the script will try to find a matching JDK or JRE in all of the above locations
   * if multiple matching JVM's are found, the script will pick the latest (highest version number)
 
-If none of these could be found or executed the script shows an applescript error dialog saying that Java needs to be installed:
+If none of these could be found or executed the script shows an AppleScript error dialog saying that Java needs to be installed:
 
 ![Error Dialog No Java Found](/docs/java-error.png?raw=true)
 
@@ -138,6 +140,35 @@ Just place the `universalJavaApplicationStub` from this repo in your build resou
 The ANT task will care about the rest...
 
 You should get a fully functional Mac Application Bundle working with both Java distributions from Apple and Oracle and all Mac OS X versions.
+
+
+
+Supported PList keys
+--------------------
+
+| Function                        | Apple PList key        | Oracle PList key      |
+|---------------------------------|------------------------|-----------------------|
+| **App Name** (Dock Name)        | `:CFBundleName`        | `:CFBundleName`       |
+| **App Icon** (Dock Icon)        | `:CFBundleIconFile`    | `:CFBundleIconFile`   |
+| **Working Directory**           | `:Java(X):WorkingDirectory`<br/>fallback to `name.app/` | *not supported*<br/>default: `name.app/Contents/Java/` |
+| **Java Min/Max[*](https://github.com/tofi86/universalJavaApplicationStub/issues/51) Version Requirement** | `:Java(X):JVMVersion`  | *not supported*       |
+| **Java ClassPath** (`-cp …`)    | `:Java(X):ClassPath`   | `:JVMClassPath`       |
+| **Java Main Class**             | `:Java(X):MainClass`   | `:JVMMainClassName`   |
+| **Splash Image** (`-splash:…`)  | `:Java(X):SplashFile`  | `:JVMSplashFile`      |
+| **Java VM Options** (`-X…`)     | `:Java(X):VMOptions`   | `:JVMDefaultOptions`  |
+| **`-XstartOnFirstThread`** [*](https://stackoverflow.com/questions/28149634/what-does-the-xstartonfirstthread-vm-argument-do-mean) | `:Java(X):StartOnMainThread` | *not supported*       |
+| **Java Properties** (`-D…`)     | `:Java(X):Properties`  | `:JVMOptions`         |
+| **Main Class Arguments**        | `:Java(X):Arguments`   | `:JVMArguments`       |
+
+
+
+Logging
+-------
+
+Starting with version 2.2.0 `universalJavaApplicationStub` logs data to the `syslog` which can be easily accessed with the `Console.app` utility by searching for *syslog*:
+
+![Example log data in Console.app](/docs/ConsoleAppLogging.png?raw=true)
+
 
 
 Missing Features
