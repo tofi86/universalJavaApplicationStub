@@ -11,8 +11,8 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2018-02-12                                                          #
 # @version   2.1.0                                                               #
+# @date      2018-02-17                                                          #
 #                                                                                #
 ##################################################################################
 #                                                                                #
@@ -716,9 +716,9 @@ export CFProcessPath="$0"
 
 # remove Apples ProcessSerialNumber from passthru arguments (#39)
 if [[ $@ == -psn* ]] ; then
-	ArgsPassthru=""
+	ArgsPassthru=()
 else
-	ArgsPassthru=$@
+	ArgsPassthru=("$@")
 fi
 
 # change to Working Directory based upon Apple/Oracle Plist info
@@ -735,7 +735,7 @@ stub_logger "[WorkingDirectory] ${WorkingDirectory}"
 # - main class
 # - main arguments
 # - passthru arguments
-stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptions:+$JVMOptions }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgs:+ $MainArgs}${ArgsPassthru:+ $ArgsPassthru}"
+stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptions:+$JVMOptions }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgs:+ $MainArgs}${ArgsPassthru:+ $(printf "'%s' " "${ArgsPassthru[@]}")}"
 exec "${JAVACMD}" \
 		-cp "${JVMClassPath}" \
 		-splash:"${ResourcesFolder}/${JVMSplashFile}" \
@@ -745,4 +745,4 @@ exec "${JAVACMD}" \
 		${JVMDefaultOptions:+$JVMDefaultOptions }\
 		${JVMMainClass}\
 		${MainArgs:+ $MainArgs}\
-		${ArgsPassthru:+ $ArgsPassthru}
+		${ArgsPassthru:+ "${ArgsPassthru[@]}"}
