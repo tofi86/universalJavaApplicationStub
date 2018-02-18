@@ -219,10 +219,11 @@ if [ $exitcode -eq 0 ]; then
 		JVMDefaultOptions+=" -XstartOnFirstThread"
 	fi
 
-	# read the JVM Arguments
-	MainArgs=$(plist_get_java ':Arguments')
-	# replace occurences of $APP_ROOT with its content
-	MainArgs=$(eval echo "${MainArgs}")
+	# read the JVM Arguments as an array and retain spaces
+	IFS=$'\t\n'
+	MainArgs=($(xargs -n1 <<<$(plist_get_java ':Arguments')))
+	unset IFS
+	# post processing of the array follows further below...
 
 	# read the Java version we want to find
 	JVMVersion=$(plist_get_java ':JVMVersion' | xargs)
@@ -278,11 +279,20 @@ else
 	# read the JVM Default Options
 	JVMDefaultOptions=$(plist_get ':JVMDefaultOptions' | grep -o " \-.*" | tr -d '\n' | xargs)
 
-	# read the Main Arguments from JVMArguments key (see #46 for naming details)
-	MainArgs=$(plist_get ':JVMArguments' | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g' | xargs)
-	# replace occurences of $APP_ROOT with its content
-	MainArgs=$(eval echo "${MainArgs}")
+	# read the Main Arguments from JVMArguments key as an array and retain spaces (see #46 for naming details)
+	IFS=$'\t\n'
+	MainArgs=($(xargs -n1 <<<$(plist_get ':JVMArguments' | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g')))
+	unset IFS
+	# post processing of the array follows below...
 fi
+
+
+# MainArgs: replace occurences of $APP_ROOT with its content
+MainArgsArr=()
+for i in "${MainArgs[@]}"
+do
+	MainArgsArr+=("$(eval echo "$i")")
+done
 
 
 
@@ -735,7 +745,7 @@ stub_logger "[WorkingDirectory] ${WorkingDirectory}"
 # - main class
 # - main arguments
 # - passthru arguments
-stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptions:+$JVMOptions }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgs:+ $MainArgs}${ArgsPassthru:+ $(printf "'%s' " "${ArgsPassthru[@]}")}"
+stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptions:+$JVMOptions }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgsArr:+ $(printf "'%s' " "${MainArgsArr[@]}")}${ArgsPassthru:+ $(printf "'%s' " "${ArgsPassthru[@]}")}"
 exec "${JAVACMD}" \
 		-cp "${JVMClassPath}" \
 		-splash:"${ResourcesFolder}/${JVMSplashFile}" \
@@ -744,5 +754,5 @@ exec "${JAVACMD}" \
 		${JVMOptions:+$JVMOptions }\
 		${JVMDefaultOptions:+$JVMDefaultOptions }\
 		${JVMMainClass}\
-		${MainArgs:+ $MainArgs}\
+		${MainArgsArr:+ "${MainArgsArr[@]}"}\
 		${ArgsPassthru:+ "${ArgsPassthru[@]}"}
