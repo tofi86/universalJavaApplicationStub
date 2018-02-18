@@ -11,8 +11,8 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
+# @date      2018-02-18                                                          #
 # @version   2.1.0                                                               #
-# @date      2018-02-17                                                          #
 #                                                                                #
 ##################################################################################
 #                                                                                #
@@ -190,10 +190,11 @@ if [ $exitcode -eq 0 ]; then
 	# read the SplashFile name
 	JVMSplashFile=$(plist_get_java ':SplashFile')
 
-	# read the JVM Properties
-	JVMOptions=$(plist_get_java ':Properties' | grep " =" | sed 's/^ */-D/g' | tr '\n' ' ' | sed 's/  */ /g' | sed 's/ = /=/g' | xargs)
-	# replace occurences of $APP_ROOT with its content
-	JVMOptions=$(eval echo "${JVMOptions}")
+	# read the JVM Properties as an array and retain spaces
+	IFS=$'\t\n'
+	JVMOptions=($(xargs -n1 <<<$(plist_get_java ':Properties' | grep " =" | sed 's/^ */-D/g' | sed -E 's/ = (.*)$/="\1"/g')))
+	unset IFS
+	# post processing of the array follows further below...
 
 	# read the ClassPath in either Array or String style
 	JVMClassPath_RAW=$(plist_get_java ':ClassPath' | xargs)
@@ -247,10 +248,11 @@ else
 	# read the SplashFile name
 	JVMSplashFile=$(plist_get ':JVMSplashFile')
 
-	# read the JVM Options
-	JVMOptions=$(plist_get ':JVMOptions' | grep " -" | tr -d '\n' | sed 's/  */ /g' | xargs)
-	# replace occurences of $APP_ROOT with its content
-	JVMOptions=$(eval echo "${JVMOptions}")
+	# read the JVM Options as an array and retain spaces
+	IFS=$'\t\n'
+	JVMOptions=($(plist_get ':JVMOptions' | grep "    " | sed 's/^ *//g'))
+	unset IFS
+	# post processing of the array follows further below...
 
 	# read the ClassPath in either Array or String style
 	JVMClassPath_RAW=$(plist_get ':JVMClassPath')
@@ -302,6 +304,12 @@ do
 	MainArgsArr+=("$(eval echo "$i")")
 done
 
+# JVMOptions: replace occurences of $APP_ROOT with its content
+JVMOptionsArr=()
+for i in "${JVMOptions[@]}"
+do
+	JVMOptionsArr+=("$(eval echo "$i")")
+done
 
 
 # internationalized messages
@@ -753,13 +761,13 @@ stub_logger "[WorkingDirectory] ${WorkingDirectory}"
 # - main class
 # - main arguments
 # - passthru arguments
-stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptions:+$JVMOptions }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgsArr:+ $(printf "'%s' " "${MainArgsArr[@]}")}${ArgsPassthru:+ $(printf "'%s' " "${ArgsPassthru[@]}")}"
+stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptionsArr:+$(printf "'%s' " "${JVMOptionsArr[@]}") }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgsArr:+ $(printf "'%s' " "${MainArgsArr[@]}")}${ArgsPassthru:+ $(printf "'%s' " "${ArgsPassthru[@]}")}"
 exec "${JAVACMD}" \
 		-cp "${JVMClassPath}" \
 		-splash:"${ResourcesFolder}/${JVMSplashFile}" \
 		-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
 		-Xdock:name="${CFBundleName}" \
-		${JVMOptions:+$JVMOptions }\
+		${JVMOptions:+"$JVMOptions[@]}" }\
 		${JVMDefaultOptions:+$JVMDefaultOptions }\
 		"${JVMMainClass}"\
 		${MainArgsArr:+ "${MainArgsArr[@]}"}\
