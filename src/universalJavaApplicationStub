@@ -227,13 +227,7 @@ if [ $exitcode -eq 0 ]; then
 
 	# read the Java version we want to find
 	JVMVersion=$(plist_get_java ':JVMVersion' | xargs)
-	if [[ ${JVMVersion} == *";"* ]]; then
-		minMaxArray=(${JVMVersion//;/ })
-		JVMVersion=${minMaxArray[0]//+}
-		JVMMaxVersion=${minMaxArray[1]//+}
-	fi
-	stub_logger "[JavaRequirement] JVM minimum version: ${JVMVersion}"
-	stub_logger "[JavaRequirement] JVM maximum version: ${JVMMaxVersion}"
+	# post processing of the version string follows below...
 
 
 # read 'Info.plist' file in Oracle style
@@ -283,9 +277,23 @@ else
 	IFS=$'\t\n'
 	MainArgs=($(xargs -n1 <<<$(plist_get ':JVMArguments' | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g')))
 	unset IFS
-	# post processing of the array follows below...
+	# post processing of the array follows further below...
+
+	# read the Java version we want to find
+	JVMVersion=$(plist_get ':JVMVersion' | xargs)
+	# post processing of the version string follows below...
 fi
 
+
+
+# JVMVersion: post processing and optional splitting
+if [[ ${JVMVersion} == *";"* ]]; then
+	minMaxArray=(${JVMVersion//;/ })
+	JVMVersion=${minMaxArray[0]//+}
+	JVMMaxVersion=${minMaxArray[1]//+}
+fi
+stub_logger "[JavaRequirement] JVM minimum version: ${JVMVersion}"
+stub_logger "[JavaRequirement] JVM maximum version: ${JVMMaxVersion}"
 
 # MainArgs: replace occurences of $APP_ROOT with its content
 MainArgsArr=()
