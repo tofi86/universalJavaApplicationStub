@@ -65,15 +65,15 @@ function stub_logger() {
 
 PRG=$0
 while [ -h "$PRG" ]; do
-	ls=`ls -ld "$PRG"`
-	link=`expr "$ls" : '^.*-> \(.*\)$' 2>/dev/null`
+	ls=$(ls -ld "$PRG")
+	link=$(expr "$ls" : '^.*-> \(.*\)$' 2>/dev/null)
 	if expr "$link" : '^/' 2> /dev/null >/dev/null; then
 		PRG="$link"
 	else
-		PRG="`dirname "$PRG"`/$link"
+		PRG="$(dirname "$PRG")/$link"
 	fi
 done
-PROGDIR=`dirname "$PRG"`
+PROGDIR=$(dirname "$PRG")
 stub_logger "[StubDir] $PROGDIR"
 
 
@@ -82,12 +82,12 @@ stub_logger "[StubDir] $PROGDIR"
 ############################################
 
 # the absolute path of the app package
-cd "$PROGDIR"/../../
-AppPackageFolder=`pwd`
+cd "$PROGDIR"/../../ || exit 11
+AppPackageFolder=$(pwd)
 
 # the base path of the app package
-cd ..
-AppPackageRoot=`pwd`
+cd .. || exit 12
+AppPackageRoot=$(pwd)
 
 # set Apple's Java folder
 AppleJavaFolder="${AppPackageFolder}"/Contents/Resources/Java
@@ -185,7 +185,7 @@ if [ $exitcode -eq 0 ]; then
 
 
 	# read the MainClass name
-	JVMMainClass=$(plist_get_java ':MainClass')
+	JVMMainClass="$(plist_get_java ':MainClass')"
 
 	# read the SplashFile name
 	JVMSplashFile=$(plist_get_java ':SplashFile')
@@ -229,8 +229,8 @@ if [ $exitcode -eq 0 ]; then
 	JVMVersion=$(plist_get_java ':JVMVersion' | xargs)
 	if [[ ${JVMVersion} == *";"* ]]; then
 		minMaxArray=(${JVMVersion//;/ })
-		JVMVersion=$(echo ${minMaxArray[0]} | sed 's/+//')
-		JVMMaxVersion=$(echo ${minMaxArray[1]} | sed 's/+//')
+		JVMVersion=${minMaxArray[0]//+}
+		JVMMaxVersion=${minMaxArray[1]//+}
 	fi
 	stub_logger "[JavaRequirement] JVM minimum version: ${JVMVersion}"
 	stub_logger "[JavaRequirement] JVM maximum version: ${JVMMaxVersion}"
@@ -248,7 +248,7 @@ else
 	APP_ROOT="${AppPackageFolder}"
 
 	# read the MainClass name
-	JVMMainClass=$(plist_get ':JVMMainClassName')
+	JVMMainClass="$(plist_get ':JVMMainClassName')"
 
 	# read the SplashFile name
 	JVMSplashFile=$(plist_get ':JVMSplashFile')
@@ -516,7 +516,7 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 	# find installed JavaVirtualMachines (JDK + JRE)
 	allJVMs=()
 	# read JDK's from '/usr/libexec/java_home -V' command
-	while read line; do
+	while read -r line; do
 		version=$(echo $line | awk -F $',' '{print $1;}')
 		path=$(echo $line | awk -F $'" ' '{print $2;}')
 		path+="/bin/java"
@@ -707,7 +707,7 @@ fi
 # MainClass check
 ############################################
 
-if [ -z ${JVMMainClass} ]; then
+if [ -z "${JVMMainClass}" ]; then
 	# log exit cause
 	stub_logger "[EXIT 2] ${MSG_MISSING_MAINCLASS}"
 	# display error message with AppleScript
@@ -732,7 +732,7 @@ else
 fi
 
 # change to Working Directory based upon Apple/Oracle Plist info
-cd "${WorkingDirectory}"
+cd "${WorkingDirectory}" || exit 13
 stub_logger "[WorkingDirectory] ${WorkingDirectory}"
 
 # execute Java and set
@@ -753,6 +753,6 @@ exec "${JAVACMD}" \
 		-Xdock:name="${CFBundleName}" \
 		${JVMOptions:+$JVMOptions }\
 		${JVMDefaultOptions:+$JVMDefaultOptions }\
-		${JVMMainClass}\
+		"${JVMMainClass}"\
 		${MainArgsArr:+ "${MainArgsArr[@]}"}\
 		${ArgsPassthru:+ "${ArgsPassthru[@]}"}
