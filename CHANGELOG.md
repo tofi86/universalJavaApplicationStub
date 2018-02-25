@@ -1,21 +1,21 @@
 ChangeLog
 ---------
 
-### v3.0.0-BETA (2018-02-18)
+### v3.0.0 (2018-02-25)
 * Completeley overhauled algorithm for JVM detection (JRE and JDK)
-  * JDK has no longer precedence before JRE
-  * All JVMs on the system which can be found are taken into account
-  * See Readme 'How the script works' for details
-* NEW special syntax in Plist key `JVMVersion` to specify a max JVM requirement in addition to the minimum requirement.
+  * JDK has no longer precedence over JRE
+  * All Java Virtual Machines on the system are taken into account
+  * See Readme section 'How the script works' for more details
+* NEW special syntax in Plist key `JVMVersion` to specify a maximum JVM version requirement in addition to the minimum requirement.
   * See issue #51 for examples
 * Support `JVMVersion` also in Oracle PList style (#59)
-* Implemented logging to 'syslog' facility which can be viewed via `Console.app` (#49)
+* Implemented logging to `syslog` facility which can be viewed via `Console.app` (#49)
 * Translation of messages to Chinese (PR #55, Thanks to @acely for his contribution)
 * Added a table with 'Supported PList keys' to the Readme file
 * Refactoring of functions, bash syntax, etc... (#46, #50, #56)
 * Bugfix: pass JVM options with spaces correctly to the java exec call (#14)
 * Bugfixes: better handling of MainClass arguments with spaces (#57, #58)
-* More bugfixes for issues #47, #48, #52
+* Bugfixes: issues #47, #48, #52
 
 ### v2.1.0 (2017-07-28)
 * Support for Java 9 which introduces a new version number schema (fixes #43)

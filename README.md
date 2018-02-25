@@ -1,9 +1,11 @@
 universalJavaApplicationStub
-=====================
+============================
 
 [![Current release](https://img.shields.io/github/release/tofi86/universalJavaApplicationStub.svg)](https://github.com/tofi86/universalJavaApplicationStub/releases) [![Join the chat at https://gitter.im/tofi86/universalJavaApplicationStub](https://badges.gitter.im/tofi86/universalJavaApplicationStub.svg)](https://gitter.im/tofi86/universalJavaApplicationStub?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-A BASH based *JavaApplicationStub* for Java Apps on Mac OS X that works with both Apple's and Oracle's plist format. It is released under the MIT License.
+A BASH based *JavaApplicationStub* for Java Apps on Mac OS X that works with both Apple's and Oracle's plist format. It is released under the [MIT License](https://github.com/tofi86/universalJavaApplicationStub/blob/master/LICENSE).
+
+See the [CHANGELOG](https://github.com/tofi86/universalJavaApplicationStub/blob/master/CHANGELOG.md) for a Release History and feature details.
 
 
 Why
@@ -177,9 +179,10 @@ Missing Features
 
 At the moment, there's no support for
 * required JVM architecture (like `x86_64`, etc.)
+* prefer JDK over JRE or vice versa
 
 
 License
 -------
 
-*universalJavaApplicationStub* is released under the MIT License.
+*universalJavaApplicationStub* is released under the [MIT License](https://github.com/tofi86/universalJavaApplicationStub/blob/master/LICENSE).

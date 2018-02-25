@@ -3,7 +3,7 @@
 #                                                                                #
 # universalJavaApplicationStub                                                   #
 #                                                                                #
-# A shellscript JavaApplicationStub for Java Apps on Mac OS X                    #
+# A BASH based JavaApplicationStub for Java Apps on Mac OS X                     #
 # that works with both Apple's and Oracle's plist format.                        #
 #                                                                                #
 # Inspired by Ian Roberts stackoverflow answer                                   #
@@ -11,14 +11,14 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2018-02-18                                                          #
-# @version   3.0.0-BETA                                                          #
+# @date      2018-02-25                                                          #
+# @version   3.0.0                                                               #
 #                                                                                #
 ##################################################################################
 #                                                                                #
 # The MIT License (MIT)                                                          #
 #                                                                                #
-# Copyright (c) 2018 Tobias Fischer                                              #
+# Copyright (c) 2014-2018 Tobias Fischer                                         #
 #                                                                                #
 # Permission is hereby granted, free of charge, to any person obtaining a copy   #
 # of this software and associated documentation files (the "Software"), to deal  #
