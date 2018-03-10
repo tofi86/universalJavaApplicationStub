@@ -23,5 +23,6 @@ matrix:
 # to exit with 0; then run 'test' command and swap the grep exit code
 # to return with 0 if grep doesn't match and return with 1 if it matches
 script:
+  - sw_vers
   - bash test/java-version-tester.sh | tee test/java-version-tester.log
   - cat test/java-version-tester.log | grep FAILED ; test $? -eq 1
