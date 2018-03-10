@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v3.0.1 (2018-03-10)
+* Bugfix: remove build number from JVM version number when creating comparable version number or extracting major version (fixes #61)
+
 ### v3.0.0 (2018-02-25)
 * Completeley overhauled algorithm for JVM detection (JRE and JDK)
   * JDK has no longer precedence over JRE
