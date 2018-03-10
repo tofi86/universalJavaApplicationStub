@@ -1,0 +1,6 @@
+# run the 'java-version-tester' script and look for [FAILED] entries which would
+# cause grep to exit with 0; then run 'test' command and swap the grep exit code
+# to return with 0 if grep doesn't match and return with 1 if it matches
+script:
+  - cd test
+  - bash java-version-tester.sh | grep FAILED ; test $? -eq 1
