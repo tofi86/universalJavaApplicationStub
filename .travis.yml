@@ -1,3 +1,5 @@
+language: generic
+
 # run on different Mac OS X versions
 # https://docs.travis-ci.com/user/reference/osx/#OS-X-Version
 matrix:
