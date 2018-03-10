@@ -11,8 +11,8 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2018-02-25                                                          #
-# @version   3.0.0                                                               #
+# @date      2018-03-10                                                          #
+# @version   3.0.1                                                               #
 #                                                                                #
 ##################################################################################
 #                                                                                #
@@ -399,7 +399,7 @@ function get_java_version_from_cmd() {
 # @return  the major version (e.g. '7', '8' or '9', etc.)
 ################################################################################
 function extract_java_major_version() {
-	echo $(echo "$1" | sed -E 's/^1\.//;s/^([0-9]+)(-ea|(\.[0-9_.]{1,7})?)[+*]?$/\1/')
+	echo $(echo "$1" | sed -E 's/^1\.//;s/^([0-9]+)(-ea|(\.[0-9_.]{1,7})?)(-b[0-9]+-[0-9]+)?[+*]?$/\1/')
 }
 
 
@@ -411,8 +411,8 @@ function extract_java_major_version() {
 # @return  an 8 digit numeral ('1.8.0_45'->'08000045'; '9.1.13'->'09001013')
 ################################################################################
 function get_comparable_java_version() {
-	# cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
-	local cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
+	# cleaning: 1) remove leading '1.'; 2) remove build string (e.g. '-b14-468'); 3) remove 'a-Z' and '-*+' (e.g. '-ea'); 4) replace '_' with '.'
+	local cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/-b[0-9]+-[0-9]+$//g;s/[a-zA-Z+*\-]//g;s/_/./g')
 	# splitting at '.' into an array
 	local arr=( ${cleaned//./ } )
 	# echo a string with left padded version numbers
