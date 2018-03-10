@@ -1,0 +1,28 @@
+language: generic
+
+# run on different Mac OS X versions
+# https://docs.travis-ci.com/user/reference/osx/#OS-X-Version
+matrix:
+  include:
+    # OS X 10.10
+    - os: osx
+      osx_image: xcode6.4
+    # OS X 10.11
+    - os: osx
+      osx_image: xcode8
+    # OS X 10.12
+    - os: osx
+      osx_image: xcode9
+    # OS X 10.13
+    - os: osx
+      osx_image: xcode9.3beta
+
+
+# run the 'java-version-tester' script and show&save (`tee`) the output to a
+# logfile; then grep the logfile for 'FAILED' entries which would cause grep
+# to exit with 0; then run 'test' command and swap the grep exit code
+# to return with 0 if grep doesn't match and return with 1 if it matches
+script:
+  - sw_vers
+  - bash test/java-version-tester.sh | tee test/java-version-tester.log
+  - cat test/java-version-tester.log | grep FAILED ; test $? -eq 1
