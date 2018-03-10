@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Tests for the functions used in universalJavaApplicationStub script
-# tofi86 @ 2018-02-12
+# tofi86 @ 2018-03-10
 
 
 
@@ -27,7 +27,7 @@ function get_java_version_from_cmd() {
 # @return  the major version (e.g. '7', '8' or '9', etc.)
 ################################################################################
 function extract_java_major_version() {
-	echo $(echo "$1" | sed -E 's/^1\.//;s/^([0-9]+)(-ea|(\.[0-9_.]{1,7})?)[+*]?$/\1/')
+	echo $(echo "$1" | sed -E 's/^1\.//;s/^([0-9]+)(-ea|(\.[0-9_.]{1,7})?)(-b[0-9]+-[0-9]+)?[+*]?$/\1/')
 }
 
 
@@ -39,8 +39,8 @@ function extract_java_major_version() {
 # @return  an 8 digit numeral ('1.8.0_45'->'08000045'; '9.1.13'->'09001013')
 ################################################################################
 function get_comparable_java_version() {
-	# cleaning: 1) remove leading '1.'; 2) remove 'a-Z' and '-*+' (e.g. '-ea'); 3) replace '_' with '.'
-	local cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/[a-zA-Z+*\-]//g;s/_/./g')
+	# cleaning: 1) remove leading '1.'; 2) remove build string (e.g. '-b14-468'); 3) remove 'a-Z' and '-*+' (e.g. '-ea'); 4) replace '_' with '.'
+	local cleaned=$(echo "$1" | sed -E 's/^1\.//g;s/-b[0-9]+-[0-9]+$//g;s/[a-zA-Z+*\-]//g;s/_/./g')
 	# splitting at '.' into an array
 	local arr=( ${cleaned//./ } )
 	# echo a string with left padded version numbers
@@ -181,6 +181,7 @@ testExtractMajor "1.6+" "6"
 testExtractMajor "1.6.0" "6"
 testExtractMajor "1.6.0_07" "6"
 testExtractMajor "1.6.0_45" "6"
+testExtractMajor "1.6.0_65-b14-468" "6"
 echo ""
 echo "Tests with Java 1.7:"
 testExtractMajor "1.7" "7"
@@ -245,6 +246,7 @@ echo "Tests with Java 1.6:"
 testComparable "1.6" "06000000"
 testComparable "1.6+" "06000000"
 testComparable "1.6.0_45" "06000045"
+testComparable "1.6.0_65-b14-468" "06000065"
 testComparable "1.6.0_100" "06000100"
 testComparable "1.6.1_87" "06001087"
 echo ""
