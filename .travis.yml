@@ -4,9 +4,6 @@ language: generic
 # https://docs.travis-ci.com/user/reference/osx/#OS-X-Version
 matrix:
   include:
-    # OS X 10.10
-    - os: osx
-      osx_image: xcode6.4
     # OS X 10.11
     - os: osx
       osx_image: xcode8
