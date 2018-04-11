@@ -18,11 +18,23 @@ matrix:
       osx_image: xcode9.3
 
 
+install:
+  - brew install shellcheck
+
+
+before_script:
+  - sw_vers
+  - shellcheck -V
+
+
 # run the 'java-version-tester' script and show&save (`tee`) the output to a
 # logfile; then grep the logfile for 'FAILED' entries which would cause grep
 # to exit with 0; then run 'test' command and swap the grep exit code
 # to return with 0 if grep doesn't match and return with 1 if it matches
 script:
-  - sw_vers
   - bash test/java-version-tester.sh | tee test/java-version-tester.log
   - cat test/java-version-tester.log | grep FAILED ; test $? -eq 1
+  # test with shellcheck for bash syntax errors which should fail the build
+  # grep for errors until shellcheck issue / feature request
+  # https://github.com/koalaman/shellcheck/issues/524 is implemented
+  - shellcheck -s bash -f gcc src/universalJavaApplicationStub | grep "error:" ; test $? -eq 1
