@@ -385,3 +385,7 @@ testValidReqPattern "9.2.15." "1"
 testValidReqPattern "9.2.15.*" "1"
 testValidReqPattern "9.2.15.+" "1"
 testValidReqPattern "9.3.5.6" "1"
+
+
+echo ""
+echo ""
