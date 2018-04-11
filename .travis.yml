@@ -15,7 +15,7 @@ matrix:
       osx_image: xcode9
     # OS X 10.13
     - os: osx
-      osx_image: xcode9.3beta
+      osx_image: xcode9.3
 
 
 # run the 'java-version-tester' script and show&save (`tee`) the output to a
