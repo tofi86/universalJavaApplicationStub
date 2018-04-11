@@ -18,9 +18,14 @@ matrix:
       osx_image: xcode9.3
 
 
+# Homebrew needs ruby 2.3 and should be updated everytime to use the latest
+# version of shellcheck
+before_install:
+  - rvm install 2.3.0
+  - brew update
+
 install:
   - brew install shellcheck
-
 
 before_script:
   - sw_vers
