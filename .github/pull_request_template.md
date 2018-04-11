@@ -2,8 +2,8 @@
 
 (Add x between brackets to check.)
 
+- [ ] I’ve updated my fork from the `develop` branch before proposing this pull request
 - [ ] I’m making this pull request against the `develop` branch
-- [ ] I’ve updated from the `develop` branch before proposing this pull request
 - [ ] I’ve tested the changes for bug fixes and/or features
 - [ ] I’ve documented new code
 
