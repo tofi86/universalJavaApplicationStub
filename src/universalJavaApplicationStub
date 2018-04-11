@@ -741,7 +741,7 @@ fi
 export CFProcessPath="$0"
 
 # remove Apples ProcessSerialNumber from passthru arguments (#39)
-if [[ $@ == -psn* ]] ; then
+if [[ "$*" == -psn* ]] ; then
 	ArgsPassthru=()
 else
 	ArgsPassthru=("$@")
