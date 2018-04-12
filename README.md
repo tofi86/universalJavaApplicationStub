@@ -43,7 +43,7 @@ How the script works
 
 You don't need a native `JavaApplicationStub` file anymore. The Bash script needs to be executable – that's all.
 
-The script reads JVM properties from `Info.plist` regardless of whether it's Apple or Oracle syntax and feeds them to a commandline `java` call like the following:
+The script reads JVM properties from `Info.plist` regardless of whether it's Apple or Oracle syntax and passes them to a `exec java` call like the following simplified:
 
 ```Bash
 # execute Java and set
@@ -51,21 +51,21 @@ The script reads JVM properties from `Info.plist` regardless of whether it's App
 # - splash image
 # - dock icon
 # - app name
-# - JVM options
-# - JVM default options
+# - JVM options / properties (-D)
+# - JVM default options (-X)
 # - main class
-# - main arguments
-# - passthru arguments
+# - main class arguments
+# - passthrough arguments from Terminal or Drag'n'Drop to Finder icon
 exec "${JAVACMD}" \
     -cp "${JVMClassPath}" \
     -splash:"${ResourcesFolder}/${JVMSplashFile}" \
     -Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
     -Xdock:name="${CFBundleName}" \
-    ${JVMOptions:+$JVMOptions }\
-    ${JVMDefaultOptions:+$JVMDefaultOptions }\
-    ${JVMMainClass}\
-    ${MainArgs:+ $MainArgs}\
-    ${ArgsPassthru:+ $ArgsPassthru}
+    ${JVMOptions} \
+    ${JVMDefaultOptions} \
+    ${JVMMainClass} \
+    ${MainArgsArr} \
+    ${ArgsPassthru}
 ```
 
 It sets the classpath, the dock icon, the *AboutMenuName* (as Xdock parameter) and then every *JVMOptions*, *JVMDefaultOptions* or *JVMArguments* found in the `Info.plist` file. See the table below for more supported Plist keys.
