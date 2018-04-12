@@ -1,6 +1,10 @@
 ChangeLog
 ---------
 
+### v3.0.2 (2018-04-12)
+* Bugfix: fix typo in JVMOptions expansion on java exec call (PR #63, Thanks to @michaelweiser for his contribution)
+* Added a basic Travis CI build pipeline running a `shellcheck` test for errors and executing the basic testsuite
+
 ### v3.0.1 (2018-03-10)
 * Bugfix: remove build number from JVM version number when creating comparable version number or extracting major version (fixes #61)
 
