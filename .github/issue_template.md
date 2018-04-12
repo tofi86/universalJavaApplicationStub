@@ -24,7 +24,7 @@ I'm submitting a…
 
 **Do you have screenshots, GIFs, demos or samples which demonstrate the problem or enhancement?**
 
-![image description](url)
+
 
 **What is the motivation / use case for changing the behavior?**
 
@@ -32,6 +32,7 @@ I'm submitting a…
 
 **Please tell us about your environment:**
 
+- universalJavaApplicationStub version:
 - Mac OS version:
 - Java version(s):
 
