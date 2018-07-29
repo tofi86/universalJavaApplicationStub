@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Tests for the functions used in universalJavaApplicationStub script
-# tofi86 @ 2018-03-10
+# tofi86 @ 2018-07-29
 
 
 
@@ -15,7 +15,7 @@
 ################################################################################
 function get_java_version_from_cmd() {
 	# second sed command strips " and -ea from the version string
-	echo $("$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g')
+	echo $("$1" -version 2>&1 | awk '/version/{print $3}' | sed -E 's/"//g;s/-ea//g')
 }
 
 
