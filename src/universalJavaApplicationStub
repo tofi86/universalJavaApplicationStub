@@ -387,7 +387,7 @@ fi
 ################################################################################
 function get_java_version_from_cmd() {
 	# second sed command strips " and -ea from the version string
-	echo $("$1" -version 2>&1 | awk '/version/{print $NF}' | sed -E 's/"//g;s/-ea//g')
+	echo $("$1" -version 2>&1 | awk '/version/{print $3}' | sed -E 's/"//g;s/-ea//g')
 }
 
 
