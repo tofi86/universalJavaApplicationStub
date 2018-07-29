@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v3.0.3 (2018-07-29)
+* Bugfix: changes for the new Java 10 `java -version` formatting (#66)
+
 ### v3.0.2 (2018-04-12)
 * Bugfix: fix typo in JVMOptions expansion on java exec call (PR #63, Thanks to @michaelweiser for his contribution)
 * Added a basic Travis CI build pipeline running a `shellcheck` test for errors and executing the basic testsuite
