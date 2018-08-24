@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v3.0.4 (2018-08-24)
+* Bugfix: Variables `$APP_PACKAGE`, `$JAVAROOT`, `$USER_HOME` in `JVMOptions` key (Oracle) or `Java:Properties` key (Apple) were not expanded (#69)
+
 ### v3.0.3 (2018-07-29)
 * Bugfix: changes for the new Java 10 `java -version` formatting (#66)
 
