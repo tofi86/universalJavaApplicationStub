@@ -339,7 +339,7 @@ stub_logger "[Language] $LANG"
 if [[ $LANG == fr* ]] ; then
 	MSG_ERROR_LAUNCHING="ERREUR au lancement de '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' n'est pas spécifié.\nL'application Java ne peut pas être lancée."
-	MSG_JVMVERSION_REQ_INVALID="La syntaxe de la version Java demandée est invalide: %s\nVeuillez contacter le développeur de l'application."
+	MSG_JVMVERSION_REQ_INVALID="La syntaxe de la version de Java demandée est invalide: %s\nVeuillez contacter le développeur de l'application."
 	MSG_NO_SUITABLE_JAVA="La version de Java installée sur votre système ne convient pas.\nCe programme nécessite Java %s"
 	MSG_JAVA_VERSION_OR_LATER="ou ultérieur"
 	MSG_JAVA_VERSION_LATEST="(dernière mise à jour)"
