@@ -1,15 +1,12 @@
 language: generic
 
 # run on different Mac OS X versions
-# https://docs.travis-ci.com/user/reference/osx/#OS-X-Version
+# https://docs.travis-ci.com/user/reference/osx/#macos-version
 matrix:
   include:
     # OS X 10.12, Java 8
     - os: osx
       osx_image: xcode9.2
-    # OS X 10.13, Java 8
-    - os: osx
-      osx_image: xcode9.3
     # OS X 10.13, Java 10
     - os: osx
       osx_image: xcode10
