@@ -4,15 +4,21 @@ language: generic
 # https://docs.travis-ci.com/user/reference/osx/#OS-X-Version
 matrix:
   include:
-    # OS X 10.11
+    # OS X 10.12, Java 8
     - os: osx
-      osx_image: xcode8
-    # OS X 10.12
-    - os: osx
-      osx_image: xcode9
-    # OS X 10.13
+      osx_image: xcode9.2
+    # OS X 10.13, Java 8
     - os: osx
       osx_image: xcode9.3
+    # OS X 10.13, Java 10
+    - os: osx
+      osx_image: xcode10
+    # OS X 10.13, Java 11
+    - os: osx
+      osx_image: xcode10.1
+    # OS X 10.14, Java 12
+    - os: osx
+      osx_image: xcode11
 
 
 # Homebrew needs ruby 2.3 and should be updated everytime to use the latest
