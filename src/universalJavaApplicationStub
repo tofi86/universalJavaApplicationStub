@@ -11,7 +11,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2018-08-24                                                          #
+# @date      2019-12-08                                                          #
 # @version   3.0.4                                                               #
 #                                                                                #
 ##################################################################################
@@ -220,9 +220,14 @@ if [ $exitcode -eq 0 ]; then
 		JVMDefaultOptions+=" -XstartOnFirstThread"
 	fi
 
-	# read the JVM Arguments as an array and retain spaces
+	# read the JVM Arguments in either Array or String style (#76) and retain spaces
 	IFS=$'\t\n'
-	MainArgs=($(xargs -n1 <<<$(plist_get_java ':Arguments')))
+	MainArgs_RAW=$(plist_get_java ':Arguments' | xargs)
+	if [[ $MainArgs_RAW == *Array* ]] ; then
+		MainArgs=($(xargs -n1 <<<$(plist_get_java ':Arguments' | tr -d '\n' | sed -E 's/Array \{ *(.*) *\}/\1/g' | sed 's/  */ /g')))
+	else
+		MainArgs=($(xargs -n1 <<<$(plist_get_java ':Arguments')))
+	fi
 	unset IFS
 	# post processing of the array follows further below...
 
