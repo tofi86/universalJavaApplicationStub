@@ -11,7 +11,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2019-12-08                                                          #
+# @date      2019-12-09                                                          #
 # @version   3.0.4                                                               #
 #                                                                                #
 ##################################################################################
@@ -292,6 +292,18 @@ else
 fi
 
 
+# (#75) check for undefined icons or icon names without .icns extension and prepare
+# an osascript statement for those cases when the icon can be shown in the dialog
+DialogWithIcon=""
+if [ ! -z ${CFBundleIconFile} ]; then
+	if [[ ${CFBundleIconFile} == *.icns ]] && [[ -f "${ResourcesFolder}/${CFBundleIconFile}" ]] ; then
+		DialogWithIcon=" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+	elif [[ ${CFBundleIconFile} != *.icns ]] && [[ -f "${ResourcesFolder}/${CFBundleIconFile}.icns" ]] ; then
+		CFBundleIconFile+=".icns"
+		DialogWithIcon=" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+	fi
+fi
+
 
 # JVMVersion: post processing and optional splitting
 if [[ ${JVMVersion} == *";"* ]]; then
@@ -518,7 +530,7 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 		# log exit cause
 		stub_logger "[EXIT 4] ${MSG_JVMVERSION_REQ_INVALID_EXPANDED}"
 		# display error message with AppleScript
-		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_JVMVERSION_REQ_INVALID_EXPANDED}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_JVMVERSION_REQ_INVALID_EXPANDED}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1${DialogWithIcon}"
 		# exit with error
 		exit 4
 	fi
@@ -528,7 +540,7 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 		# log exit cause
 		stub_logger "[EXIT 5] ${MSG_JVMVERSION_REQ_INVALID_EXPANDED}"
 		# display error message with AppleScript
-		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_JVMVERSION_REQ_INVALID_EXPANDED}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_JVMVERSION_REQ_INVALID_EXPANDED}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1${DialogWithIcon}"
 		# exit with error
 		exit 5
 	fi
@@ -705,7 +717,7 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 		stub_logger "[EXIT 3] ${MSG_NO_SUITABLE_JAVA_EXPANDED}"
 
 		# display error message with AppleScript
-		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA_EXPANDED}\n${MSG_NO_SUITABLE_JAVA_CHECK}\" with title \"${CFBundleName}\"  buttons {\" OK \", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA_EXPANDED}\n${MSG_NO_SUITABLE_JAVA_CHECK}\" with title \"${CFBundleName}\"  buttons {\" OK \", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\"${DialogWithIcon}" \
 				-e "set response to button returned of the result" \
 				-e "if response is \"${MSG_VISIT_JAVA_DOT_COM}\" then open location \"http://java.com\""
 		# exit with error
@@ -715,7 +727,7 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 		# log exit cause
 		stub_logger "[EXIT 1] ${MSG_ERROR_LAUNCHING}"
 		# display error message with AppleScript
-		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_INSTALL_JAVA}\" with title \"${CFBundleName}\" buttons {\"${MSG_LATER}\", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\" with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)" \
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_INSTALL_JAVA}\" with title \"${CFBundleName}\" buttons {\"${MSG_LATER}\", \"${MSG_VISIT_JAVA_DOT_COM}\"} default button \"${MSG_VISIT_JAVA_DOT_COM}\"${DialogWithIcon}" \
 					-e "set response to button returned of the result" \
 					-e "if response is \"${MSG_VISIT_JAVA_DOT_COM}\" then open location \"http://java.com\""
 		# exit with error
@@ -732,7 +744,7 @@ if [ -z "${JVMMainClass}" ]; then
 	# log exit cause
 	stub_logger "[EXIT 2] ${MSG_MISSING_MAINCLASS}"
 	# display error message with AppleScript
-	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_MISSING_MAINCLASS}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+	osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_MISSING_MAINCLASS}\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1${DialogWithIcon}"
 	# exit with error
 	exit 2
 fi
