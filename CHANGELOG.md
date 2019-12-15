@@ -1,6 +1,12 @@
 ChangeLog
 ---------
 
+### v3.0.5 (2019-12-15)
+* If java is missing, offer a choice between Oracle and AdoptOpenJDK download buttons (#78)
+* Support Array style `Java:Arguments` for Apple Plist style (#76)
+* Bugfix: do not crash if `CFBundleIconFile` is provided without ".icns" extension (#75)
+* Minor French translation fix (PR #73, Thanks to @ebourg for his contribution)
+
 ### v3.0.4 (2018-08-24)
 * Bugfix: Variables `$APP_PACKAGE`, `$JAVAROOT`, `$USER_HOME` in `JVMOptions` key (Oracle) or `Java:Properties` key (Apple) were not expanded (#69)
 
