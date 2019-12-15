@@ -166,6 +166,32 @@ Supported PList keys
 | **Main Class Arguments**        | `:Java(X):Arguments`   | `:JVMArguments`       |
 
 
+### Specify min/max Java requirement
+
+Since v3.0 ([#51](https://github.com/tofi86/universalJavaApplicationStub/issues/51))
+
+Use `Java(X):JVMVersion` (Apple style) or `:JVMVersion` (Oracle style) with the following values:
+
+* `1.8` or `1.8*` for Java 8
+* `1.8+` for Java 8 or higher
+* `1.7;1.8*` for Java 7 or 8
+* `1.8;9.0` for Java 8* up to exactly 9.0 (but not 9.0.*)
+* `1.8;9.0*` for Java 8* and 9.0.* but not 9.1.*
+
+
+### Bundle a JRE/JDK with your app
+
+You can use the Plist key `LSEnvironment` to export and set the `$JAVA_HOME` environment variable relative to your App's root directory:
+
+```xml
+<key>LSEnvironment</key>
+<dict>
+    <key>JAVA_HOME</key>
+    <string>Contents/Frameworks/jdk8u232-b09-jre/Contents/Home</string>
+<dict>
+```
+
+
 Recommended additional Plist keys
 ---------------------------------
 
