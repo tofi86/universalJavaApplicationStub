@@ -104,6 +104,8 @@ Use whichever ANT task you like:
 * Oracle's opensource ["Appbundler"](https://java.net/projects/appbundler) *(seems to be dead)*
   * or [*infinitekind*'s fork](https://bitbucket.org/infinitekind/appbundler/overview)
 
+Or build the App bundle statically from scratch...
+
 ### JarBundler (≥ v3.3) example
 Download the latest JarBundler release [from its github repo](https://github.com/UltraMixer/JarBundler).
 
@@ -162,6 +164,49 @@ Supported PList keys
 | **`-XstartOnFirstThread`** [*](https://stackoverflow.com/questions/28149634/what-does-the-xstartonfirstthread-vm-argument-do-mean) | `:Java(X):StartOnMainThread` | *not supported*       |
 | **Java Properties** (`-D…`)     | `:Java(X):Properties`  | `:JVMOptions`         |
 | **Main Class Arguments**        | `:Java(X):Arguments`   | `:JVMArguments`       |
+
+
+### Specify min/max Java requirement
+
+Since v3.0 ([#51](https://github.com/tofi86/universalJavaApplicationStub/issues/51))
+
+Use `Java(X):JVMVersion` (Apple style) or `:JVMVersion` (Oracle style) with the following values:
+
+* `1.8` or `1.8*` for Java 8
+* `1.8+` for Java 8 or higher
+* `1.7;1.8*` for Java 7 or 8
+* `1.8;9.0` for Java 8* up to exactly 9.0 (but not 9.0.*)
+* `1.8;9.0*` for Java 8* and 9.0.* but not 9.1.*
+
+
+### Bundle a JRE/JDK with your app
+
+You can use the Plist key `LSEnvironment` to export and set the `$JAVA_HOME` environment variable relative to your App's root directory:
+
+```xml
+<key>LSEnvironment</key>
+<dict>
+    <key>JAVA_HOME</key>
+    <string>Contents/Frameworks/jdk8u232-b09-jre/Contents/Home</string>
+<dict>
+```
+
+
+Recommended additional Plist keys
+---------------------------------
+
+Starting with Mac OS 10.14 users may be confronted with an additional system security dialog before any warning dialog of this stub is shown. See [issue #77](https://github.com/tofi86/universalJavaApplicationStub/issues/77) for more details.
+
+This happens because the warning dialogs of this launcher stub are displayed with AppleScript.
+
+It's recommended to at least set the following Plist key in order to display a descriptive message to the user, why he should grant the app system access:
+
+```xml
+<key>NSAppleEventsUsageDescription</key>
+<string>There was an error while launching the application. Please click OK to display a dialog with more information or cancel and view the syslog for details.</string>
+```
+
+The message itself is just a sample...
 
 
 Logging
