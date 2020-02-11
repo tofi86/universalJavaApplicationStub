@@ -477,7 +477,7 @@ function get_comparable_java_version() {
 ################################################################################
 function is_valid_requirement_pattern() {
 	local java_req=$1
-	java8pattern='1\.[4-8](\.0)?(\.0_[0-9]+)?[*+]?'
+	java8pattern='1\.[4-8](\.[0-9]+)?(\.0_[0-9]+)?[*+]?'
 	java9pattern='(9|1[0-9])(-ea|[*+]|(\.[0-9]+){1,2}[*+]?)?'
 	# test matches either old Java versioning scheme (up to 1.8) or new scheme (starting with 9)
 	if [[ ${java_req} =~ ^(${java8pattern}|${java9pattern})$ ]]; then
