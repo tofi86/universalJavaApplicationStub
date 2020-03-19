@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+### v3.0.6 (2020-03-19)
+* Fixed an issue related to Java 4-8 version number detection (PR #81, Thanks to @thatChadM for his contribution)
+
 ### v3.0.5 (2019-12-15)
 * If java is missing, offer a choice between Oracle and AdoptOpenJDK download buttons (#78)
 * Support Array style `Java:Arguments` for Apple Plist style (#76)

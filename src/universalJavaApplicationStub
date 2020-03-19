@@ -11,14 +11,14 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2019-12-15                                                          #
-# @version   3.0.5                                                               #
+# @date      2020-03-19                                                          #
+# @version   3.0.6                                                               #
 #                                                                                #
 ##################################################################################
 #                                                                                #
 # The MIT License (MIT)                                                          #
 #                                                                                #
-# Copyright (c) 2014-2018 Tobias Fischer                                         #
+# Copyright (c) 2014-2020 Tobias Fischer                                         #
 #                                                                                #
 # Permission is hereby granted, free of charge, to any person obtaining a copy   #
 # of this software and associated documentation files (the "Software"), to deal  #
@@ -477,7 +477,7 @@ function get_comparable_java_version() {
 ################################################################################
 function is_valid_requirement_pattern() {
 	local java_req=$1
-	java8pattern='1\.[4-8](\.0)?(\.0_[0-9]+)?[*+]?'
+	java8pattern='1\.[4-8](\.[0-9]+)?(\.0_[0-9]+)?[*+]?'
 	java9pattern='(9|1[0-9])(-ea|[*+]|(\.[0-9]+){1,2}[*+]?)?'
 	# test matches either old Java versioning scheme (up to 1.8) or new scheme (starting with 9)
 	if [[ ${java_req} =~ ^(${java8pattern}|${java9pattern})$ ]]; then

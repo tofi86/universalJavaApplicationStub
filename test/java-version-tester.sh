@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Tests for the functions used in universalJavaApplicationStub script
-# tofi86 @ 2018-07-29
+# tofi86 @ 2020-02-11
 
 
 
@@ -84,7 +84,7 @@ function get_comparable_java_version() {
 ################################################################################
 function is_valid_requirement_pattern() {
 	local java_req=$1
-	java8pattern='1\.[4-8](\.0)?(\.0_[0-9]+)?[*+]?'
+	java8pattern='1\.[4-8](\.[0-9]+)?(\.0_[0-9]+)?[*+]?'
 	java9pattern='(9|1[0-9])(-ea|[*+]|(\.[0-9]+){1,2}[*+]?)?'
 	# test matches either old Java versioning scheme (up to 1.8) or new scheme (starting with 9)
 	if [[ ${java_req} =~ ^(${java8pattern}|${java9pattern})$ ]]; then
@@ -179,6 +179,7 @@ echo "Tests with Java 1.6:"
 testExtractMajor "1.6" "6"
 testExtractMajor "1.6+" "6"
 testExtractMajor "1.6.0" "6"
+testExtractMajor "1.6.2" "6"
 testExtractMajor "1.6.0_07" "6"
 testExtractMajor "1.6.0_45" "6"
 testExtractMajor "1.6.0_65-b14-468" "6"
@@ -328,6 +329,7 @@ testValidReqPattern "1.6.0_45" "0"
 testValidReqPattern "1.6.0_45+" "0"
 testValidReqPattern "1.6.0_100" "0"
 testValidReqPattern "1.6.0_100+" "0"
+testValidReqPattern "1.6.2" "0"
 echo ""
 echo "Tests with old version scheme (invalid requirements):"
 testValidReqPattern "1.2" "1"
