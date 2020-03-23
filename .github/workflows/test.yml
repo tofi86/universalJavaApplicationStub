@@ -1,0 +1,61 @@
+name: Tests and Shellcheck
+
+# Trigger the workflow on push or pull request
+on: [push, pull_request]
+
+
+jobs:
+
+  tests:
+    name: Run bash function tests
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Log Mac OS version information
+      run: |
+        sw_vers
+
+    # Run the 'java-version-tester' script and show&save (`tee`) the output to a
+    # logfile; then grep the logfile for 'FAILED' entries which would cause grep
+    # to exit with 0; then run 'test' command and swap the grep exit code
+    # to return with 0 if grep doesn't match and return with 1 if it matches.
+    - name: Run function tests in java-version-tester.sh
+      run: |
+        echo "Running tests..."
+        bash test/java-version-tester.sh | tee test/java-version-tester.log
+        echo "Tests done. Checking for failures..."
+        test/check-log.sh test/java-version-tester.log FAILED
+
+
+  shellcheck:
+    name: Check bash syntax with shellcheck
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Log Mac OS version information
+      run: |
+        sw_vers
+
+    - name: Install shellcheck via HomeBrew
+      run: |
+        brew install shellcheck
+        shellcheck -V
+
+    # Test with shellcheck for bash syntax errors which should fail the build.
+    # Until https://github.com/koalaman/shellcheck/issues/524 is implemented,
+    # grep for errors and fail manually.
+    #
+    # Show & save the output via `tee` to a logfile; then grep the logfile for
+    # 'error:' entries which would cause grep to exit with 0; then run 'test'
+    # command and swap the grep exit code to return with 0 if grep doesn't match
+    #  and return with 1 if it matches
+    - name: Run shellcheck on the launcher stub
+      run: |
+        echo "Running shellcheck..."
+        shellcheck -s bash -f gcc src/universalJavaApplicationStub | tee test/shellcheck.log
+        echo "Shellcheck done. Checking for errors..."
+        test/check-log.sh test/shellcheck.log "error:"
