@@ -1,7 +1,7 @@
 universalJavaApplicationStub
 ============================
 
-[![Build Status](https://travis-ci.org/tofi86/universalJavaApplicationStub.svg?branch=master)](https://travis-ci.org/tofi86/universalJavaApplicationStub) [![Current release](https://img.shields.io/github/release/tofi86/universalJavaApplicationStub.svg)](https://github.com/tofi86/universalJavaApplicationStub/releases) [![Join the chat at https://gitter.im/tofi86/universalJavaApplicationStub](https://badges.gitter.im/tofi86/universalJavaApplicationStub.svg)](https://gitter.im/tofi86/universalJavaApplicationStub?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+![Tests and Shellcheck](https://github.com/tofi86/universalJavaApplicationStub/workflows/Tests%20and%20Shellcheck/badge.svg) [![Current release](https://img.shields.io/github/release/tofi86/universalJavaApplicationStub.svg)](https://github.com/tofi86/universalJavaApplicationStub/releases) [![Join the chat at https://gitter.im/tofi86/universalJavaApplicationStub](https://badges.gitter.im/tofi86/universalJavaApplicationStub.svg)](https://gitter.im/tofi86/universalJavaApplicationStub?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 A BASH based *JavaApplicationStub* for Java Apps on Mac OS X that works with both Apple's and Oracle's plist format. It is released under the [MIT License](https://github.com/tofi86/universalJavaApplicationStub/blob/master/LICENSE).
 
