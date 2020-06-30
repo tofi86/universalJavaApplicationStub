@@ -380,6 +380,21 @@ elif [[ $LANG == zh* ]] ; then
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
 
+# Spanish localization
+elif [[ $LANG == es* ]] ; then
+	MSG_ERROR_LAUNCHING="ERROR iniciando '${CFBundleName}'."
+	MSG_MISSING_MAINCLASS="¡'MainClass' no especificada!\n¡La aplicación Java no puede iniciarse!"
+	MSG_JVMVERSION_REQ_INVALID="La sintaxis de la versión Java requerida no es válida: %s\nPor favor, contacte con el desarrollador de la aplicación."
+	MSG_NO_SUITABLE_JAVA="¡No se encontró una versión de Java adecuada en su sistema!\nEste programa requiere Java %s"
+	MSG_JAVA_VERSION_OR_LATER="o posterior"
+	MSG_JAVA_VERSION_LATEST="(ultima actualización)"
+	MSG_JAVA_VERSION_MAX="superior a %s"
+	MSG_NO_SUITABLE_JAVA_CHECK="Asegúrese de instalar la versión Java requerida."
+	MSG_INSTALL_JAVA="¡Necesita tener JAVA instalado en su Mac!\nVisite java.com para consultar las instrucciones para su instalación..."
+	MSG_LATER="Más tarde"
+	MSG_VISIT_JAVA_DOT_COM="Java de Oracle"
+	MSG_VISIT_ADOPTOPENJDK="Java de AdoptOpenJDK"
+
 # English default localization
 else
 	MSG_ERROR_LAUNCHING="ERROR launching '${CFBundleName}'."
