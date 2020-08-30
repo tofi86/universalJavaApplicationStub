@@ -567,14 +567,22 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 
 	# find installed JavaVirtualMachines (JDK + JRE)
 	allJVMs=()
-	# read JDK's from '/usr/libexec/java_home -V' command
-	while read -r line; do
-		version=$(echo $line | awk -F $',' '{print $1;}')
-		path=$(echo $line | awk -F $'" ' '{print $2;}')
+	
+	# read JDK's from '/usr/libexec/java_home --xml' command with PlistBuddy and a custom Dict iterator
+	# idea: https://stackoverflow.com/a/14085460/1128689 and https://scriptingosx.com/2018/07/parsing-dscl-output-in-scripts/
+	javaXml=$(/usr/libexec/java_home --xml)
+	javaCounter=$(/usr/libexec/PlistBuddy -c "Print" /dev/stdin <<< $javaXml | grep "Dict" | wc -l | tr -d ' ')
+	stub_logger "[JavaSearch] ... found $javaCounter JVM's"
+
+	# iterate over all Dict entries
+	for idx in $(seq 0 $((javaCounter - 1)))
+	do
+		version=$(/usr/libexec/PlistBuddy -c "print :$idx:JVMVersion" /dev/stdin <<< $javaXml)
+		path=$(/usr/libexec/PlistBuddy -c "print :$idx:JVMHomePath" /dev/stdin <<< $javaXml)
 		path+="/bin/java"
 		allJVMs+=("$version:$path")
-	done < <(/usr/libexec/java_home -V 2>&1 | grep '^[[:space:]]')
-	# unset while loop variables
+	done
+	# unset for loop variables
 	unset version path
 
 	# add Apple JRE if available
