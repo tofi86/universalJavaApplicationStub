@@ -538,7 +538,7 @@ fi
 # check for any other or a specific Java version
 # also if $JAVA_HOME exists but isn't executable
 if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
-	stub_logger "[JavaSearch] Checking for JavaVirtualMachines on the system ..."
+	stub_logger "[JavaSearch] Searching for JavaVirtualMachines on the system ..."
 	# reset variables
 	JAVACMD=""
 	JAVACMD_version=""
@@ -603,6 +603,9 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 
 
 	# determine JVMs matching the min/max version requirement
+
+	stub_logger "[JavaSearch] Filtering the result list for JVMs matching the min/max version requirement ..."
+
 	minC=$(get_comparable_java_version ${JVMVersion})
 	maxC=$(get_comparable_java_version ${JVMMaxVersion})
 	matchingJVMs=()
@@ -687,7 +690,7 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 	# debug output
 	for i in "${matchingJVMs[@]}"
 	do
-		stub_logger "[JavaSearch] ... ... matches all requirements: $i"
+		stub_logger "[JavaSearch] ... matches all requirements: $i"
 	done
 
 
