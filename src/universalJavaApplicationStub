@@ -574,7 +574,6 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 	# idea: https://stackoverflow.com/a/14085460/1128689 and https://scriptingosx.com/2018/07/parsing-dscl-output-in-scripts/
 	javaXml=$(/usr/libexec/java_home --xml)
 	javaCounter=$(/usr/libexec/PlistBuddy -c "Print" /dev/stdin <<< $javaXml | grep "Dict" | wc -l | tr -d ' ')
-	stub_logger "[JavaSearch] ... found $javaCounter JVM's"
 
 	# iterate over all Dict entries
 	for idx in $(seq 0 $((javaCounter - 1)))
