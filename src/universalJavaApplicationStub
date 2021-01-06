@@ -213,6 +213,8 @@ if [ $exitcode -eq 0 ]; then
 	else
 		JVMDefaultOptions=${JVMDefaultOptions_RAW}
 	fi
+	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME (#84)
+	JVMDefaultOptions=$(eval echo "${JVMDefaultOptions}")
 
 	# read StartOnMainThread and add as -XstartOnFirstThread
 	JVMStartOnMainThread=$(plist_get_java ':StartOnMainThread')
