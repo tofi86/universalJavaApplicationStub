@@ -587,6 +587,22 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 	# unset for loop variables
 	unset version path
 
+	# add SDKMAN! java versions (#95)
+	if [ -d ~/.sdkman/candidates/java/ ] ; then
+		for sdkjdk in ~/.sdkman/candidates/java/*/
+		do
+			if [[ ${sdkjdk} =~ /current/$ ]] ; then
+				continue
+			fi
+
+			sdkjdkcmd="${sdkjdk}bin/java"
+			version=$(get_java_version_from_cmd "${sdkjdkcmd}")
+			allJVMs+=("$version:$sdkjdkcmd")
+		done
+		# unset for loop variables
+		unset version
+	fi
+
 	# add Apple JRE if available
 	if [ -x "${apple_jre_plugin}" ] ; then
 		allJVMs+=("$apple_jre_version:$apple_jre_plugin")
