@@ -43,6 +43,21 @@ jobs:
           prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
           body: ${{ steps.changelog_reader.outputs.changes }}
 
+      - name: ZIP uncompiled universalJavaApplicationStub
+        run: |
+          echo "Zipping uncompiled script..."
+          zip --junk-paths universalJavaApplicationStub-uncompiled.zip src/universalJavaApplicationStub
+
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCESS_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_draft_release.outputs.upload_url }}
+          asset_name: universalJavaApplicationStub-v${{ env.RELEASE_VERSION }}-source.zip
+          asset_path: ./universalJavaApplicationStub-uncompiled.zip
+          asset_content_type: application/zip
+
 
   compile:
     name: Compile the stub on ${{ matrix.os }}
@@ -81,7 +96,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCESS_TOKEN }}
         with:
           upload_url: ${{ needs.draft_release.outputs.upload_url }}
-          asset_name: universalJavaApplicationStub-${{ env.RELEASE_TAG }}-${{ matrix.os }}.zip
+          asset_name: universalJavaApplicationStub-${{ env.RELEASE_TAG }}-binary-${{ matrix.os }}.zip
           asset_path: ./universalJavaApplicationStub-${{ matrix.os }}.zip
           asset_content_type: application/zip
 
