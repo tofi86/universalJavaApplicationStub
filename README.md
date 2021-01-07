@@ -192,8 +192,22 @@ You can use the Plist key `LSEnvironment` to export and set the `$JAVA_HOME` env
 ```
 
 
+Use a compiled binary for macOS 10.15 and above
+-----------------------------------------------
+
+Starting with macOS 10.15 Apple by default prevents access to _Protected Resources_ like the user's _Download_, _Documents_ or _Desktop_ folders and shows a security dialog which the user has to accept before access is granted.
+
+When using `javax.swing.JFileChooser` in your application, which supports these kinds of security dialogs (interestingly `java.awt.FileDialog` does not!), you should use a compiled binary of the `universalJavaApplicationStub` script instead of the plain bash script. See [issue #85](https://github.com/tofi86/universalJavaApplicationStub/issues/85) for more details.
+
+Starting with version 3.1.0 we provide pre-built binaries on the [Releases page](https://github.com/tofi86/universalJavaApplicationStub/releases/) which are automatically compiled with [`shc`](https://github.com/neurobin/shc) via GitHub Actions CI.
+
+Additionaly we recommend you set _Usage Description_ Plist keys as described further below.
+
+
 Recommended additional Plist keys
 ---------------------------------
+
+### `NSAppleEventsUsageDescription`
 
 Starting with Mac OS 10.14 users may be confronted with an additional system security dialog before any warning dialog of this stub is shown. See [issue #77](https://github.com/tofi86/universalJavaApplicationStub/issues/77) for more details.
 
@@ -206,7 +220,16 @@ It's recommended to at least set the following Plist key in order to display a d
 <string>There was an error while launching the application. Please click OK to display a dialog with more information or cancel and view the syslog for details.</string>
 ```
 
-The message itself is just a sample...
+### Access to "Protected Resources"
+
+If your app requires access to _Protected Resources_ like the user's _Download_, _Documents_ or _Desktop_ folders, there are [a couple more properties](https://developer.apple.com/documentation/bundleresources/information_property_list/protected_resources) to add in your Plist file for setting a _Usage Description_: 
+
+* [`NSDownloadsFolderUsageDescription`](https://developer.apple.com/documentation/bundleresources/information_property_list/nsdownloadsfolderusagedescription)
+* [`NSDocumentsFolderUsageDescription`](https://developer.apple.com/documentation/bundleresources/information_property_list/nsdocumentsfolderusagedescription)
+* [`NSDesktopFolderUsageDescription`](https://developer.apple.com/documentation/bundleresources/information_property_list/nsdesktopfolderusagedescription)
+* and maybe more...
+
+This may be extra important when using `javax.swing.JFileChooser` in your application. See [issue #85](https://github.com/tofi86/universalJavaApplicationStub/issues/85) for more details.
 
 
 Logging
