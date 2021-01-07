@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [3.1.0] - 2021-01-07
+### Added
+- Support for macOS 11.0 "Big Sur" (#91)
+- Support for JDK's installed via SDKMAN! (#95)
+- Apple `VMOptions` key: expand variables `$APP_PACKAGE`, `$JAVAROOT`, `$USER_HOME` (#84)
+- Translation of messages to Spanish (PR #88, Thanks to @fvarrui for his contribution)
+- Added a CI action for automated releases that builds and publishes binary releases with `shc` (#85, #87, PR #96)
+
+### Changed
+- Suppress empty `-splash` option if no splash image is specified in `Info.plist` (#94)
+- Replace Travis CI with GitHub Actions CI
+
+
 ## [3.0.6] - 2020-03-19
 ### Fixed
 - Fixed an issue related to Java 4-8 version number detection (PR #81, Thanks to @thatChadM for his contribution)
