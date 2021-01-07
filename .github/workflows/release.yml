@@ -1,0 +1,114 @@
+name: Release
+
+# Trigger the workflow only on tags
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+
+jobs:
+
+  draft_release:
+    name: Create draft release
+    runs-on: ubuntu-latest
+
+    outputs:
+      release_id: ${{ steps.create_draft_release.outputs.id }}
+      upload_url: ${{ steps.create_draft_release.outputs.upload_url }}
+
+    steps:
+      - name: Get version from tag
+        id: tag_name
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+
+      - name: Get Changelog Entry
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: ${{ env.RELEASE_VERSION }}
+          path: ./CHANGELOG.md
+
+      - name: Create draft release
+        id: create_draft_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCESS_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: true
+          prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
+          body: ${{ steps.changelog_reader.outputs.changes }}
+
+      - name: ZIP uncompiled universalJavaApplicationStub
+        run: |
+          echo "Zipping uncompiled script..."
+          zip --junk-paths universalJavaApplicationStub-uncompiled.zip src/universalJavaApplicationStub
+
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCESS_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_draft_release.outputs.upload_url }}
+          asset_name: universalJavaApplicationStub-v${{ env.RELEASE_VERSION }}-source.zip
+          asset_path: ./universalJavaApplicationStub-uncompiled.zip
+          asset_content_type: application/zip
+
+
+  compile:
+    name: Compile the stub on ${{ matrix.os }}
+    needs: draft_release # we need to know the upload URL
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-10.15 ] # macos-11.0
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set env
+        run: echo "RELEASE_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
+
+      - name: Install shc via HomeBrew
+        run: |
+          brew install shc
+          shc -h
+
+      - name: Compile universalJavaApplicationStub
+        run: |
+          echo "Running shc..."
+          shc -r -f src/universalJavaApplicationStub
+
+      - name: ZIP universalJavaApplicationStub binary
+        run: |
+          echo "Zipping binary..."
+          mv src/universalJavaApplicationStub.x universalJavaApplicationStub
+          rm src/universalJavaApplicationStub.x.c
+          zip --junk-paths universalJavaApplicationStub-${{ matrix.os }}.zip universalJavaApplicationStub
+
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCESS_TOKEN }}
+        with:
+          upload_url: ${{ needs.draft_release.outputs.upload_url }}
+          asset_name: universalJavaApplicationStub-${{ env.RELEASE_TAG }}-binary-${{ matrix.os }}.zip
+          asset_path: ./universalJavaApplicationStub-${{ matrix.os }}.zip
+          asset_content_type: application/zip
+
+
+  publish_release:
+    name: Publish drafted release
+    needs: [ draft_release, compile ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_API_PERSONAL_ACCESS_TOKEN }}
+        with:
+          release_id: ${{ needs.draft_release.outputs.release_id }}
