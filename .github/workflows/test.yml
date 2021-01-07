@@ -7,15 +7,14 @@ on: [push, pull_request]
 jobs:
 
   tests:
-    name: Run bash function tests
-    runs-on: macos-latest
+    name: Run bash function tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-10.15 ] # macos-11.0
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Log Mac OS version information
-      run: |
-        sw_vers
 
     # Run the 'java-version-tester' script and show&save (`tee`) the output to a
     # logfile; then grep the logfile for 'FAILED' entries which would cause grep
@@ -30,15 +29,14 @@ jobs:
 
 
   shellcheck:
-    name: Check bash syntax with shellcheck
-    runs-on: macos-latest
+    name: Check bash syntax with shellcheck on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-10.15 ] # macos-11.0
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Log Mac OS version information
-      run: |
-        sw_vers
 
     - name: Install shellcheck via HomeBrew
       run: |
