@@ -346,7 +346,7 @@ for i in "${appleLanguages[@]}"
 do
 	langValue="${i%-*}"
 	stub_logger "[LanguageSearch] ... found '$i' (as '$langValue')"
-	if [ -z "${language}" ] && [[ " ${stubLanguages[@]} " =~ " ${langValue} " ]]; then
+	if [ -z "${language}" ] && grep -q ${langValue} <<< "${stubLanguages[@]}" ; then
 		stub_logger "[LanguageSearch] ... ... which has been set as the default language for the launcher stub"
 		language=${langValue}
 	fi
