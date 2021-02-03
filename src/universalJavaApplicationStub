@@ -527,19 +527,27 @@ if [ -n "$JAVA_HOME" ] ; then
 	if [[ $JAVA_HOME == /* ]] ; then
 		# if "$JAVA_HOME" starts with a Slash it's an absolute path
 		JAVACMD="$JAVA_HOME/bin/java"
+		stub_logger "[JavaSearch] ... parsing JAVA_HOME as absolute path to the executable '$JAVACMD'"
 	else
 		# otherwise it's a relative path to "$AppPackageFolder"
 		JAVACMD="$AppPackageFolder/$JAVA_HOME/bin/java"
+		stub_logger "[JavaSearch] ... parsing JAVA_HOME as relative path inside the App bundle to the executable '$JAVACMD'"
 	fi
 	JAVACMD_version=$(get_comparable_java_version $(get_java_version_from_cmd "${JAVACMD}"))
 else
-	stub_logger "[JavaSearch] ... didn't found JAVA_HOME"
+	stub_logger "[JavaSearch] ... haven't found JAVA_HOME"
 fi
 
 
 # check for any other or a specific Java version
 # also if $JAVA_HOME exists but isn't executable
 if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
+
+	# add a warning in the syslog if JAVA_HOME is not executable or not found (#100)
+	if [ -n "$JAVA_HOME" ] ; then
+		stub_logger "[JavaSearch] ... but no 'java' executable was found at the JAVA_HOME location!"
+	fi
+
 	stub_logger "[JavaSearch] Searching for JavaVirtualMachines on the system ..."
 	# reset variables
 	JAVACMD=""

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Changed
+- Improved logging for JAVA_HOME detection (#100)
+
 ### Fixed
 - Fixed a crash when `/usr/libexec/java_home` returns no JVMs (#93)
 
