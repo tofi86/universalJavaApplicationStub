@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Improved language detection by reading the user preferred languages from the macOS System Preferences instead of using the system locale (#101)
 - Improved logging for JAVA_HOME detection (#100)
 
 ### Fixed

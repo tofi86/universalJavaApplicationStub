@@ -334,11 +334,27 @@ done
 # internationalized messages
 ############################################
 
-LANG=$(defaults read -g AppleLocale)
-stub_logger "[Language] $LANG"
+# supported languages / available translations
+stubLanguages=("fr" "de" "zh" "es" "en")
+
+# read user preferred languages as defined in macOS System Preferences (#101)
+stub_logger '[LanguageSearch] Checking preferred languages ...'
+appleLanguages=($(defaults read -g AppleLanguages | grep '\s"' | tr -d ',' | xargs))
+
+language=""
+for i in "${appleLanguages[@]}"
+do
+	langValue="${i%-*}"
+	stub_logger "[LanguageSearch] ... found '$i' (as '$langValue')"
+	if [ -z "${language}" ] && [[ " ${stubLanguages[@]} " =~ " ${langValue} " ]]; then
+		stub_logger "[LanguageSearch] ... ... which has been set as the default language for the launcher stub"
+		language=${langValue}
+	fi
+done
+stub_logger "[Language] $language"
 
 # French localization
-if [[ $LANG == fr* ]] ; then
+if [[ "$language" == "fr" ]] ; then
 	MSG_ERROR_LAUNCHING="ERREUR au lancement de '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' n'est pas spécifié.\nL'application Java ne peut pas être lancée."
 	MSG_JVMVERSION_REQ_INVALID="La syntaxe de la version de Java demandée est invalide: %s\nVeuillez contacter le développeur de l'application."
@@ -353,7 +369,7 @@ if [[ $LANG == fr* ]] ; then
 	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
 
 # German localization
-elif [[ $LANG == de* ]] ; then
+elif [[ "$language" == "de" ]] ; then
 	MSG_ERROR_LAUNCHING="FEHLER beim Starten von '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="Die 'MainClass' ist nicht spezifiziert!\nDie Java-Anwendung kann nicht gestartet werden!"
 	MSG_JVMVERSION_REQ_INVALID="Die Syntax der angeforderten Java-Version ist ungültig: %s\nBitte kontaktieren Sie den Entwickler der App."
@@ -368,7 +384,7 @@ elif [[ $LANG == de* ]] ; then
 	MSG_VISIT_ADOPTOPENJDK="Java von AdoptOpenJDK"
 
 # Simplifyed Chinese localization
-elif [[ $LANG == zh* ]] ; then
+elif [[ "$language" == "zh" ]] ; then
 	MSG_ERROR_LAUNCHING="无法启动 '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="没有指定 'MainClass'！\nJava程序无法启动!"
 	MSG_JVMVERSION_REQ_INVALID="Java版本参数语法错误: %s\n请联系该应用的开发者。"
@@ -383,7 +399,7 @@ elif [[ $LANG == zh* ]] ; then
 	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
 
 # Spanish localization
-elif [[ $LANG == es* ]] ; then
+elif [[ "$language" == "es" ]] ; then
 	MSG_ERROR_LAUNCHING="ERROR iniciando '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="¡'MainClass' no especificada!\n¡La aplicación Java no puede iniciarse!"
 	MSG_JVMVERSION_REQ_INVALID="La sintaxis de la versión Java requerida no es válida: %s\nPor favor, contacte con el desarrollador de la aplicación."
