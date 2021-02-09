@@ -247,10 +247,14 @@ else
 	ResourcesFolder="${OracleResourcesFolder}"
 	WorkingDirectory="${OracleJavaFolder}"
 
-	APP_ROOT="${AppPackageFolder}"
+	APP_PACKAGE="${AppPackageFolder}"
 
 	# read the MainClass name
 	JVMMainClass="$(plist_get ':JVMMainClassName')"
+
+	# read the Java version we want to find
+	JVMVersion=$(plist_get ':JVMVersion')
+	# post processing of the version string follows below...
 
 	# read the SplashFile name
 	JVMSplashFile=$(plist_get ':JVMSplashFile')
@@ -533,7 +537,7 @@ if [ -n "$JAVA_HOME" ] ; then
 	fi
 	JAVACMD_version=$(get_comparable_java_version $(get_java_version_from_cmd "${JAVACMD}"))
 else
-	stub_logger "[JavaSearch] ... didn't found JAVA_HOME"
+	stub_logger "[JavaSearch] ... didn't find JAVA_HOME"
 fi
 
 
@@ -568,176 +572,20 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 
 
 	# find installed JavaVirtualMachines (JDK + JRE)
-	allJVMs=()
-	
-	# read JDK's from '/usr/libexec/java_home --xml' command with PlistBuddy and a custom Dict iterator
-	# idea: https://stackoverflow.com/a/14085460/1128689 and https://scriptingosx.com/2018/07/parsing-dscl-output-in-scripts/
-	javaXml=$(/usr/libexec/java_home --xml)
-	javaCounter=$(/usr/libexec/PlistBuddy -c "Print" /dev/stdin <<< $javaXml | grep "Dict" | wc -l | tr -d ' ')
-
-	# iterate over all Dict entries
-	for idx in $(seq 0 $((javaCounter - 1)))
-	do
-		version=$(/usr/libexec/PlistBuddy -c "print :$idx:JVMVersion" /dev/stdin <<< $javaXml)
-		path=$(/usr/libexec/PlistBuddy -c "print :$idx:JVMHomePath" /dev/stdin <<< $javaXml)
-		path+="/bin/java"
-		allJVMs+=("$version:$path")
-	done
-	# unset for loop variables
-	unset version path
-
-	# add SDKMAN! java versions (#95)
-	if [ -d ~/.sdkman/candidates/java/ ] ; then
-		for sdkjdk in ~/.sdkman/candidates/java/*/
-		do
-			if [[ ${sdkjdk} =~ /current/$ ]] ; then
-				continue
+	# first check if JVMVersion is set
+	if [ -z "${JVMVersion}" ]  ; then
+		stub_logger "[EXIT 6] JVMVersion not set"
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\nmisuse of universalJavaApplicationStub: JMVersion not set\" with title \"${CFBundleName}\" buttons {\" OK \"} default button 1 with icon path to resource \"${CFBundleIconFile}\" in bundle (path to me)"
+		exit 6
 			fi
 
-			sdkjdkcmd="${sdkjdk}bin/java"
-			version=$(get_java_version_from_cmd "${sdkjdkcmd}")
-			allJVMs+=("$version:$sdkjdkcmd")
-		done
-		# unset for loop variables
-		unset version
+	# read JDK's from '/usr/libexec/java_home -v "${JVMVersion}"' command
+	JVMfound=`/usr/libexec/java_home 2>&1 -v "${JVMVersion}"`
+	if [[ $JVMfound =~ "Unable to find"* ]] ; then
+		JAVACMD=""
+	else
+	    JAVACMD="${JVMfound}/bin/java"
 	fi
-
-	# add Apple JRE if available
-	if [ -x "${apple_jre_plugin}" ] ; then
-		allJVMs+=("$apple_jre_version:$apple_jre_plugin")
-	fi
-
-	# add Oracle JRE if available
-	if [ -x "${oracle_jre_plugin}" ] ; then
-		allJVMs+=("$oracle_jre_version:$oracle_jre_plugin")
-	fi
-
-	# debug output
-	for i in "${allJVMs[@]}"
-	do
-		stub_logger "[JavaSearch] ... found JVM: $i"
-	done
-
-
-	# determine JVMs matching the min/max version requirement
-
-	stub_logger "[JavaSearch] Filtering the result list for JVMs matching the min/max version requirement ..."
-
-	minC=$(get_comparable_java_version ${JVMVersion})
-	maxC=$(get_comparable_java_version ${JVMMaxVersion})
-	matchingJVMs=()
-
-	for i in "${allJVMs[@]}"
-	do
-		# split JVM string at ':' delimiter to retain spaces in $path substring
-		IFS=: arr=($i) ; unset IFS
-		# [0] JVM version number
-		ver=${arr[0]}
-		# comparable JVM version number
-		comp=$(get_comparable_java_version $ver)
-		# [1] JVM path
-		path="${arr[1]}"
-		# construct string item for adding to the "matchingJVMs" array
-		item="$comp:$ver:$path"
-
-		# pre-requisite: current version number needs to be greater than min version number
-		if [ "$comp" -ge "$minC" ] ; then
-
-			# perform max version checks if max version requirement is present
-			if [ ! -z ${JVMMaxVersion} ] ; then
-
-				# max version requirement ends with '*' modifier
-				if [[ ${JVMMaxVersion} == *\* ]] ; then
-
-					# use the '*' modifier from the max version string as wildcard for a 'starts with' comparison
-					# and check whether the current version number starts with the max version wildcard string
-					if [[ ${ver} == ${JVMMaxVersion} ]]; then
-						matchingJVMs+=("$item")
-
-					# or whether the current comparable version is lower than the comparable max version
-					elif [ "$comp" -le "$maxC" ] ; then
-						matchingJVMs+=("$item")
-					fi
-
-				# max version requirement ends with '+' modifier -> always add this version if it's greater than $min
-				# because a max requirement with + modifier doesn't make sense
-				elif [[ ${JVMMaxVersion} == *+ ]] ; then
-					matchingJVMs+=("$item")
-
-				# matches 6 zeros at the end of the max version string (e.g. for 1.8, 9)
-				# -> then the max version string should be treated like with a '*' modifier at the end
-				#elif [[ ${maxC} =~ ^[0-9]{2}0{6}$ ]] && [ "$comp" -le $(( ${maxC#0} + 999 )) ] ; then
-				#	matchingJVMs+=("$item")
-
-				# matches 3 zeros at the end of the max version string (e.g. for 9.1, 10.3)
-				# -> then the max version string should be treated like with a '*' modifier at the end
-				#elif [[ ${maxC} =~ ^[0-9]{5}0{3}$ ]] && [ "$comp" -le "${maxC}" ] ; then
-				#	matchingJVMs+=("$item")
-
-				# matches standard requirements without modifier
-				elif [ "$comp" -le "$maxC" ]; then
-					matchingJVMs+=("$item")
-				fi
-
-			# no max version requirement:
-
-			# min version requirement ends with '+' modifier
-			# -> always add the current version because it's greater than $min
-			elif [[ ${JVMVersion} == *+ ]] ; then
-				matchingJVMs+=("$item")
-
-			# min version requirement ends with '*' modifier
-			# -> use the '*' modifier from the min version string as wildcard for a 'starts with' comparison
-			#    and check whether the current version number starts with the min version wildcard string
-			elif [[ ${JVMVersion} == *\* ]] ; then
-				if [[ ${ver} == ${JVMVersion} ]] ; then
-					matchingJVMs+=("$item")
-				fi
-
-			# compare the min version against the current version with an additional * wildcard for a 'starts with' comparison
-			# -> e.g. add 1.8.0_44 when the requirement is 1.8
-			elif [[ ${ver} == ${JVMVersion}* ]] ; then
-					matchingJVMs+=("$item")
-			fi
-		fi
-	done
-	# unset for loop variables
-	unset arr ver comp path item
-
-	# debug output
-	for i in "${matchingJVMs[@]}"
-	do
-		stub_logger "[JavaSearch] ... matches all requirements: $i"
-	done
-
-
-	# sort the matching JavaVirtualMachines by version number
-	# https://stackoverflow.com/a/11789688/1128689
-	IFS=$'\n' matchingJVMs=($(sort -nr <<<"${matchingJVMs[*]}"))
-	unset IFS
-
-
-	# get the highest matching JVM
-	for ((i = 0; i < ${#matchingJVMs[@]}; i++));
-	do
-		# split JVM string at ':' delimiter to retain spaces in $path substring
-		IFS=: arr=(${matchingJVMs[$i]}) ; unset IFS
-		# [0] comparable JVM version number
-		comp=${arr[0]}
-		# [1] JVM version number
-		ver=${arr[1]}
-		# [2] JVM path
-		path="${arr[2]}"
-
-		# use current value as JAVACMD if it's executable
-		if [ -x "$path" ] ; then
-			JAVACMD="$path"
-			JAVACMD_version=$comp
-			break
-		fi
-	done
-	# unset for loop variables
-	unset arr comp ver path
 fi
 
 # log the Java Command and the extracted version number
