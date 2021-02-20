@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- Also expand variables `$APP_PACKAGE`, `$JAVAROOT` and `$USER_HOME` in Oracle style PList files
+- Also expand variable `$APP_ROOT` in Apple style PList files
+
 ### Changed
 - Improved language detection by reading the user preferred languages from the macOS System Preferences instead of using the system locale (#101)
 - Improved logging for JAVA_HOME detection (#100)

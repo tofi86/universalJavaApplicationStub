@@ -166,6 +166,8 @@ if [ $exitcode -eq 0 ]; then
 	JavaFolder="${AppleJavaFolder}"
 	ResourcesFolder="${AppleResourcesFolder}"
 
+	# set expandable variables
+	APP_ROOT="${AppPackageFolder}"
 	APP_PACKAGE="${AppPackageFolder}"
 	JAVAROOT="${AppleJavaFolder}"
 	USER_HOME="$HOME"
@@ -180,7 +182,7 @@ if [ $exitcode -eq 0 ]; then
 		# AppPackageRoot is the standard WorkingDirectory when the script is started
 		WorkingDirectory="${AppPackageRoot}"
 	fi
-	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+	# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 	WorkingDirectory=$(eval echo "${WorkingDirectory}")
 
 
@@ -203,7 +205,7 @@ if [ $exitcode -eq 0 ]; then
 	else
 		JVMClassPath=${JVMClassPath_RAW}
 	fi
-	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+	# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 	JVMClassPath=$(eval echo "${JVMClassPath}")
 
 	# read the JVM Options in either Array or String style
@@ -213,7 +215,7 @@ if [ $exitcode -eq 0 ]; then
 	else
 		JVMDefaultOptions=${JVMDefaultOptions_RAW}
 	fi
-	# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME (#84)
+	# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME (#84)
 	JVMDefaultOptions=$(eval echo "${JVMDefaultOptions}")
 
 	# read StartOnMainThread and add as -XstartOnFirstThread
@@ -247,7 +249,11 @@ else
 	ResourcesFolder="${OracleResourcesFolder}"
 	WorkingDirectory="${OracleJavaFolder}"
 
+	# set expandable variables
 	APP_ROOT="${AppPackageFolder}"
+	APP_PACKAGE="${AppPackageFolder}"
+	JAVAROOT="${OracleJavaFolder}"
+	USER_HOME="$HOME"
 
 	# read the MainClass name
 	JVMMainClass="$(plist_get ':JVMMainClassName')"
@@ -265,12 +271,12 @@ else
 	JVMClassPath_RAW=$(plist_get ':JVMClassPath')
 	if [[ $JVMClassPath_RAW == *Array* ]] ; then
 		JVMClassPath=.$(plist_get ':JVMClassPath' | grep "    " | sed 's/^ */:/g' | tr -d '\n' | xargs)
-		# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+		# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 		JVMClassPath=$(eval echo "${JVMClassPath}")
 
 	elif [[ ! -z ${JVMClassPath_RAW} ]] ; then
 		JVMClassPath=${JVMClassPath_RAW}
-		# expand variables $APP_PACKAGE, $JAVAROOT, $USER_HOME
+		# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 		JVMClassPath=$(eval echo "${JVMClassPath}")
 
 	else
@@ -316,14 +322,14 @@ fi
 stub_logger "[JavaRequirement] JVM minimum version: ${JVMVersion}"
 stub_logger "[JavaRequirement] JVM maximum version: ${JVMMaxVersion}"
 
-# MainArgs: replace occurences of $APP_ROOT with its content
+# MainArgs: expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 MainArgsArr=()
 for i in "${MainArgs[@]}"
 do
 	MainArgsArr+=("$(eval echo "$i")")
 done
 
-# JVMOptions: replace occurences of $APP_ROOT with its content
+# JVMOptions: expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME
 JVMOptionsArr=()
 for i in "${JVMOptions[@]}"
 do
