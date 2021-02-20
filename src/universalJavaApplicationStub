@@ -285,8 +285,11 @@ else
 		# Do NOT expand the default 'AppName.app/Contents/Java/*' classpath (#42)
 	fi
 
-	# read the JVM Default Options
+	# read the JVM Default Options by parsing the :JVMDefaultOptions <dict>
+	# and pulling all <string> values starting with a dash (-)
 	JVMDefaultOptions=$(plist_get ':JVMDefaultOptions' | grep -o " \-.*" | tr -d '\n' | xargs)
+	# expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME (#99)
+	JVMDefaultOptions=$(eval echo "${JVMDefaultOptions}")
 
 	# read the Main Arguments from JVMArguments key as an array and retain spaces (see #46 for naming details)
 	IFS=$'\t\n'
