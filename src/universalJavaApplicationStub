@@ -11,7 +11,7 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2021-02-03                                                          #
+# @date      2021-02-20                                                          #
 # @version   3.1.1-beta                                                          #
 #                                                                                #
 ##################################################################################
@@ -335,26 +335,33 @@ done
 ############################################
 
 # supported languages / available translations
-stubLanguages=("fr" "de" "zh" "es" "en")
+stubLanguages="^(fr|de|zh|es|en)-"
 
 # read user preferred languages as defined in macOS System Preferences (#101)
-stub_logger '[LanguageSearch] Checking preferred languages ...'
+stub_logger '[LanguageSearch] Checking preferred languages in macOS System Preferences...'
 appleLanguages=($(defaults read -g AppleLanguages | grep '\s"' | tr -d ',' | xargs))
+stub_logger "[LanguageSearch] ... found [${appleLanguages[*]}]"
 
 language=""
 for i in "${appleLanguages[@]}"
 do
 	langValue="${i%-*}"
-	stub_logger "[LanguageSearch] ... found '$i' (as '$langValue')"
-	if [ -z "${language}" ] && grep -q ${langValue} <<< "${stubLanguages[@]}" ; then
-		stub_logger "[LanguageSearch] ... ... which has been set as the default language for the launcher stub"
+    if [[ "$i" =~ $stubLanguages ]]; then 
+		stub_logger "[LanguageSearch] ... selected '$i' ('$langValue') as the default language for the launcher stub"
 		language=${langValue}
+        break
 	fi
 done
+if [ -z "${language}" ]; then
+    language="en"
+    stub_logger "[LanguageSearch] ... selected fallback 'en' as the default language for the launcher stub"
+fi
 stub_logger "[Language] $language"
 
-# French localization
-if [[ "$language" == "fr" ]] ; then
+
+case "${language}" in
+# French
+fr)
 	MSG_ERROR_LAUNCHING="ERREUR au lancement de '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' n'est pas spécifié.\nL'application Java ne peut pas être lancée."
 	MSG_JVMVERSION_REQ_INVALID="La syntaxe de la version de Java demandée est invalide: %s\nVeuillez contacter le développeur de l'application."
@@ -367,9 +374,10 @@ if [[ "$language" == "fr" ]] ; then
 	MSG_LATER="Plus tard"
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
+    ;;
 
-# German localization
-elif [[ "$language" == "de" ]] ; then
+# German
+de)
 	MSG_ERROR_LAUNCHING="FEHLER beim Starten von '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="Die 'MainClass' ist nicht spezifiziert!\nDie Java-Anwendung kann nicht gestartet werden!"
 	MSG_JVMVERSION_REQ_INVALID="Die Syntax der angeforderten Java-Version ist ungültig: %s\nBitte kontaktieren Sie den Entwickler der App."
@@ -382,9 +390,10 @@ elif [[ "$language" == "de" ]] ; then
 	MSG_LATER="Später"
 	MSG_VISIT_JAVA_DOT_COM="Java von Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java von AdoptOpenJDK"
+    ;;
 
-# Simplifyed Chinese localization
-elif [[ "$language" == "zh" ]] ; then
+# Simplified Chinese
+zh)
 	MSG_ERROR_LAUNCHING="无法启动 '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="没有指定 'MainClass'！\nJava程序无法启动!"
 	MSG_JVMVERSION_REQ_INVALID="Java版本参数语法错误: %s\n请联系该应用的开发者。"
@@ -397,9 +406,10 @@ elif [[ "$language" == "zh" ]] ; then
 	MSG_LATER="稍后"
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
+    ;;
 
-# Spanish localization
-elif [[ "$language" == "es" ]] ; then
+# Spanish
+es)
 	MSG_ERROR_LAUNCHING="ERROR iniciando '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="¡'MainClass' no especificada!\n¡La aplicación Java no puede iniciarse!"
 	MSG_JVMVERSION_REQ_INVALID="La sintaxis de la versión Java requerida no es válida: %s\nPor favor, contacte con el desarrollador de la aplicación."
@@ -412,9 +422,10 @@ elif [[ "$language" == "es" ]] ; then
 	MSG_LATER="Más tarde"
 	MSG_VISIT_JAVA_DOT_COM="Java de Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java de AdoptOpenJDK"
+    ;;
 
-# English default localization
-else
+# English | default
+en|*)
 	MSG_ERROR_LAUNCHING="ERROR launching '${CFBundleName}'."
 	MSG_MISSING_MAINCLASS="'MainClass' isn't specified!\nJava application cannot be started!"
 	MSG_JVMVERSION_REQ_INVALID="The syntax of the required Java version is invalid: %s\nPlease contact the App developer."
@@ -427,7 +438,8 @@ else
 	MSG_LATER="Later"
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
-fi
+    ;;
+esac
 
 
 
