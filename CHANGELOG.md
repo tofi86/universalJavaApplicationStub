@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [3.2.0] - 2021-02-21
+### Added
+- Also expand variables `$APP_PACKAGE`, `$JAVAROOT` and `$USER_HOME` in Oracle style PList files
+- Also expand variable `$APP_ROOT` in Apple style PList files
+- Oracle JVMDefaultOptions key: expand variables $APP_PACKAGE, $APP_ROOT, $JAVAROOT, $USER_HOME (#99)
+
+### Changed
+- Improved language detection by reading the user preferred languages from the macOS System Preferences instead of using the system locale (#101, thanks to @Flexperte for his valuable feedback)
+- Improved logging for JAVA_HOME detection (#100)
+
+### Fixed
+- Fixed a crash when `/usr/libexec/java_home` returns no JVMs (#93)
+
+
 ## [3.1.0] - 2021-01-07
 ### Added
 - Support for macOS 11.0 "Big Sur" (#91)

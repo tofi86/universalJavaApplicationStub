@@ -151,20 +151,21 @@ You should get a fully functional Mac Application Bundle working with both Java 
 Supported PList keys
 --------------------
 
-| Function                        | Apple PList key        | Oracle PList key      |
-|---------------------------------|------------------------|-----------------------|
-| **App Name** (Dock Name)        | `:CFBundleName`        | `:CFBundleName`       |
-| **App Icon** (Dock Icon)        | `:CFBundleIconFile`    | `:CFBundleIconFile`   |
-| **Working Directory**           | `:Java(X):WorkingDirectory`<br/>fallback to `name.app/`<br/>support for variables `$APP_PACKAGE`, `$JAVAROOT`, `$USER_HOME` | *not supported*<br/>default: `name.app/Contents/Java/` |
-| **Java Min/Max[*](https://github.com/tofi86/universalJavaApplicationStub/issues/51) Version Requirement** | `:Java(X):JVMVersion`  | `:JVMVersion`         |
-| **Java ClassPath** (`-cp …`)    | `:Java(X):ClassPath`   | `:JVMClassPath`       |
-| **Java Main Class**             | `:Java(X):MainClass`   | `:JVMMainClassName`   |
-| **Splash Image** (`-splash:…`)  | `:Java(X):SplashFile`  | `:JVMSplashFile`      |
-| **Java VM Options** (`-X…`)     | `:Java(X):VMOptions`   | `:JVMDefaultOptions`  |
-| **`-XstartOnFirstThread`** [*](https://stackoverflow.com/questions/28149634/what-does-the-xstartonfirstthread-vm-argument-do-mean) | `:Java(X):StartOnMainThread` | *not supported*       |
-| **Java Properties** (`-D…`)     | `:Java(X):Properties`  | `:JVMOptions`         |
-| **Main Class Arguments**        | `:Java(X):Arguments`   | `:JVMArguments`       |
+| Function                                   | Apple PList key        | Oracle PList key      |
+|--------------------------------------------|------------------------|-----------------------|
+| **App Name** (Dock Name)                   | `:CFBundleName`        | `:CFBundleName`       |
+| **App Icon** (Dock Icon)                   | `:CFBundleIconFile`    | `:CFBundleIconFile`   |
+| **Working Directory**  <sup>🌟</sup>       | `:Java(X):WorkingDirectory`<br/>fallback to `name.app/ | *not supported*<br/>default: `name.app/Contents/Java/` |
+| **Java Min/Max<sup>[★](https://github.com/tofi86/universalJavaApplicationStub/issues/51)</sup> Version Requirement** | `:Java(X):JVMVersion` | `:JVMVersion` |
+| **Java ClassPath** (`-cp …`) <sup>🌟</sup> | `:Java(X):ClassPath`   | `:JVMClassPath`       |
+| **Java Main Class**                        | `:Java(X):MainClass`   | `:JVMMainClassName`   |
+| **Splash Image** (`-splash:…`)             | `:Java(X):SplashFile`  | `:JVMSplashFile`      |
+| **Java VM Options** (`-X…`) <sup>🌟</sup>  | `:Java(X):VMOptions`   | `:JVMDefaultOptions`  |
+| **`-XstartOnFirstThread`** <sup>[★](https://stackoverflow.com/questions/28149634/what-does-the-xstartonfirstthread-vm-argument-do-mean)</sup> | `:Java(X):StartOnMainThread` | *not supported* |
+| **Java Properties** (`-D…`) <sup>🌟</sup>  | `:Java(X):Properties`  | `:JVMOptions`         |
+| **Main Class Arguments** <sup>🌟</sup>     | `:Java(X):Arguments`   | `:JVMArguments`       |
 
+<sup>🌟</sup> Variable placeholders `$APP_PACKAGE`, `$APP_ROOT`, `$JAVAROOT`, `$USER_HOME` get expanded in these contexts.
 
 ### Specify min/max Java requirement
 
