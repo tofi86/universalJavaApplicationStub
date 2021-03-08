@@ -1,11 +1,17 @@
 universalJavaApplicationStub
 ============================
 
-![Tests and Shellcheck](https://github.com/tofi86/universalJavaApplicationStub/workflows/Tests%20and%20Shellcheck/badge.svg) [![Current release](https://img.shields.io/github/release/tofi86/universalJavaApplicationStub.svg)](https://github.com/tofi86/universalJavaApplicationStub/releases) [![Join the chat at https://gitter.im/tofi86/universalJavaApplicationStub](https://badges.gitter.im/tofi86/universalJavaApplicationStub.svg)](https://gitter.im/tofi86/universalJavaApplicationStub?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+![Tests and Shellcheck](https://github.com/tofi86/universalJavaApplicationStub/workflows/Tests%20and%20Shellcheck/badge.svg) [![Current release](https://img.shields.io/github/release/tofi86/universalJavaApplicationStub.svg)](https://github.com/tofi86/universalJavaApplicationStub/releases) [![Donate to this project using Buy Me A Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://ko-fi.com/tofi86)
 
-A BASH based *JavaApplicationStub* for Java Apps on Mac OS X that works with both Apple's and Oracle's plist format. It is released under the [MIT License](https://github.com/tofi86/universalJavaApplicationStub/blob/master/LICENSE).
+A BASH based _launcher stub_ for Java based macOS Apps that works with both Apple's and Oracle's plist format. It is released under the [MIT License](https://github.com/tofi86/universalJavaApplicationStub/blob/master/LICENSE).
 
-See the [CHANGELOG](https://github.com/tofi86/universalJavaApplicationStub/blob/master/CHANGELOG.md) for a Release History and feature details.
+📃 🔄 See the [CHANGELOG](https://github.com/tofi86/universalJavaApplicationStub/blob/master/CHANGELOG.md) for a Release History and feature details.
+
+🐛 🔥 Report _Issues_ at the [GitHub Issues Page](https://github.com/tofi86/universalJavaApplicationStub/issues).
+
+🤔 ❓ If you have a _general question_ about how a feature works or would like to _share an idea_ or a _usecase for this project_, then please use the [GitHub Discussions Page](https://github.com/tofi86/universalJavaApplicationStub/discussions).
+
+❤️ ☕ If you want to support this independent project, you can buy me a coffee: [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/tofi86)
 
 
 Why
