@@ -11,8 +11,8 @@
 #                                                                                #
 # @author    Tobias Fischer                                                      #
 # @url       https://github.com/tofi86/universalJavaApplicationStub              #
-# @date      2021-02-21                                                          #
-# @version   3.2.0                                                               #
+# @date      2021-11-02                                                          #
+# @version   3.2.1                                                               #
 #                                                                                #
 ##################################################################################
 #                                                                                #
@@ -344,7 +344,7 @@ done
 ############################################
 
 # supported languages / available translations
-stubLanguages="^(fr|de|zh|es|en)-"
+stubLanguages=("de" "en" "es" "fr" "pt-BR" "zh")
 
 # read user preferred languages as defined in macOS System Preferences (#101)
 stub_logger '[LanguageSearch] Checking preferred languages in macOS System Preferences...'
@@ -355,15 +355,19 @@ language=""
 for i in "${appleLanguages[@]}"
 do
 	langValue="${i%-*}"
-    if [[ "$i" =~ $stubLanguages ]]; then 
-		stub_logger "[LanguageSearch] ... selected '$i' ('$langValue') as the default language for the launcher stub"
+	if [[ " ${stubLanguages[*]} " =~ " ${i} " ]]; then
+		stub_logger "[LanguageSearch] ... selected '$i' as the default language for the launcher stub"
+		language=${i}
+		break
+	elif [[ " ${stubLanguages[*]} " =~ " ${langValue} " ]]; then
+		stub_logger "[LanguageSearch] ... selected '$langValue' (from '$i') as the default language for the launcher stub"
 		language=${langValue}
-        break
+		break
 	fi
 done
 if [ -z "${language}" ]; then
-    language="en"
-    stub_logger "[LanguageSearch] ... selected fallback 'en' as the default language for the launcher stub"
+	language="en"
+	stub_logger "[LanguageSearch] ... selected fallback 'en' as the default language for the launcher stub"
 fi
 stub_logger "[Language] $language"
 
@@ -432,6 +436,22 @@ es)
 	MSG_VISIT_JAVA_DOT_COM="Java de Oracle"
 	MSG_VISIT_ADOPTOPENJDK="Java de AdoptOpenJDK"
     ;;
+
+# Brazilian Portuguese
+pt-BR)
+	MSG_ERROR_LAUNCHING="ERRO iniciando '${CFBundleName}'."
+	MSG_MISSING_MAINCLASS="'MainClass' não foi definida!\nA aplicação java não poderá ser iniciada!"
+	MSG_JVMVERSION_REQ_INVALID="A sintaxe da versão Java requerida não é valida: %s\nPor favor contacte o desenvolvedor dessa aplicação."
+	MSG_NO_SUITABLE_JAVA="Não foi encontrado uma versão Java compatível no seu sistema!\nEsta aplicação precisa do Java %s"
+	MSG_JAVA_VERSION_OR_LATER="ou maior"
+	MSG_JAVA_VERSION_LATEST="(última atualização)"
+	MSG_JAVA_VERSION_MAX="máxima %s"
+	MSG_NO_SUITABLE_JAVA_CHECK="Verifique se instalou a versão Java necessária."
+	MSG_INSTALL_JAVA="Você precisa instalar o JAVA no seu Mac!\nPor favor, visite java.com para instruções de instalação..."
+	MSG_LATER="Depois"
+	MSG_VISIT_JAVA_DOT_COM="Java por Oracle"
+	MSG_VISIT_ADOPTOPENJDK="Java por AdoptOpenJDK"
+	;;
 
 # English | default
 en|*)
