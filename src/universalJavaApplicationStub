@@ -386,7 +386,7 @@ fr)
 	MSG_INSTALL_JAVA="Java doit être installé sur votre système.\nRendez-vous sur java.com et suivez les instructions d'installation..."
 	MSG_LATER="Plus tard"
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
-	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
+	MSG_VISIT_ADOPTIUM="Java by Adoptium"
     ;;
 
 # German
@@ -402,7 +402,7 @@ de)
 	MSG_INSTALL_JAVA="Auf Ihrem System muss die 'Java'-Software installiert sein.\nBesuchen Sie java.com für weitere Installationshinweise."
 	MSG_LATER="Später"
 	MSG_VISIT_JAVA_DOT_COM="Java von Oracle"
-	MSG_VISIT_ADOPTOPENJDK="Java von AdoptOpenJDK"
+	MSG_VISIT_ADOPTIUM="Java von Adoptium"
     ;;
 
 # Simplified Chinese
@@ -418,7 +418,7 @@ zh)
 	MSG_INSTALL_JAVA="你需要在Mac中安装Java运行环境！\n访问 java.com 了解如何安装。"
 	MSG_LATER="稍后"
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
-	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
+	MSG_VISIT_ADOPTIUM="Java by Adoptium"
     ;;
 
 # Spanish
@@ -434,7 +434,7 @@ es)
 	MSG_INSTALL_JAVA="¡Necesita tener JAVA instalado en su Mac!\nVisite java.com para consultar las instrucciones para su instalación..."
 	MSG_LATER="Más tarde"
 	MSG_VISIT_JAVA_DOT_COM="Java de Oracle"
-	MSG_VISIT_ADOPTOPENJDK="Java de AdoptOpenJDK"
+	MSG_VISIT_ADOPTIUM="Java de Adoptium"
     ;;
 
 # Brazilian Portuguese
@@ -450,7 +450,7 @@ pt-BR)
 	MSG_INSTALL_JAVA="Você precisa instalar o JAVA no seu Mac!\nPor favor, visite java.com para instruções de instalação..."
 	MSG_LATER="Depois"
 	MSG_VISIT_JAVA_DOT_COM="Java por Oracle"
-	MSG_VISIT_ADOPTOPENJDK="Java por AdoptOpenJDK"
+	MSG_VISIT_ADOPTIUM="Java por Adoptium"
 	;;
 
 # English | default
@@ -466,7 +466,7 @@ en|*)
 	MSG_INSTALL_JAVA="You need to have JAVA installed on your Mac!\nVisit java.com for installation instructions..."
 	MSG_LATER="Later"
 	MSG_VISIT_JAVA_DOT_COM="Java by Oracle"
-	MSG_VISIT_ADOPTOPENJDK="Java by AdoptOpenJDK"
+	MSG_VISIT_ADOPTIUM="Java by Adoptium"
     ;;
 esac
 
@@ -832,10 +832,10 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 		stub_logger "[EXIT 3] ${MSG_NO_SUITABLE_JAVA_EXPANDED}"
 
 		# display error message with AppleScript
-		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA_EXPANDED}\n${MSG_NO_SUITABLE_JAVA_CHECK}\" with title \"${CFBundleName}\"  buttons {\" OK \", \"${MSG_VISIT_JAVA_DOT_COM}\", \"${MSG_VISIT_ADOPTOPENJDK}\"} default button 1${DialogWithIcon}" \
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_NO_SUITABLE_JAVA_EXPANDED}\n${MSG_NO_SUITABLE_JAVA_CHECK}\" with title \"${CFBundleName}\"  buttons {\" OK \", \"${MSG_VISIT_JAVA_DOT_COM}\", \"${MSG_VISIT_ADOPTIUM}\"} default button 1${DialogWithIcon}" \
 				-e "set response to button returned of the result" \
 				-e "if response is \"${MSG_VISIT_JAVA_DOT_COM}\" then open location \"https://www.java.com/download/\"" \
-				-e "if response is \"${MSG_VISIT_ADOPTOPENJDK}\" then open location \"https://adoptopenjdk.net/releases.html\""
+				-e "if response is \"${MSG_VISIT_ADOPTIUM}\" then open location \"https://adoptium.net/releases.html\""
 		# exit with error
 		exit 3
 
@@ -843,10 +843,10 @@ if [ -z "${JAVACMD}" ] || [ ! -x "${JAVACMD}" ] ; then
 		# log exit cause
 		stub_logger "[EXIT 1] ${MSG_ERROR_LAUNCHING}"
 		# display error message with AppleScript
-		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_INSTALL_JAVA}\" with title \"${CFBundleName}\" buttons {\"${MSG_LATER}\", \"${MSG_VISIT_JAVA_DOT_COM}\", \"${MSG_VISIT_ADOPTOPENJDK}\"} default button 1${DialogWithIcon}" \
+		osascript -e "tell application \"System Events\" to display dialog \"${MSG_ERROR_LAUNCHING}\n\n${MSG_INSTALL_JAVA}\" with title \"${CFBundleName}\" buttons {\"${MSG_LATER}\", \"${MSG_VISIT_JAVA_DOT_COM}\", \"${MSG_VISIT_ADOPTIUM}\"} default button 1${DialogWithIcon}" \
 					-e "set response to button returned of the result" \
 					-e "if response is \"${MSG_VISIT_JAVA_DOT_COM}\" then open location \"https://www.java.com/download/\"" \
-					-e "if response is \"${MSG_VISIT_ADOPTOPENJDK}\" then open location \"https://adoptopenjdk.net/releases.html\""
+					-e "if response is \"${MSG_VISIT_ADOPTIUM}\" then open location \"https://adoptium.net/releases.html\""
 		# exit with error
 		exit 1
 	fi

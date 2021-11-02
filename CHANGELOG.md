@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support country specific locales such as Brazilian Portuguese (`pt-BR`)
 - Translation of messages to Brazilian Portuguese (#115, Thanks to @israelins85 for his contribution)
 
+### Changed
+- Changed Adopt OpenJDK link and name to Adoptium
+
 
 ## [3.2.0] - 2021-02-21
 ### Added
