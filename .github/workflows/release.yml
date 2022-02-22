@@ -83,12 +83,35 @@ jobs:
           echo "Running shc..."
           shc -r -f src/universalJavaApplicationStub
 
+      - name: Build universalJavaApplicationStub x86_64
+        run: |
+           echo "Running clang for universalJavaApplicationStub.x86_64"
+           clang -o universalJavaApplicationStub.x86_64 -target x86_64-apple-macos10.10 src/universalJavaApplicationStub.x.c 
+           strip universalJavaApplicationStub.x86_64
+
+      - name: Build universalJavaApplicationStub arm64
+        run: |
+           echo "Running clang for universalJavaApplicationStub.arm64"
+           clang -o universalJavaApplicationStub.arm64 -target arm64-apple-macos11 src/universalJavaApplicationStub.x.c
+           strip universalJavaApplicationStub.arm64
+
+      - name: Build universal universalJavaApplicationStub
+        run: |
+           echo "Runnning lipo"
+           lipo -create -output universalJavaApplicationStub universalJavaApplicationStub.x86_64 universalJavaApplicationStub.arm64
+           strip universalJavaApplicationStub
+           chmod ug=rwx,o=rx universalJavaApplicationStub
+
+      - name: Cleanup build files
+        run: |
+           echo "Runnning rm"
+           rm src/universalJavaApplicationStub.x src/universalJavaApplicationStub.x.c universalJavaApplicationStub.x86_64 universalJavaApplicationStub.arm64
+
       - name: ZIP universalJavaApplicationStub binary
         run: |
           echo "Zipping binary..."
-          mv src/universalJavaApplicationStub.x universalJavaApplicationStub
-          rm src/universalJavaApplicationStub.x.c
           zip --junk-paths universalJavaApplicationStub-${{ matrix.os }}.zip universalJavaApplicationStub
+          rm universalJavaApplicationStub
 
       - name: Upload release assets
         uses: actions/upload-release-asset@v1
