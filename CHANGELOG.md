@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Changed Adopt OpenJDK link and name to Adoptium
 
+### Removed
+- Option to fund this project
+
 
 ## [3.2.0] - 2021-02-21
 ### Added
