@@ -1,7 +1,7 @@
 universalJavaApplicationStub
 ============================
 
-![Tests and Shellcheck](https://github.com/tofi86/universalJavaApplicationStub/workflows/Tests%20and%20Shellcheck/badge.svg) [![Current release](https://img.shields.io/github/release/tofi86/universalJavaApplicationStub.svg)](https://github.com/tofi86/universalJavaApplicationStub/releases) [![Donate to this project using Buy Me A Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://ko-fi.com/tofi86)
+![Tests and Shellcheck](https://github.com/tofi86/universalJavaApplicationStub/workflows/Tests%20and%20Shellcheck/badge.svg) [![Current release](https://img.shields.io/github/release/tofi86/universalJavaApplicationStub.svg)](https://github.com/tofi86/universalJavaApplicationStub/releases)
 
 A BASH based _launcher stub_ for Java based macOS Apps that works with both Apple's and Oracle's plist format. It is released under the [MIT License](https://github.com/tofi86/universalJavaApplicationStub/blob/master/LICENSE).
 
@@ -10,8 +10,6 @@ A BASH based _launcher stub_ for Java based macOS Apps that works with both Appl
 🐛 🔥 Report _Issues_ at the [GitHub Issues Page](https://github.com/tofi86/universalJavaApplicationStub/issues).
 
 🤔 ❓ If you have a _general question_ about how a feature works or would like to _share an idea_ or a _usecase for this project_, then please use the [GitHub Discussions Page](https://github.com/tofi86/universalJavaApplicationStub/discussions).
-
-❤️ ☕ If you want to support this independent project, you can buy me a coffee: [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/tofi86)
 
 
 Why
